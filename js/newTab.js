@@ -4,42 +4,6 @@
 
 "use strict";
 
-let Cu = Components.utils;
-let Ci = Components.interfaces;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/DirectoryLinksProvider.jsm");
-Cu.import("resource://gre/modules/NewTabUtils.jsm");
-
-XPCOMUtils.defineLazyModuleGetter(this, "Rect",
-  "resource://gre/modules/Geometry.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "PrivateBrowsingUtils",
-  "resource://gre/modules/PrivateBrowsingUtils.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "UpdateChannel",
-  "resource://gre/modules/UpdateChannel.jsm");
-
-let {
-  linkChecker: gLinkChecker,
-} = NewTabUtils;
-
-XPCOMUtils.defineLazyGetter(this, "gStringBundle", function() {
-  return Services.strings.
-    createBundle("chrome://browser/locale/newTab.properties");
-});
-
-function newTabString(name, args) {
-  let stringName = "newtab." + name;
-  if (!args) {
-    return gStringBundle.GetStringFromName(stringName);
-  }
-  return gStringBundle.formatStringFromName(stringName, args, args.length);
-}
-
-function inPrivateBrowsingMode() {
-  return PrivateBrowsingUtils.isContentWindowPrivate(window);
-}
-
 const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 const XUL_NAMESPACE = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
@@ -47,21 +11,67 @@ const TILES_EXPLAIN_LINK = "https://support.mozilla.org/kb/how-do-tiles-work-fir
 const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
 const TILES_PRIVACY_LINK = "https://www.mozilla.org/privacy/";
 
-#include transformations.js
-#include page.js
-#include grid.js
-#include cells.js
-#include sites.js
-#include drag.js
-#include dragDataHelper.js
-#include drop.js
-#include dropTargetShim.js
-#include dropPreview.js
-#include updater.js
-#include undo.js
-#include search.js
-#include customize.js
-#include intro.js
+let listeners = {};
+
+function init() {
+  // Add a listener for messages sent from the browser.
+  // The listener calls our associated callback functions
+  window.addEventListener("message", (message) => {
+    for (let callback of listeners[message.data.name]) {
+      callback(message.data.data);
+    }
+  }, false);
+}
+
+function newTabString(name, args) {
+  let stringName = "newtab." + name;
+  if (!args) {
+    return gStrings[stringName];
+  }
+  return formatStringFromName(stringName, args, args.length);
+}
+
+function formatStringFromName(str, substrArr) {
+  let regExp = /%[0-9]\$S/g;
+  let matches;
+  while (matches = regExp.exec(str)) {
+    let match = matches[0];
+    let index = match.charAt(1); // Get the digit in the regExp.
+    str = str.replace(match, substrArr[index - 1]);
+  }
+  return str;
+}
+
+function sendToBrowser(type, data) {
+  let event = new CustomEvent('NewTabCommand', {
+    detail: {
+      command: type,
+      data: data
+    }
+  });
+  try {
+    document.dispatchEvent(event);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+function registerListener(type, callback) {
+  if (!listeners[type]) {
+    listeners[type] = [];
+  }
+  listeners[type].push(callback);
+  sendToBrowser("NewTab:Register", {type});
+}
+
+function inPrivateBrowsingMode() {
+  return PrivateBrowsingUtils.isContentWindowPrivate(window);
+}
+
 
 // Everything is loaded. Initialize the New Tab Page.
-gPage.init();
+init();
+window.addEventListener("load", () => {
+  gPage.init();
+});
+

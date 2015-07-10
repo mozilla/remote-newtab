@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 // The amount of time we wait while coalescing updates for hidden pages.
 const SCHEDULE_UPDATE_TIMEOUT_MS = 1000;
@@ -26,10 +24,10 @@ let gPage = {
    * Initializes the page.
    */
   init: function Page_init() {
-    addMessageListener("NewTab:UpdatePages", this.update.bind(this));
-    addMessageListener("NewTab:Observe", this.observe.bind(this));
-    addMessageListener("NewTab:PinState", this.setPinState.bind(this));
-    addMessageListener("NewTab:BlockState", this.setBlockState.bind(this));
+    registerListener("NewTab:UpdatePages", this.update.bind(this));
+    registerListener("NewTab:Observe", this.observe.bind(this));
+    registerListener("NewTab:PinState", this.setPinState.bind(this));
+    registerListener("NewTab:BlockState", this.setBlockState.bind(this));
 
     // XXX bug 991111 - Not all click events are correctly triggered when
     // listening from xhtml nodes -- in particular middle clicks on sites, so
@@ -39,30 +37,30 @@ let gPage = {
     addEventListener("unload", this, false);
 
     // Check if the new tab feature is enabled.
-    let enabled = Services.prefs.getBoolPref("browser.newtabpage.enabled");
+    let enabled = true; //Services.prefs.getBoolPref("browser.newtabpage.enabled");
     if (enabled)
       this._init();
 
     this._updateAttributes(enabled);
 
     // Initialize customize controls.
-    gCustomize.init();
+    //gCustomize.init();
 
     // Initialize intro panel.
-    gIntro.init();
+    //gIntro.init();
   },
 
   /**
    * Listens for notifications specific to this page.
    */
   observe: function Page_observe(message) {
-    let topic = message.data.topic;
-    let data = message.data.data;
+    let topic = message.topic;
+    let data = message.data;
 
     if (topic == "nsPref:changed") {
-      gCustomize.updateSelected();
+      //gCustomize.updateSelected();
 
-      let enabled = Services.prefs.getBoolPref("browser.newtabpage.enabled");
+      let enabled = true;//Services.prefs.getBoolPref("browser.newtabpage.enabled");
       this._updateAttributes(enabled);
 
       // Show intro if necessary.
@@ -155,13 +153,13 @@ let gPage = {
     gGrid.init();
 
     // Initialize the drop target shim.
-    gDropTargetShim.init();
+    //gDropTargetShim.init();
 
-#ifdef XP_MACOSX
-    // Workaround to prevent a delay on MacOSX due to a slow drop animation.
-    document.addEventListener("dragover", this, false);
-    document.addEventListener("drop", this, false);
-#endif
+    if (navigator.appVersion.indexOf("Mac") != -1) {
+      // Workaround to prevent a delay on MacOSX due to a slow drop animation.
+      document.addEventListener("dragover", this, false);
+      document.addEventListener("drop", this, false);
+    }
   },
 
   /**
@@ -254,7 +252,7 @@ let gPage = {
 
   onPageFirstVisible: function () {
     // Record another page impression.
-    Services.telemetry.getHistogramById("NEWTAB_PAGE_SHOWN").add(true);
+    //Services.telemetry.getHistogramById("NEWTAB_PAGE_SHOWN").add(true);
 
     for (let site of gGrid.sites) {
       if (site) {
@@ -280,10 +278,11 @@ let gPage = {
     this.reportLastVisibleTileIndex();
 
     // Show the panel now that anchors are sized
-    gIntro.showIfNecessary();
+    //gIntro.showIfNecessary();
   },
 
   reportLastVisibleTileIndex() {
+    /*
     let cwu = window.QueryInterface(Ci.nsIInterfaceRequestor)
                     .getInterface(Ci.nsIDOMWindowUtils);
 
@@ -306,8 +305,7 @@ let gPage = {
         }
       }
     }
-
-    DirectoryLinksProvider.reportSitesAction(sites, "view", lastIndex);
+    DirectoryLinksProvider.reportSitesAction(sites, "view", lastIndex);*/
   },
 
   setPinState: function Page_setPinState(message) {

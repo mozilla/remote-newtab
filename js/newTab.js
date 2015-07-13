@@ -15,8 +15,8 @@ let listeners = {};
 
 function init() {
   // Add a listener for messages sent from the browser.
-  // The listener calls our associated callback functions
-  window.addEventListener("message", (message) => {
+  // The listener calls our associated callback functions.
+  window.addEventListener("message", message => {
     for (let callback of listeners[message.data.name]) {
       callback(message.data.data);
     }
@@ -43,7 +43,7 @@ function formatStringFromName(str, substrArr) {
 }
 
 function sendToBrowser(type, data) {
-  let event = new CustomEvent('NewTabCommand', {
+  let event = new CustomEvent("NewTabCommand", {
     detail: {
       command: type,
       data: data
@@ -65,7 +65,8 @@ function registerListener(type, callback) {
 }
 
 function inPrivateBrowsingMode() {
-  return PrivateBrowsingUtils.isContentWindowPrivate(window);
+  return false;
+  //return PrivateBrowsingUtils.isContentWindowPrivate(window);
 }
 
 

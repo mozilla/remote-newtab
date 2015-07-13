@@ -171,9 +171,9 @@ let gGrid = {
       '  <span class="newtab-title"></span>' +
       '</a>' +
       '<input type="button" title="' + newTabString("pin") + '"' +
-      '       class="newtab-control newtab-control-pin"></input>' +
+      '       class="newtab-control newtab-control-pin"/>' +
       '<input type="button" title="' + newTabString("block") + '"' +
-      '       class="newtab-control newtab-control-block"></input>' +
+      '       class="newtab-control newtab-control-block"/>' +
       '<span class="newtab-suggested"></span>';
 
     this._siteFragment = document.createDocumentFragment();

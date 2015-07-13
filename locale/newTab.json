@@ -1,4 +1,4 @@
-/* 
+/*
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,13 +8,13 @@ let gStrings = {
 	"newtab.pin": "Pin this site at its current position",
 	"newtab.unpin": "Unpin this site",
 	"newtab.block": "Remove this site",
-   	/* 
-   	 * LOCALIZATION NOTE(newtab.sponsored.button): This text appears for sponsored
+	/*
+	 * LOCALIZATION NOTE(newtab.sponsored.button): This text appears for sponsored
 	 * and enhanced tiles on the same line as the tile's title, so prefer short
 	 * strings to avoid overlap. This string should be uppercase.
 	 */
 	"newtab.sponsored.button": "SPONSORED",
-	/* 
+	/*
 	 * LOCALIZATION NOTE(newtab.suggested.button): This text appears for sponsored
 	 * and suggested tiles on the same line as the tile's title, so prefer short
 	 * strings to avoid overlap. This string should be uppercase.
@@ -33,7 +33,7 @@ let gStrings = {
 	 * newtab.learn.link as text.
 	 */
 	"newtab.sponsored.explain": "This tile is being shown to you on behalf of a Mozilla partner. You can remove it at any time by clicking the %1$S button. %2$S",
-	/* 
+	/*
 	 * LOCALIZATION NOTE(newtab.sponsored.explain2): %1$S will be replaced inline by
 	 * the (X) block icon. %2$S will be replaced by an active link using string
 	 * newtab.learn.link as text.
@@ -89,7 +89,7 @@ let gStrings = {
 	"newtab.privacy.link": "Privacy Notice",
 	"newtab.learn.link2": "More about New Tab",
 	"newtab.privacy.link2": "About your privacy",
-	/* 
+	/*
 	 * LOCALIZATION NOTE(newtab.intro.header.welcome): %1$S will be replaced by
 	 * brandShortName as bold text.
 	 */

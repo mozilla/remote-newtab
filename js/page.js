@@ -155,7 +155,7 @@ let gPage = {
     // Initialize the drop target shim.
     //gDropTargetShim.init();
 
-    if (navigator.appVersion.indexOf("Mac") != -1) {
+    if (navigator.platform.indexOf("Mac") !== -1) {
       // Workaround to prevent a delay on MacOSX due to a slow drop animation.
       document.addEventListener("dragover", this, false);
       document.addEventListener("drop", this, false);

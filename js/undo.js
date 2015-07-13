@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 /**
  * Dialog allowing to undo the removal of single site or to completely restore
@@ -28,7 +26,7 @@ let gUndoDialog = {
     this._undoButton = document.getElementById("newtab-undo-button");
     this._undoCloseButton = document.getElementById("newtab-undo-close-button");
     this._undoRestoreButton = document.getElementById("newtab-undo-restore-button");
-    addMessageListener("NewTab:Restore", this._restore.bind(this));
+    registerListener("NewTab:Restore", this._restore.bind(this));
   },
 
   /**

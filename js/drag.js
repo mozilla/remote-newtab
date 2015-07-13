@@ -1,17 +1,16 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 /**
  * This singleton implements site dragging functionality.
  */
-
+/*
 XPCOMUtils.defineLazyGetter(this, "gPrincipal", function () {
   let uri = Services.io.newURI("about:newtab", null, null);
   return Services.scriptSecurityManager.getNoAppCodebasePrincipal(uri);
 });
+*/
 
 let gDrag = {
   /**
@@ -122,14 +121,16 @@ let gDrag = {
 
     }
 
+/*
     let flags = Ci.nsIScriptSecurityManager.DISALLOW_INHERIT_PRINCIPAL |
-                Ci.nsIScriptSecurityManager.DONT_REPORT_ERRORS;
+                Ci.nsIScriptSecurityManager.DONT_REPORT_ERRORS;*/
+    let flags = null;
 
     // Check that we're not accepting URLs which would inherit the caller's
     // principal (such as javascript: or data:).
     try {
-      Services.scriptSecurityManager.
-        checkLoadURIStrWithPrincipal(gPrincipal, link.url, flags);
+     // Services.scriptSecurityManager.
+     //   checkLoadURIStrWithPrincipal(gPrincipal, link.url, flags);
       return true;
     } catch (e) {
       // Attempting to drag a wierd URL - don't allow the drag to happen.

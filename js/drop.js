@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 // A little delay that prevents the grid from being too sensitive when dragging
 // sites around.
@@ -94,7 +92,7 @@ let gDrop = {
       if (link) {
         // A new link was dragged onto the grid. Create it by pinning its URL.
         // Also, make sure the newly added link is not blocked.
-        sendAsyncMessage("NewTab:PinLink", {link, index, ensureUnblocked: true});
+        sendToBrowser("NewTab:PinLink", {link, index, ensureUnblocked: true});
       }
     }
   },

@@ -53,7 +53,7 @@ Site.prototype = {
     if (typeof aIndex == "undefined")
       aIndex = this.cell.index;
 
-    sendAsyncMessage("NewTab:PinLink", {link: this._link, index: aIndex});
+    sendToBrowser("NewTab:PinLink", {link: this._link, index: aIndex});
     this._updateAttributes(true);
   },
 
@@ -62,7 +62,7 @@ Site.prototype = {
    */
   unpin: function Site_unpin() {
     if (this.isPinned()) {
-      sendAsyncMessage("NewTab:UnpinLink", {link: this._link});
+      sendToBrowser("NewTab:UnpinLink", {link: this._link});
       this._updateAttributes(false);
     }
   },
@@ -82,7 +82,7 @@ Site.prototype = {
   block: function Site_block() {
     if (!this.isBlocked()) {
       gUndoDialog.show(this);
-      sendAsyncMessage("NewTab:BlockLink", {link: this._link});
+      sendToBrowser("NewTab:BlockLink", {link: this._link});
     }
   },
 
@@ -155,7 +155,7 @@ Site.prototype = {
        delete this.link.endTime;
        // clear enhanced-content image that may still exist in preloaded page
        this._querySelector(".enhanced-content").style.backgroundImage = "";
-       sendAsyncMessage("NewTab:ReplacePinLink", {oldUrl, link: this.link});
+       sendToBrowser("NewTab:ReplacePinLink", {oldUrl, link: this.link});
     }
   },
 
@@ -382,9 +382,9 @@ Site.prototype = {
     }
 
     // Report all link click actions
-    if (action) {
+    /*if (action) {
       DirectoryLinksProvider.reportSitesAction(gGrid.sites, action, tileIndex);
-    }
+    }*/
   },
 
   /**

@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 let gCustomize = {
   _nodeIDSuffixes: [
@@ -27,7 +25,6 @@ let gCustomize = {
     this._nodes.classic.addEventListener("click", this);
     this._nodes.enhanced.addEventListener("click", this);
     this._nodes.learn.addEventListener("click", this);
-
     this.updateSelected();
   },
 
@@ -84,18 +81,18 @@ let gCustomize = {
     }
     switch (event.currentTarget.id) {
       case "newtab-customize-blank":
-        sendAsyncMessage("NewTab:Customize", {enabled: false, enhanced: false});
+        sendToBrowser("NewTab:Customize", {enabled: false, enhanced: false});
         break;
       case "newtab-customize-classic":
         if (this._nodes.enhanced.getAttribute("selected")){
-          sendAsyncMessage("NewTab:Customize", {enabled: true, enhanced: true});
+          sendToBrowser("NewTab:Customize", {enabled: true, enhanced: true});
         } else {
-          sendAsyncMessage("NewTab:Customize", {enabled: true, enhanced: false});
+          sendToBrowser("NewTab:Customize", {enabled: true, enhanced: false});
         }
         break;
       case "newtab-customize-enhanced":
-        let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced");
-        sendAsyncMessage("NewTab:Customize", {enabled: true, enhanced: !enhanced});
+        let enhanced = true; /*Services.prefs.getBoolPref("browser.newtabpage.enhanced")*/;
+        sendToBrowser("NewTab:Customize", {enabled: true, enhanced: !this._enhanced});
         break;
       case "newtab-customize-learn":
         this.showLearn();
@@ -115,8 +112,8 @@ let gCustomize = {
   },
 
   updateSelected: function() {
-    let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced");
-    let enabled = Services.prefs.getBoolPref("browser.newtabpage.enabled");
+    let enhanced = true; //Services.prefs.getBoolPref("browser.newtabpage.enhanced");
+    let enabled = true; //Services.prefs.getBoolPref("browser.newtabpage.enabled");
     let selected = enabled ? enhanced ? "enhanced" : "classic" : "blank";
     ["enhanced", "classic", "blank"].forEach(id => {
       let node = this._nodes[id];

@@ -131,7 +131,7 @@ let gGrid = {
     this._node.appendChild(fragment);
     this._ready = true;
 
-    this._pinnedLinks = message.data.pinnedLinks;
+    this._pinnedLinks = message.pinnedLinks;
 
     // If fetching links took longer than loading the page itself then
     // we need to resize the grid as that was blocked until now.
@@ -148,8 +148,7 @@ let gGrid = {
    * @param rows Number of rows defaulting to the max
    */
   _computeHeight: function Grid_computeHeight(aRows) {
-    //let {gridRows} = gGridPrefs;
-    let gridRows = 3;
+    let gridRows = 3; //Math.max(1, Services.prefs.getIntPref("browser.newtabpage.rows"));
     aRows = aRows === undefined ? gridRows : Math.min(gridRows, aRows);
     return aRows * this._cellHeight + GRID_BOTTOM_EXTRA;
   },

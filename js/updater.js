@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 /**
  * This singleton provides functionality to update the current grid to a new
@@ -13,7 +11,7 @@ let gUpdater = {
    * Set up message listener to fetch links when the grid needs to be updated.
    */
   init: function Updater_init() {
-    addMessageListener("NewTab:UpdateLinks", this.updateGrid.bind(this));
+    registerListener("NewTab:UpdateLinks", this.updateGrid.bind(this));
   },
 
   /**
@@ -22,7 +20,7 @@ let gUpdater = {
    * @param message The links sent down by the parent process
    */
   updateGrid: function Updater_updateGrid(message) {
-    let links = message.data.links.slice(0, gGrid.cells.length);
+    let links = message.links.slice(0, gGrid.cells.length);
 
     // Find all sites that remain in the grid.
     let sites = this._findRemainingSites(links);
@@ -54,7 +52,7 @@ let gUpdater = {
    * Sends a message to update the grid.
    */
   sendUpdate: function Updater_sendUpdate() {
-    sendAsyncMessage("NewTab:UpdateGrid");
+    sendToBrowser("NewTab:UpdateGrid");
   },
 
   /**

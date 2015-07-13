@@ -15,9 +15,9 @@ let gPage = {
    */
   get windowID() {
     delete this.windowID;
-    return this.windowID = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                                 .getInterface(Ci.nsIDOMWindowUtils)
-                                 .outerWindowID;
+    return 0;//this.windowID = window.QueryInterface(Ci.nsIInterfaceRequestor)
+             //                    .getInterface(Ci.nsIDOMWindowUtils)
+             //                      .outerWindowID;
   },
 
   /**
@@ -44,7 +44,7 @@ let gPage = {
     this._updateAttributes(enabled);
 
     // Initialize customize controls.
-    //gCustomize.init();
+    gCustomize.init();
 
     // Initialize intro panel.
     //gIntro.init();
@@ -97,11 +97,12 @@ let gPage = {
     }
 
     let currentWindowID = this.windowID;
+    currentWindowID = message.outerWindowID;
 
     // Do not refresh the entire grid for the page we're on, as refreshing will
     // cause tiles to flash briefly. It is ok to refresh pages not currently visible
     // but ignore updates for the currently visible page.
-    if (currentWindowID == message.data.outerWindowID || message.data.refresh == false) {
+    if (currentWindowID == message.outerWindowID || message.refresh == false) {
       // We do, however, want to update the grid if the tiles have changed location
       // due to unpinning, blocking or restoring.
       gUpdater.updateGrid(message);
@@ -141,7 +142,7 @@ let gPage = {
     this._initialized = true;
 
     // Initialize search.
-    gSearch.init();
+    //gSearch.init();
 
     if (document.hidden) {
       addEventListener("visibilitychange", this);
@@ -153,7 +154,7 @@ let gPage = {
     gGrid.init();
 
     // Initialize the drop target shim.
-    //gDropTargetShim.init();
+    gDropTargetShim.init();
 
     if (navigator.platform.indexOf("Mac") !== -1) {
       // Workaround to prevent a delay on MacOSX due to a slow drop animation.
@@ -310,16 +311,16 @@ let gPage = {
 
   setPinState: function Page_setPinState(message) {
     for (let site of gGrid.sites) {
-      if (site && site._link.url == message.data.link.url) {
-        site._link.pinState = message.data.pinState
+      if (site && site._link.url == message.link.url) {
+        site._link.pinState = message.pinState;
       }
     }
   },
 
   setBlockState: function Page_setBlockState(message) {
     for (let site of gGrid.sites) {
-      if (site && site._link.url == message.data.link.url) {
-        site._link.blockState = message.data.blockState
+      if (site && site._link.url == message.link.url) {
+        site._link.blockState = message.blockState;
       }
     }
   },

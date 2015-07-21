@@ -286,15 +286,6 @@ Site.prototype = {
   },
 
   /**
-   * Speculatively opens a connection to the current site.
-   */
-  _speculativeConnect: function Site_speculativeConnect() {
-    let sc = Services.io.QueryInterface(Ci.nsISpeculativeConnect);
-    let uri = Services.io.newURI(this.url, null, null);
-    sc.speculativeConnect(uri, null);
-  },
-
-  /**
    * Record interaction with site using telemetry.
    */
   _recordSiteClicked: function Site_recordSiteClicked(aIndex) {
@@ -394,7 +385,7 @@ Site.prototype = {
     switch (aEvent.type) {
       case "mouseover":
         this._node.removeEventListener("mouseover", this, false);
-        //this._speculativeConnect();
+        sendToBrowser("NewTab:SpeculativeConnect", {url: this.url});
         break;
       case "dragstart":
         gDrag.start(this, aEvent);

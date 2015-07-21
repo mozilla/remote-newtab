@@ -243,3 +243,7 @@
 .newtab-control-block:hover:active {
   background-image: -moz-image-rect(url(chrome://browser/skin/newtab/controls.svg), 0, 256, 32, 224);
 }
+
+.newtab-undo-button {
+  color: #144FAE;
+}

@@ -373,9 +373,9 @@ Site.prototype = {
     }
 
     // Report all link click actions
-    /*if (action) {
-      DirectoryLinksProvider.reportSitesAction(gGrid.sites, action, tileIndex);
-    }*/
+    if (action) {
+      sendToBrowser("NewTab:ReportSitesAction", {sites: stringifySites(gGrid.sites), action: action, index: tileIndex});
+    }
   },
 
   /**

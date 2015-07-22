@@ -42,6 +42,14 @@ function formatStringFromName(str, substrArr) {
   return str;
 }
 
+function stringifySites() {
+  let stringifiedSites = [];
+  for (let site of gGrid.sites) {
+    stringifiedSites.push(site ? JSON.stringify(site._link) : site);
+  }
+  return stringifiedSites;
+}
+
 function sendToBrowser(type, data) {
   let event = new CustomEvent("NewTabCommand", {
     detail: {

@@ -283,30 +283,14 @@ let gPage = {
   },
 
   reportLastVisibleTileIndex() {
-    /*
-    let cwu = window.QueryInterface(Ci.nsIInterfaceRequestor)
-                    .getInterface(Ci.nsIDOMWindowUtils);
-
-    let rect = cwu.getBoundsWithoutFlushing(gGrid.node);
-    let nodes = cwu.nodesFromRect(rect.left, rect.top, 0, rect.width,
-                                  rect.height, 0, true, false);
-
-    let i = -1;
-    let lastIndex = -1;
-    let sites = gGrid.sites;
-
-    for (let node of nodes) {
-      if (node.classList && node.classList.contains("newtab-cell")) {
-        if (sites[++i]) {
-          lastIndex = i;
-          if (sites[i].link.targetedSite) {
-            // record that suggested tile is shown to use suggested-tiles-histogram
-            this._suggestedTilePresent = true;
-          }
-        }
+    let cells = document.getElementsByClassName("newtab-cell");
+    let lastIndex = cells.length - 1;
+    for (let site of gGrid.sites) {
+      if (site.link.targetedSite) {
+        this._suggestedTilePresent = true;
       }
     }
-    DirectoryLinksProvider.reportSitesAction(sites, "view", lastIndex);*/
+    sendToBrowser("NewTab:ReportSitesAction", {sites: stringifySites(gGrid.sites), action: "view", index: lastIndex});
   },
 
   setPinState: function Page_setPinState(message) {

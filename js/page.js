@@ -29,6 +29,9 @@ let gPage = {
     registerListener("NewTab:PinState", this.setPinState.bind(this));
     registerListener("NewTab:BlockState", this.setBlockState.bind(this));
 
+    // Listen for 'unload' to unregister this page.
+    addEventListener("unload", this, false);
+
     // XXX bug 991111 - Not all click events are correctly triggered when
     // listening from xhtml nodes -- in particular middle clicks on sites, so
     // listen from the xul window and filter then delegate
@@ -196,10 +199,10 @@ let gPage = {
     // of histogram linear and not loose the change in user attention
     let delta = Math.round((Date.now() - this._firstVisibleTime) / 500);
     if (this._suggestedTilePresent) {
-      Services.telemetry.getHistogramById("NEWTAB_PAGE_LIFE_SPAN_SUGGESTED").add(delta);
+      sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_LIFE_SPAN_SUGGESTED", value: delta});
     }
     else {
-      Services.telemetry.getHistogramById("NEWTAB_PAGE_LIFE_SPAN").add(delta);
+      sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_LIFE_SPAN", value: delta});
     }
   },
 
@@ -253,7 +256,7 @@ let gPage = {
 
   onPageFirstVisible: function () {
     // Record another page impression.
-    //Services.telemetry.getHistogramById("NEWTAB_PAGE_SHOWN").add(true);
+    sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_SHOWN", value: true});
 
     for (let site of gGrid.sites) {
       if (site) {
@@ -286,7 +289,7 @@ let gPage = {
     let cells = document.getElementsByClassName("newtab-cell");
     let lastIndex = cells.length - 1;
     for (let site of gGrid.sites) {
-      if (site.link.targetedSite) {
+      if (site && site.link.targetedSite) {
         this._suggestedTilePresent = true;
       }
     }

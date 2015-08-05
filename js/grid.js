@@ -52,8 +52,8 @@ let gGrid = {
     this._createSiteFragment();
     addEventListener("resize", this);
 
-    sendToBrowser("NewTab:InitializeGrid");
-    registerListener("NewTab:UpdateLinks", this.refresh.bind(this));
+    gNewTab.sendToBrowser("NewTab:InitializeGrid");
+    gNewTab.registerListener("NewTab:UpdateLinks", this.refresh.bind(this));
 
     // Resize the grid as soon as the page loads.
     if (!this.isDocumentLoaded) {
@@ -163,15 +163,15 @@ let gGrid = {
 
     // Create the site's inner HTML code.
     site.innerHTML =
-      '<span class="newtab-sponsored">' + newTabString("sponsored.button") + '</span>' +
+      '<span class="newtab-sponsored">' + gNewTab.newTabString("sponsored.button") + '</span>' +
       '<a class="newtab-link">' +
       '  <span class="newtab-thumbnail"></span>' +
       '  <span class="newtab-thumbnail enhanced-content"></span>' +
       '  <span class="newtab-title"></span>' +
       '</a>' +
-      '<input type="button" title="' + newTabString("pin") + '"' +
+      '<input type="button" title="' + gNewTab.newTabString("pin") + '"' +
       '       class="newtab-control newtab-control-pin"/>' +
-      '<input type="button" title="' + newTabString("block") + '"' +
+      '<input type="button" title="' + gNewTab.newTabString("block") + '"' +
       '       class="newtab-control newtab-control-block"/>' +
       '<span class="newtab-suggested"></span>';
 

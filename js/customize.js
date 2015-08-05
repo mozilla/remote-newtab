@@ -81,13 +81,13 @@ let gCustomize = {
     }
     switch (event.currentTarget.id) {
       case "newtab-customize-blank":
-        sendToBrowser("NewTab:Customize", {enabled: false, enhanced: false});
+        gNewTab.sendToBrowser("NewTab:Customize", {enabled: false, enhanced: false});
         break;
       case "newtab-customize-classic":
         if (this._nodes.enhanced.getAttribute("selected")){
-          sendToBrowser("NewTab:Customize", {enabled: true, enhanced: true});
+          gNewTab.sendToBrowser("NewTab:Customize", {enabled: true, enhanced: true});
         } else {
-          sendToBrowser("NewTab:Customize", {enabled: true, enhanced: false});
+          gNewTab.sendToBrowser("NewTab:Customize", {enabled: true, enhanced: false});
         }
         break;
       case "newtab-customize-enhanced":

@@ -53,7 +53,7 @@ Site.prototype = {
     if (typeof aIndex == "undefined")
       aIndex = this.cell.index;
 
-    sendToBrowser("NewTab:PinLink", {link: this._link, index: aIndex});
+    gNewTab.sendToBrowser("NewTab:PinLink", {link: this._link, index: aIndex});
     this._updateAttributes(true);
   },
 
@@ -62,7 +62,7 @@ Site.prototype = {
    */
   unpin: function Site_unpin() {
     if (this.isPinned()) {
-      sendToBrowser("NewTab:UnpinLink", {link: this._link});
+      gNewTab.sendToBrowser("NewTab:UnpinLink", {link: this._link});
       this._updateAttributes(false);
     }
   },
@@ -82,7 +82,7 @@ Site.prototype = {
   block: function Site_block() {
     if (!this.isBlocked()) {
       gUndoDialog.show(this);
-      sendToBrowser("NewTab:BlockLink", {link: this._link});
+      gNewTab.sendToBrowser("NewTab:BlockLink", {link: this._link});
     }
   },
 
@@ -113,10 +113,10 @@ Site.prototype = {
 
     if (aPinned) {
       this.node.setAttribute("pinned", true);
-      control.setAttribute("title", newTabString("unpin"));
+      control.setAttribute("title", gNewTab.newTabString("unpin"));
     } else {
       this.node.removeAttribute("pinned");
-      control.setAttribute("title", newTabString("pin"));
+      control.setAttribute("title", gNewTab.newTabString("pin"));
     }
   },
 
@@ -137,7 +137,7 @@ Site.prototype = {
     if (this.link.explanation) {
       return this._newTabString(this.link.explanation, [targetedName, targetedSite]);
     }
-    return newTabString("suggested.button", [targetedName]);
+    return gNewTab.newTabString("suggested.button", [targetedName]);
   },
 
   /**
@@ -155,7 +155,7 @@ Site.prototype = {
        delete this.link.endTime;
        // clear enhanced-content image that may still exist in preloaded page
        this._querySelector(".enhanced-content").style.backgroundImage = "";
-       sendToBrowser("NewTab:ReplacePinLink", {oldUrl, link: this.link});
+       gNewTab.sendToBrowser("NewTab:ReplacePinLink", {oldUrl, link: this.link});
     }
   },
 
@@ -184,7 +184,7 @@ Site.prototype = {
     if (this.link.targetedSite) {
       if (this.node.getAttribute("type") != "sponsored") {
         this._querySelector(".newtab-sponsored").textContent =
-          newTabString("suggested.tag");
+          gNewTab.newTabString("suggested.tag");
       }
 
       this.node.setAttribute("suggested", true);
@@ -223,7 +223,7 @@ Site.prototype = {
    */
   captureIfMissing: function Site_captureIfMissing() {
     if (!document.hidden && !this.link.imageURI) {
-      sendToBrowser("NewTab:BackgroundPageThumbs", {url: this.url});
+      gNewTab.sendToBrowser("NewTab:BackgroundPageThumbs", {url: this.url});
     }
   },
 
@@ -231,7 +231,7 @@ Site.prototype = {
    * Refreshes the thumbnail for the site.
    */
   refreshThumbnail: function Site_refreshThumbnail() {
-    sendToBrowser("NewTab:PageThumbs", {url: this.url});
+    gNewTab.sendToBrowser("NewTab:PageThumbs", {url: this.url});
   },
 
   _getURI: function Site_getURI(message) {
@@ -275,7 +275,7 @@ Site.prototype = {
     this._node.addEventListener("dragend", this, false);
     this._node.addEventListener("mouseover", this, false);
 
-    registerListener("NewTab:"+ this.url +"URI", this._getURI.bind(this));
+    gNewTab.registerListener("NewTab:"+ this.url +"URI", this._getURI.bind(this));
 
     // Specially treat the sponsored icon & suggested explanation
     // text to prevent regular hover effects
@@ -299,12 +299,12 @@ Site.prototype = {
       this.node.appendChild(explain);
 
       let link = '<a href="' + TILES_EXPLAIN_LINK + '">' +
-                 newTabString("learn.link") + "</a>";
+                 gNewTab.newTabString("learn.link") + "</a>";
       let type = (this.node.getAttribute("suggested") && this.node.getAttribute("type") == "affiliate") ?
                   "suggested" : this.node.getAttribute("type");
       let icon = '<input type="button" class="newtab-control newtab-' +
                  (type == "enhanced" ? "customize" : "control-block") + '"/>';
-      explain.innerHTML = newTabString(type + (type == "sponsored" ? ".explain2" : ".explain"), [icon, link]);
+      explain.innerHTML = gNewTab.newTabString(type + (type == "sponsored" ? ".explain2" : ".explain"), [icon, link]);
 
       button.setAttribute("active", "true");
     }
@@ -324,7 +324,7 @@ Site.prototype = {
         target.parentElement.classList.contains("newtab-link")) {
       // Record for primary and middle clicks
       if (button == 0 || button == 1) {
-        sendToBrowser("NewTab:RecordSiteClicked", {index: tileIndex});
+        gNewTab.sendToBrowser("NewTab:RecordSiteClicked", {index: tileIndex});
         action = "click";
       }
     }
@@ -359,7 +359,7 @@ Site.prototype = {
 
     // Report all link click actions
     if (action) {
-      sendToBrowser("NewTab:ReportSitesAction", {sites: stringifySites(gGrid.sites), action: action, index: tileIndex});
+      gNewTab.sendToBrowser("NewTab:ReportSitesAction", {sites: gNewTab.stringifySites(gGrid.sites), action: action, index: tileIndex});
     }
   },
 
@@ -370,7 +370,7 @@ Site.prototype = {
     switch (aEvent.type) {
       case "mouseover":
         this._node.removeEventListener("mouseover", this, false);
-        sendToBrowser("NewTab:SpeculativeConnect", {url: this.url});
+        gNewTab.sendToBrowser("NewTab:SpeculativeConnect", {url: this.url});
         break;
       case "dragstart":
         gDrag.start(this, aEvent);

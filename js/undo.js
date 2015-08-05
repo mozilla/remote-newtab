@@ -26,7 +26,7 @@ let gUndoDialog = {
     this._undoButton = document.getElementById("newtab-undo-button");
     this._undoCloseButton = document.getElementById("newtab-undo-close-button");
     this._undoRestoreButton = document.getElementById("newtab-undo-restore-button");
-    registerListener("NewTab:Restore", this._restore.bind(this));
+    gNewTab.registerListener("NewTab:Restore", this._restore.bind(this));
   },
 
   /**
@@ -91,7 +91,7 @@ let gUndoDialog = {
       return;
 
     let {index, wasPinned, blockedLink} = this._undoData;
-    sendToBrowser("NewTab:UnblockLink", {link: blockedLink, wasPinned, index});
+    gNewTab.sendToBrowser("NewTab:UnblockLink", {link: blockedLink, wasPinned, index});
     this._restore();
   },
 
@@ -99,7 +99,7 @@ let gUndoDialog = {
    * Undo all blocked sites.
    */
   _undoAll: function UndoDialog_undoAll() {
-    sendToBrowser("NewTab:UndoAll");
+    gNewTab.sendToBrowser("NewTab:UndoAll");
   },
 
   /**

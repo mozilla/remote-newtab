@@ -11,7 +11,7 @@ let gUpdater = {
    * Set up message listener to fetch links when the grid needs to be updated.
    */
   init: function Updater_init() {
-    registerListener("NewTab:UpdateLinks", this.updateGrid.bind(this));
+    gNewTab.registerListener("NewTab:UpdateLinks", this.updateGrid.bind(this));
   },
 
   /**
@@ -52,7 +52,7 @@ let gUpdater = {
    * Sends a message to update the grid.
    */
   sendUpdate: function Updater_sendUpdate() {
-    sendToBrowser("NewTab:UpdateGrid");
+    gNewTab.sendToBrowser("NewTab:UpdateGrid");
   },
 
   /**

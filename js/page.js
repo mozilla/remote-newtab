@@ -24,10 +24,10 @@ let gPage = {
    * Initializes the page.
    */
   init: function Page_init() {
-    registerListener("NewTab:UpdatePages", this.update.bind(this));
-    registerListener("NewTab:Observe", this.observe.bind(this));
-    registerListener("NewTab:PinState", this.setPinState.bind(this));
-    registerListener("NewTab:BlockState", this.setBlockState.bind(this));
+    gNewTab.registerListener("NewTab:UpdatePages", this.update.bind(this));
+    gNewTab.registerListener("NewTab:Observe", this.observe.bind(this));
+    gNewTab.registerListener("NewTab:PinState", this.setPinState.bind(this));
+    gNewTab.registerListener("NewTab:BlockState", this.setBlockState.bind(this));
 
     // Listen for 'unload' to unregister this page.
     addEventListener("unload", this, false);
@@ -61,7 +61,7 @@ let gPage = {
     let data = message.data;
 
     if (topic == "nsPref:changed") {
-      //gCustomize.updateSelected();
+      gCustomize.updateSelected();
 
       let enabled = true;//Services.prefs.getBoolPref("browser.newtabpage.enabled");
       this._updateAttributes(enabled);
@@ -199,10 +199,10 @@ let gPage = {
     // of histogram linear and not loose the change in user attention
     let delta = Math.round((Date.now() - this._firstVisibleTime) / 500);
     if (this._suggestedTilePresent) {
-      sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_LIFE_SPAN_SUGGESTED", value: delta});
+      gNewTab.sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_LIFE_SPAN_SUGGESTED", value: delta});
     }
     else {
-      sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_LIFE_SPAN", value: delta});
+      gNewTab.sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_LIFE_SPAN", value: delta});
     }
   },
 
@@ -256,7 +256,7 @@ let gPage = {
 
   onPageFirstVisible: function () {
     // Record another page impression.
-    sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_SHOWN", value: true});
+    gNewTab.sendToBrowser("NewTab:UpdateTelemetryProbe", {probe: "NEWTAB_PAGE_SHOWN", value: true});
 
     for (let site of gGrid.sites) {
       if (site) {
@@ -293,7 +293,7 @@ let gPage = {
         this._suggestedTilePresent = true;
       }
     }
-    sendToBrowser("NewTab:ReportSitesAction", {sites: stringifySites(gGrid.sites), action: "view", index: lastIndex});
+    gNewTab.sendToBrowser("NewTab:ReportSitesAction", {sites: gNewTab.stringifySites(gGrid.sites), action: "view", index: lastIndex});
   },
 
   setPinState: function Page_setPinState(message) {

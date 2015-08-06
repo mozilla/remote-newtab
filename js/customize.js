@@ -81,7 +81,7 @@ let gCustomize = {
     }
     switch (event.currentTarget.id) {
       case "newtab-customize-blank":
-        gNewTab.sendToBrowser("NewTab:Customize", {enabled: false, enhanced: false});
+        gNewTab.sendToBrowser("NewTab:Customize", {enabled: false});
         break;
       case "newtab-customize-classic":
         if (this._nodes.enhanced.getAttribute("selected")){
@@ -91,8 +91,7 @@ let gCustomize = {
         }
         break;
       case "newtab-customize-enhanced":
-        let enhanced = true; /*Services.prefs.getBoolPref("browser.newtabpage.enhanced")*/;
-        sendToBrowser("NewTab:Customize", {enabled: true, enhanced: !this._enhanced});
+        gNewTab.sendToBrowser("NewTab:Customize", {enabled: true, enhanced: !gNewTab.enhanced});
         break;
       case "newtab-customize-learn":
         this.showLearn();
@@ -112,9 +111,14 @@ let gCustomize = {
   },
 
   updateSelected: function() {
-    let enhanced = true; //Services.prefs.getBoolPref("browser.newtabpage.enhanced");
-    let enabled = true; //Services.prefs.getBoolPref("browser.newtabpage.enabled");
-    let selected = enabled ? enhanced ? "enhanced" : "classic" : "blank";
+    if (!this._nodes) {
+      // Cannot update nodes that do not yet exist. We might get here when
+      // we receive the values for 'enabled' and 'enhanced' for the first time
+      // but have not yet initialized the page.
+      return;
+    }
+
+    let selected = gNewTab.enabled ? gNewTab.enhanced ? "enhanced" : "classic" : "blank";
     ["enhanced", "classic", "blank"].forEach(id => {
       let node = this._nodes[id];
       if (id == selected) {

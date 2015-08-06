@@ -168,7 +168,7 @@ Site.prototype = {
     // setup display variables
     //let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced")
     //                && DirectoryLinksProvider.getEnhancedLink(this.link);
-    let enhanced = false;
+    let enhanced = gNewTab.enhanced;
     let url = this.url;
     let title = enhanced && enhanced.title ? enhanced.title :
                 this.link.type == "history" ? this.link.baseDomain :

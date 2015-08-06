@@ -25,7 +25,6 @@ let gPage = {
    */
   init: function Page_init() {
     gNewTab.registerListener("NewTab:UpdatePages", this.update.bind(this));
-    gNewTab.registerListener("NewTab:Observe", this.observe.bind(this));
     gNewTab.registerListener("NewTab:PinState", this.setPinState.bind(this));
     gNewTab.registerListener("NewTab:BlockState", this.setBlockState.bind(this));
 
@@ -40,50 +39,16 @@ let gPage = {
     addEventListener("unload", this, false);
 
     // Check if the new tab feature is enabled.
-    let enabled = true; //Services.prefs.getBoolPref("browser.newtabpage.enabled");
-    if (enabled)
+    if (gNewTab.enabled)
       this._init();
 
-    this._updateAttributes(enabled);
+    this._updateAttributes(gNewTab.enabled);
 
     // Initialize customize controls.
     gCustomize.init();
 
     // Initialize intro panel.
     //gIntro.init();
-  },
-
-  /**
-   * Listens for notifications specific to this page.
-   */
-  observe: function Page_observe(message) {
-    let topic = message.topic;
-    let data = message.data;
-
-    if (topic == "nsPref:changed") {
-      gCustomize.updateSelected();
-
-      let enabled = true;//Services.prefs.getBoolPref("browser.newtabpage.enabled");
-      this._updateAttributes(enabled);
-
-      // Show intro if necessary.
-      if (data == "browser.newtabpage.enhanced") {
-        gIntro.showIfNecessary();
-      }
-
-      // Initialize the whole page if we haven't done that, yet.
-      if (enabled) {
-        this._init();
-      } else {
-        gUndoDialog.hide();
-      }
-    } else if (topic == "page-thumbnail:create" && gGrid.ready) {
-      for (let site of gGrid.sites) {
-        if (site && site.url === data) {
-          site.refreshThumbnail();
-        }
-      }
-    }
   },
 
   /**

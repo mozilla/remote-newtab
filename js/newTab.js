@@ -23,6 +23,40 @@ let gNewTab = {
         callback(message.data.data);
       }
     }, false);
+    this.registerListener("NewTab:Observe", this.observe.bind(this));
+    this.sendToBrowser("NewTab:GetState");
+  },
+
+  // NOTE: @emtwo Get rid of private calls to gPage members!!
+  observe: function(message) {
+    let topic = message.topic;
+    let data = message.data;
+
+    if (topic == "page-thumbnail:create" && gGrid.ready) {
+      for (let site of gGrid.sites) {
+        if (site && site.url === data) {
+          site.refreshThumbnail();
+        }
+      }
+      return;
+    }
+
+    // This must be either "browser.newtabpage.enhanced" or "browser.newtabpage.enabled".
+    // We need to update for both.
+    if (topic == "browser.newtabpage.enabled") {
+      this.enabled = message.data;
+      gPage._updateAttributes(this.enabled);
+      // Initialize the whole page if we haven't done that, yet.
+      if (this.enabled) {
+        gPage._init();
+      } else {
+        gUndoDialog.hide();
+      }
+    } else {
+      this.enhanced = message.data;
+      //gIntro.showIfNecessary();
+    }
+    gCustomize.updateSelected();
   },
 
   newTabString: function(name, args) {

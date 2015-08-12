@@ -23,15 +23,13 @@ let gNewTab = {
         callback(message.data.data);
       }
     }, false);
-    this.registerListener("NewTab:Observe", this.observe.bind(this));
-    this.sendToBrowser("NewTab:GetState");
+    this.registerListener("NewTab:Observe", message => { this.observe(message.topic, message.data); });
+    this.registerListener("NewTab:State", this.setState.bind(this));
+    this.sendToBrowser("NewTab:GetInitialState");
   },
 
   // NOTE: @emtwo Get rid of private calls to gPage members!!
-  observe: function(message) {
-    let topic = message.topic;
-    let data = message.data;
-
+  observe: function(topic, data) {
     if (topic == "page-thumbnail:create" && gGrid.ready) {
       for (let site of gGrid.sites) {
         if (site && site.url === data) {
@@ -44,7 +42,7 @@ let gNewTab = {
     // This must be either "browser.newtabpage.enhanced" or "browser.newtabpage.enabled".
     // We need to update for both.
     if (topic == "browser.newtabpage.enabled") {
-      this.enabled = message.data;
+      this.enabled = data;
       gPage._updateAttributes(this.enabled);
       // Initialize the whole page if we haven't done that, yet.
       if (this.enabled) {
@@ -53,10 +51,16 @@ let gNewTab = {
         gUndoDialog.hide();
       }
     } else {
-      this.enhanced = message.data;
+      this.enhanced = data;
       //gIntro.showIfNecessary();
     }
     gCustomize.updateSelected();
+  },
+
+  setState: function(message) {
+    this.privateBrowsingMode = message.privateBrowsingMode;
+    this.observe("browser.newtabpage.enabled", message.enabled);
+    this.observe("browser.newtabpage.enhanced", message.enhanced);
   },
 
   newTabString: function(name, args) {
@@ -111,11 +115,6 @@ let gNewTab = {
     if (this.listeners[type].length == 1) {
       this.sendToBrowser("NewTab:Register", {type});
     }
-  },
-
-  inPrivateBrowsingMode: function() {
-    return false;
-    //return PrivateBrowsingUtils.isContentWindowPrivate(window);
   }
 }
 

@@ -111,7 +111,7 @@ let gCustomize = {
   },
 
   updateSelected: function() {
-    if (!this._nodes) {
+    if (!this._nodes || Object.keys(this._nodes).length == 0) {
       // Cannot update nodes that do not yet exist. We might get here when
       // we receive the values for 'enabled' and 'enhanced' for the first time
       // but have not yet initialized the page.

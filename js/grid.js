@@ -53,7 +53,7 @@ let gGrid = {
     addEventListener("resize", this);
 
     gNewTab.sendToBrowser("NewTab:InitializeGrid");
-    gNewTab.registerListener("NewTab:UpdateLinks", this.refresh.bind(this));
+    gNewTab.registerListener("NewTab:InitializeGrid:UpdateLinks", this.refresh.bind(this));
 
     // Resize the grid as soon as the page loads.
     if (!this.isDocumentLoaded) {

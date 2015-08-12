@@ -23,9 +23,6 @@ let gNewTab = {
         callback(message.data.data);
       }
     }, false);
-    this.registerListener("NewTab:Observe", message => { this.observe(message.topic, message.data); });
-    this.registerListener("NewTab:State", this.setState.bind(this));
-    this.sendToBrowser("NewTab:GetInitialState");
   },
 
   // NOTE: @emtwo Get rid of private calls to gPage members!!
@@ -61,6 +58,7 @@ let gNewTab = {
     this.privateBrowsingMode = message.privateBrowsingMode;
     this.observe("browser.newtabpage.enabled", message.enabled);
     this.observe("browser.newtabpage.enhanced", message.enhanced);
+    gPage.init();
   },
 
   newTabString: function(name, args) {
@@ -118,9 +116,11 @@ let gNewTab = {
   }
 }
 
-// Everything is loaded. Initialize the New Tab Page.
+// Document is loaded. Initialize the New Tab Page.
 gNewTab.init();
-window.addEventListener("load", () => {
-  gPage.init();
+document.addEventListener("NewTabCommandReady", () => {
+  gNewTab.registerListener("NewTab:Observe", message => { gNewTab.observe(message.topic, message.data); });
+  gNewTab.registerListener("NewTab:State", gNewTab.setState.bind(gNewTab));
+  gNewTab.sendToBrowser("NewTab:GetInitialState");
 });
 

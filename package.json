@@ -1,0 +1,13 @@
+{
+  "url" : "https://github.com/mozilla/remote-newtab/issues",
+  "license": "MPL",
+  "contributors": [
+    {"name": "Marcos Caceres"},
+    {"name": "Marina Samuel"},
+    {"name": "Olivier Yiptong"}
+  ],
+  "repository": "https://github.com/mozilla/remote-newtab",
+  "devDependencies": {
+    "mocha": "2.2.5"
+  }
+}

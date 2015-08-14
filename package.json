@@ -1,13 +1,26 @@
 {
-  "url" : "https://github.com/mozilla/remote-newtab/issues",
+  "url": "https://github.com/mozilla/remote-newtab/issues",
   "license": "MPL",
   "contributors": [
-    {"name": "Marcos Caceres"},
-    {"name": "Marina Samuel"},
-    {"name": "Olivier Yiptong"}
+    {
+      "name": "Marcos Caceres"
+    },
+    {
+      "name": "Marina Samuel"
+    },
+    {
+      "name": "Olivier Yiptong"
+    }
   ],
   "repository": "https://github.com/mozilla/remote-newtab",
   "devDependencies": {
-    "mocha": "2.2.5"
+    "chai": "^3.2.0",
+    "karma": "~0.13",
+    "karma-chai": "^0.1.0",
+    "karma-firefox-launcher": "~0.1",
+    "karma-mocha": "^0.2.0",
+    "karma-requirejs": "^0.2.2",
+    "mocha": "^2.2.5",
+    "requirejs": "^2.1.20"
   }
 }

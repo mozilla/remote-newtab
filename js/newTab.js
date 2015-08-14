@@ -119,12 +119,7 @@ let gNewTab = {
       this.listeners[type] = [];
     }
     this.listeners[type].push(callback);
-
-    // If this is the first callback we've created for this message type,
-    // inform the browser to send us these message types.
-    if (this.listeners[type].length == 1) {
-      this.sendToBrowser("NewTab:Register", {type});
-    }
+    this.sendToBrowser("NewTab:Register", {type});
   }
 }
 

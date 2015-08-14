@@ -107,4 +107,15 @@
     <script type="text/javascript;version=1.8" src="js/newTab.js"></script>
     <script type="text/javascript;version=1.8" src="js/updater.js"></script>
     <script type="text/javascript;version=1.8" src="js/undo.js"></script>
+    <script type="text/javascript;version=1.8">
+    document.addEventListener("DOMContentLoaded", async(function* () {
+      try {
+        yield navigator.serviceWorker.register("sw.js", {scope: "./"});
+        console.log("ServiceWorker registration successful!");
+      } catch (err) {
+        console.error("ServiceWorker registration failed:", err);
+      }
+    }));
+    </script>
 </body>
+

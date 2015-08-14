@@ -22,7 +22,7 @@ self.addEventListener("install", (ev) => {
     "js/transformations.js",
     "js/undo.js",
     "js/updater.js",
-    "locale/newTab.json",
+    "locale/newTab.js",
     "newTab.html"
   ];
   var populateCacheTask = async(function*() {

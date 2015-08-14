@@ -1,143 +1,121 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<!doctype html>
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html dir="ltr">
 
-<html>
 <head>
-  <title>New Tab</title>
-
-  <link rel="stylesheet" type="text/css" media="all"
-        href="chrome://global/skin/">
-  <link rel="stylesheet" type="text/css" media="all"
-        href="chrome://browser/content/searchSuggestionUI.css">
-  <link rel="stylesheet" type="text/css" media="all"
-        href="css/newTab.css">
-  <link rel="stylesheet" type="text/css" media="all"
-        href="css/newTab.inc.css">
+    <meta charset="utf-8">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="css/newTab.css">
+    <link rel="stylesheet" href="css/newTab.inc.css">
 </head>
 
-<body dir="ltr">
-  <div class="newtab-customize-panel-container">
-    <div id="newtab-customize-panel" orient="vertical">
-        <div id="newtab-customize-panel-anchor"></div>
-        <div id="newtab-customize-title" class="newtab-customize-panel-item">
-            <label>NEW TAB CONTROLS</label>
-        </div>
-
-        <div class="newtab-customize-complex-option">
-            <div id="newtab-customize-classic" class="newtab-customize-panel-superitem newtab-customize-panel-item selectable">
-                <label>Show your top sites</label>
+<body>
+    <div class="newtab-customize-panel-container">
+        <div id="newtab-customize-panel" data-orient="vertical">
+            <div id="newtab-customize-panel-anchor"></div>
+            <div id="newtab-customize-title" class="newtab-customize-panel-item">
+                <label>NEW TAB CONTROLS</label>
             </div>
-            <div id="newtab-customize-enhanced" class="newtab-customize-panel-subitem">
-                <label class="checkbox"></label>
-                <label>Include suggested sites</label>
+            <div class="newtab-customize-complex-option">
+                <div id="newtab-customize-classic" class="newtab-customize-panel-superitem newtab-customize-panel-item selectable">
+                    <label>Show your top sites</label>
+                </div>
+                <div id="newtab-customize-enhanced" class="newtab-customize-panel-subitem">
+                    <label class="checkbox"></label>
+                    <label>Include suggested sites</label>
+                </div>
+            </div>
+            <div id="newtab-customize-blank" class="newtab-customize-panel-item selectable">
+                <label>Show blank page</label>
+            </div>
+            <div id="newtab-customize-learn" class="newtab-customize-panel-item">
+                <label>Learn about New Tab</label>
             </div>
         </div>
-        <div id="newtab-customize-blank" class="newtab-customize-panel-item selectable">
-            <label>Show blank page</label>
+    </div>
+    <div id="newtab-customize-overlay"></div>
+    <div id="newtab-intro-mask">
+        <div id="newtab-intro-modal">
+            <div id="newtab-intro-progress">
+                <div id="newtab-intro-numerical-progress"></div>
+                <div id="newtab-intro-graphical-progress"></div>
+                <span id="indicator"></span>
+            </div>
         </div>
-        <div id="newtab-customize-learn" class="newtab-customize-panel-item">
-            <label>Learn about New Tab</label>
+        <div id="newtab-intro-header"></div>
+        <div id="newtab-intro-body">
+            <div id="newtab-intro-content">
+                <div id="newtab-intro-image"></div>
+                <div id="newtab-intro-text">
+                    <p></p>
+                </div>
+            </div>
+            <div id="newtab-intro-buttons">
+                <button onclick="gIntro._back()"></button>
+                <button onclick="gIntro._next()"></button>
+            </div>
+        </div>
+        <div id="newtab-intro-footer">
+            <ul>
+                <li></li>
+                <li></li>
+            </ul>
         </div>
     </div>
-  </div>
-
-  <div id="newtab-customize-overlay"></div>
-
-  <div id="newtab-intro-mask">
-    <div id="newtab-intro-modal">
-
-      <div id="newtab-intro-progress">
-        <div id="newtab-intro-numerical-progress"></div>
-        <div id="newtab-intro-graphical-progress"></div>
-          <span id="indicator"/>
+    <div id="newtab-scrollbox">
+        <div id="newtab-vertical-margin">
+            <div id="newtab-margin-top"></div>
+            <div id="newtab-margin-undo-container">
+                <div id="newtab-undo-container" data-undo-disabled="true">
+                    <label id="newtab-undo-label">Thumbnail removed.</label>
+                    <button id="newtab-undo-button" tabindex="-1" class="newtab-undo-button">Undo.</button>
+                    <button id="newtab-undo-restore-button" tabindex="-1" class="newtab-undo-button">Restore All.</button>
+                    <div id="newtab-undo-close-button" tabindex="-1" class="close-icon tabbable" data-tooltiptext="Hide"></div>
+                </div>
+            </div>
+            <div id="newtab-search-container">
+                <form id="newtab-search-form" name="searchForm">
+                    <div id="newtab-search-logo"></div>
+                    <input type="text" name="q" value="" id="newtab-search-text" maxlength="256">
+                    <input id="newtab-search-submit" type="submit" value="Search">
+                </form>
+            </div>
+            <div id="newtab-horizontal-margin">
+                <div class="newtab-side-margin"></div>
+                <div id="newtab-grid"></div>
+                <div class="newtab-side-margin"></div>
+            </div>
+            <div id="newtab-margin-bottom"></div>
         </div>
-      </div>
-      <div id="newtab-intro-header"/>
-      <div id="newtab-intro-body">
-        <div id="newtab-intro-content">
-          <div id="newtab-intro-image"></div>
-          <div id="newtab-intro-text">
-            <p/><p/>
-          </div>
-        </div>
-        <div id="newtab-intro-buttons">
-          <input type="button" onclick="gIntro._back()"/>
-          <input type="button" default="true" onclick="gIntro._next()"/>
-        </div>
-      </div>
-      <div id="newtab-intro-footer">
-        <ul>
-          <li/><li/>
-        </ul>
-      </div>
+        <button id="newtab-customize-button" title="Customize your New Tab page"></button>
     </div>
-  </div>
-
-  <div id="newtab-scrollbox">
-
-    <div id="newtab-vertical-margin">
-
-      <div id="newtab-margin-top"></div>
-
-      <div id="newtab-margin-undo-container">
-        <div id="newtab-undo-container" undo-disabled="true">
-          <label id="newtab-undo-label">Thumbnail removed.</label>
-          <button id="newtab-undo-button" tabindex="-1"
-                  class="newtab-undo-button">Undo.</button>
-          <button id="newtab-undo-restore-button" tabindex="-1"
-                  class="newtab-undo-button">Restore All.</button>
-          <div id="newtab-undo-close-button" tabindex="-1"
-               class="close-icon tabbable"
-               tooltiptext="Hide"></div>
-        </div>
-      </div>
-
-      <div id="newtab-search-container">
-        <form id="newtab-search-form" name="searchForm">
-          <div id="newtab-search-logo"></div>
-          <input type="text" name="q" value="" id="newtab-search-text"
-                 maxlength="256" dir="ltr"></input>
-          <input id="newtab-search-submit" type="submit"
-                 value="Search"></input>
-        </form>
-      </div>
-
-      <div id="newtab-horizontal-margin">
-        <div class="newtab-side-margin"></div>
-
-        <div id="newtab-grid">
-        </div>
-
-        <div class="newtab-side-margin"></div>
-      </div>
-
-      <div id="newtab-margin-bottom"></div>
-
-    </div>
-    <input id="newtab-customize-button" type="button" dir="ltr" title="Customize your New Tab page"/>
-  </div>
+    <script type="text/javascript;version=1.8" src="locale/newTab.json"></script>
+    <script type="text/javascript;version=1.8" src="js/customize.js"></script>
+    <script type="text/javascript;version=1.8" src="js/rect.js"></script>
+    <script type="text/javascript;version=1.8" src="js/dropTargetShim.js"></script>
+    <script type="text/javascript;version=1.8" src="js/dropPreview.js"></script>
+    <script type="text/javascript;version=1.8" src="js/drop.js"></script>
+    <script type="text/javascript;version=1.8" src="js/dragDataHelper.js"></script>
+    <script type="text/javascript;version=1.8" src="js/transformations.js"></script>
+    <script type="text/javascript;version=1.8" src="js/drag.js"></script>
+    <script type="text/javascript;version=1.8" src="js/sites.js"></script>
+    <script type="text/javascript;version=1.8" src="js/cells.js"></script>
+    <script type="text/javascript;version=1.8" src="js/grid.js"></script>
+    <script type="text/javascript;version=1.8" src="js/page.js"></script>
+    <script type="text/javascript;version=1.8" src="js/newTab.js"></script>
+    <script type="text/javascript;version=1.8" src="js/updater.js"></script>
+    <script type="text/javascript;version=1.8" src="js/undo.js"></script>
+    <script type="text/javascript;version=1.8">
+    document.addEventListener("DOMContentLoaded", async(function* () {
+      try {
+        yield navigator.serviceWorker.register("sw.js", {scope: "./"});
+        console.log("ServiceWorker registration successful!");
+      } catch (err) {
+        console.error("ServiceWorker registration failed:", err);
+      }
+    }));
+    </script>
 </body>
-
-<script type="text/javascript;version=1.8" src="locale/newTab.json"></script>
-<script type="text/javascript;version=1.8" src="js/customize.js"></script>
-<script type="text/javascript;version=1.8" src="js/rect.js"></script>
-<script type="text/javascript;version=1.8" src="js/dropTargetShim.js"></script>
-<script type="text/javascript;version=1.8" src="js/dropPreview.js"></script>
-<script type="text/javascript;version=1.8" src="js/drop.js"></script>
-<script type="text/javascript;version=1.8" src="js/dragDataHelper.js"></script>
-<script type="text/javascript;version=1.8" src="js/transformations.js"></script>
-<script type="text/javascript;version=1.8" src="js/drag.js"></script>
-<script type="text/javascript;version=1.8" src="js/sites.js"></script>
-<script type="text/javascript;version=1.8" src="js/cells.js"></script>
-<script type="text/javascript;version=1.8" src="js/grid.js"></script>
-<script type="text/javascript;version=1.8" src="js/page.js"></script>
-<script type="text/javascript;version=1.8" src="js/newTab.js"></script>
-<script type="text/javascript;version=1.8" src="js/updater.js"></script>
-<script type="text/javascript;version=1.8" src="js/undo.js"></script>
-
-</html>
-
 

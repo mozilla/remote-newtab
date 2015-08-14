@@ -30,8 +30,8 @@
  */
 
 (function(exports) {
+  "use strict";
   function async(func, self) {
-    "use strict";
     return function asyncFunction() {
       const functionArgs = Array.from(arguments);
       return new Promise(function(resolve, reject) {

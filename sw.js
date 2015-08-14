@@ -1,4 +1,4 @@
-/*globals console, async, importScripts */
+/*globals async, importScripts, self, caches*/
 "use strict";
 const CACHE_NAME = "newtab-v2";
 importScripts("async.js");

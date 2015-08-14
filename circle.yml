@@ -1,0 +1,11 @@
+machine:
+    node:
+        version: 0.10.40
+test:
+    pre:
+        - npm install mozilla-download -g
+        - cd /tmp/
+        - mozilla-download --branch mozilla-central --product firefox /tmp/firefox
+        - /tmp/firefox/firefox/firefox -v
+    override:
+        - PATH=/tmp/firefox/firefox:$PATH npm test

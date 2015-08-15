@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      "js/async.js",
+      "js/lib/async.js",
       "test/*.js",
       "test/**/*.js"
     ],
@@ -30,7 +30,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "js/*.js": ["coverage"]
+      "js/*.js": ["coverage"],
+      "js/**/*.js": ["coverage"]
     },
 
     // test results reporter to use

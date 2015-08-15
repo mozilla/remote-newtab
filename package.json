@@ -16,6 +16,8 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
+    "jscs": "^2.1.0",
+    "jshint": "^2.8.0",
     "karma": "~0.13",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "^0.1.2",
@@ -26,6 +28,7 @@
     "requirejs": "^2.1.20"
   },
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run"
+    "test": "./node_modules/.bin/karma start --single-run",
+    "pretest": "jshint *.js js/**.js test/**.js && jscs *.js test/**.js js/**.js"
   }
 }

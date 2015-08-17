@@ -6,7 +6,6 @@ node_modules
 ./js/drop.js
 ./js/dropPreview.js
 ./js/dropTargetShim.js
-./js/grid.js
 ./js/newTab.js
 ./js/page.js
 ./js/rect.js

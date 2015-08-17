@@ -12,7 +12,6 @@
     "./js/drop.js",
     "./js/dropPreview.js",
     "./js/dropTargetShim.js",
-    "./js/grid.js",
     "./js/page.js",
     "./js/rect.js",
     "./js/sites.js",

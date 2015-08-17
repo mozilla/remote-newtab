@@ -5,16 +5,16 @@
 "use strict";
 
 const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
-const XUL_NAMESPACE = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
-const TILES_EXPLAIN_LINK = "https://support.mozilla.org/kb/how-do-tiles-work-firefox";
+const TILES_EXPLAIN_LINK =
+  "https://support.mozilla.org/kb/how-do-tiles-work-firefox";
+
 const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
 
-let gNewTab = {
-
+const gNewTab = {
   listeners: {},
 
-  init: function() {
+  init() {
     // Add a listener for messages sent from the browser.
     // The listener calls our associated callback functions.
     window.addEventListener("message", message => {
@@ -25,7 +25,7 @@ let gNewTab = {
   },
 
   // NOTE: @emtwo Get rid of private calls to gPage members!!
-  observe: function(topic, data) {
+  observe(topic, data) {
     switch(topic) {
       case "page-thumbnail:create":
         if (!gGrid.ready) {
@@ -63,7 +63,7 @@ let gNewTab = {
     }
   },
 
-  setState: function(message) {
+  setState(message) {
     this.privateBrowsingMode = message.privateBrowsingMode;
     this.rows = message.rows;
     this.columns = message.columns;
@@ -73,7 +73,7 @@ let gNewTab = {
     gPage.init();
   },
 
-  newTabString: function(name, args) {
+  newTabString(name, args) {
     let stringName = "newtab." + name;
     if (!args) {
       return gStrings[stringName];
@@ -81,7 +81,7 @@ let gNewTab = {
     return this._formatStringFromName(gStrings[stringName], args, args.length);
   },
 
-  _formatStringFromName: function(str, substrArr) {
+  _formatStringFromName(str, substrArr) {
     let regExp = /%[0-9]\$S/g;
     let matches;
     while (matches = regExp.exec(str)) {
@@ -92,7 +92,7 @@ let gNewTab = {
     return str;
   },
 
-  stringifySites: function() {
+  stringifySites() {
     let stringifiedSites = [];
     for (let site of gGrid.sites) {
       stringifiedSites.push(site ? JSON.stringify(site._link) : site);
@@ -100,7 +100,7 @@ let gNewTab = {
     return stringifiedSites;
   },
 
-  sendToBrowser: function(type, data) {
+  sendToBrowser(type, data) {
     let event = new CustomEvent("NewTabCommand", {
       detail: {
         command: type,
@@ -114,20 +114,21 @@ let gNewTab = {
     }
   },
 
-  registerListener: function(type, callback) {
+  registerListener(type, callback) {
     if (!this.listeners[type]) {
       this.listeners[type] = [];
     }
     this.listeners[type].push(callback);
     this.sendToBrowser("NewTab:Register", {type});
   }
-}
+};
 
 // Document is loaded. Initialize the New Tab Page.
 gNewTab.init();
 document.addEventListener("NewTabCommandReady", () => {
-  gNewTab.registerListener("NewTab:Observe", message => { gNewTab.observe(message.topic, message.data); });
+  gNewTab.registerListener("NewTab:Observe", message => {
+    gNewTab.observe(message.topic, message.data);
+  });
   gNewTab.registerListener("NewTab:State", gNewTab.setState.bind(gNewTab));
   gNewTab.sendToBrowser("NewTab:GetInitialState");
 });
-

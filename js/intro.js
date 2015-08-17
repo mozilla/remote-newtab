@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 const PREF_INTRO_SHOWN = "browser.newtabpage.introShown";
 const PREF_NEWTAB_ENHANCED = "browser.newtabpage.enhanced";
@@ -37,7 +35,7 @@ let gIntro = {
 
     // Set the button
     document.getElementById("newtab-intro-button").
-             setAttribute("value", newTabString("intro.gotit"));
+             setAttribute("value", gNewTab.newTabString("intro.gotit"));
   },
 
   _bold: function(str) {
@@ -57,22 +55,23 @@ let gIntro = {
 
   _generateParagraphs: function() {
     let customizeIcon = '<input type="button" class="newtab-control newtab-customize"/>';
-    this._paragraphs.push(newTabString("intro1.paragraph1"));
-    this._paragraphs.push(newTabString("intro1.paragraph2",
+    this._paragraphs.push(gNewTab.newTabString("intro1.paragraph1"));
+    this._paragraphs.push(gNewTab.newTabString("intro1.paragraph2",
                             [
-                              this._link(TILES_PRIVACY_LINK, newTabString("privacy.link")),
+                              this._link(TILES_PRIVACY_LINK, gNewTab.newTabString("privacy.link")),
                               customizeIcon
                             ]));
   },
 
   showIfNecessary: function() {
-    if (!Services.prefs.getBoolPref(PREF_NEWTAB_ENHANCED)) {
+    if (!gNewTab.enhanced) {
       return;
     }
-    if (!Services.prefs.getBoolPref(PREF_INTRO_SHOWN)) {
+    if (!gNewTab.introShown) {
       this.showPanel();
+      gNewTab.introShown = true;
+      gNewTab.sendToBrowser("NewTab:IntroShown");
     }
-    sendAsyncMessage("NewTab:IntroShown");
   },
 
   showPanel: function() {
@@ -86,10 +85,10 @@ let gIntro = {
     this._showMessage();
 
     // Header text
-    this._nodes.header.innerHTML = newTabString("intro.header.update");
+    this._nodes.header.innerHTML = gNewTab.newTabString("intro.header.update");
 
     // Footer links
     let footerLinkNode = document.getElementById("newtab-intro-link");
-    footerLinkNode.innerHTML = this._link(TILES_INTRO_LINK, newTabString("learn.link2"))
+    footerLinkNode.innerHTML = this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn.link2"))
   },
 };

@@ -1,5 +1,4 @@
 node_modules
-./js/cells.js
 ./js/customize.js
 ./js/drag.js
 ./js/dragDataHelper.js

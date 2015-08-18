@@ -1,5 +1,4 @@
 node_modules
-./js/drag.js
 ./js/dragDataHelper.js
 ./js/drop.js
 ./js/dropPreview.js

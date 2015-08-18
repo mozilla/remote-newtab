@@ -5,7 +5,6 @@
   "validateQuoteMarks": true,
   "excludeFiles": [
     "node_modules/**",
-    "./js/dropPreview.js",
     "./js/dropTargetShim.js",
     "./js/rect.js",
     "./js/sites.js",

@@ -15,6 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      "js/async.js",
       "test/*.js",
       "test/**/*.js"
     ],
@@ -29,12 +30,23 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      "js/*.js": ["coverage"]
     },
 
     // test results reporter to use
     // possible values: "dots", "progress"
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["progress"],
+    reporters: ["progress", "coverage"],
+
+    coverageReporter: {
+      dir: "build/reports/coverage",
+      reporters: [
+        {type: "lcov", subdir: "lcov"},
+        {type: "html", subdir: "html"},
+        {type: "text", subdir: ".", file: "text.txt"},
+        {type: "text-summary", subdir: ".", file: "text-summary.txt"},
+      ]
+    },
 
     // web server port
     port: 9876,
@@ -52,6 +64,10 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ["FirefoxNightly"],
+
+    browserNoActivityTimeout: 10000,
+
+    browserDisconnectTimeout: 2000,
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

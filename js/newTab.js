@@ -9,7 +9,6 @@ const XUL_NAMESPACE = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only
 
 const TILES_EXPLAIN_LINK = "https://support.mozilla.org/kb/how-do-tiles-work-firefox";
 const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
-const TILES_PRIVACY_LINK = "https://www.mozilla.org/privacy/";
 
 let gNewTab = {
 

@@ -2,9 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const PREF_INTRO_SHOWN = "browser.newtabpage.introShown";
-const PREF_NEWTAB_ENHANCED = "browser.newtabpage.enhanced";
+"use strict";
 
+const TILES_PRIVACY_LINK = "https://www.mozilla.org/privacy/";
+
+/* global gNewTab, TILES_INTRO_LINK */
+/* exported gIntro */
 let gIntro = {
   _nodeIDSuffixes: [
     "mask",
@@ -21,7 +24,8 @@ let gIntro = {
 
   init: function() {
     for (let idSuffix of this._nodeIDSuffixes) {
-      this._nodes[idSuffix] = document.getElementById("newtab-intro-" + idSuffix);
+      this._nodes[idSuffix] =
+        document.getElementById("newtab-intro-" + idSuffix);
     }
   },
 
@@ -54,13 +58,15 @@ let gIntro = {
   },
 
   _generateParagraphs: function() {
-    let customizeIcon = '<input type="button" class="newtab-control newtab-customize"/>';
+    let customizeIcon =
+      `<input type="button" class="newtab-control newtab-customize"/>`;
     this._paragraphs.push(gNewTab.newTabString("intro1.paragraph1"));
     this._paragraphs.push(gNewTab.newTabString("intro1.paragraph2",
-                            [
-                              this._link(TILES_PRIVACY_LINK, gNewTab.newTabString("privacy.link")),
-                              customizeIcon
-                            ]));
+                          [
+                            this._link(TILES_PRIVACY_LINK,
+                                       gNewTab.newTabString("privacy.link")),
+                            customizeIcon
+                          ]));
   },
 
   showIfNecessary: function() {
@@ -89,6 +95,7 @@ let gIntro = {
 
     // Footer links
     let footerLinkNode = document.getElementById("newtab-intro-link");
-    footerLinkNode.innerHTML = this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn.link2"))
+    footerLinkNode.innerHTML =
+      this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn.link2"));
   },
 };

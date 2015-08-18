@@ -1,5 +1,4 @@
 node_modules
-./js/dropTargetShim.js
 ./js/newTab.js
 ./js/rect.js
 ./js/sites.js

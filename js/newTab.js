@@ -29,11 +29,12 @@ let gNewTab = {
   observe: function(topic, data) {
     switch(topic) {
       case "page-thumbnail:create":
-        if (gGrid.ready) {
-          for (let site of gGrid.sites) {
-            if (site && site.url === data) {
-              site.refreshThumbnail();
-            }
+        if (!gGrid.ready) {
+          return;
+        }
+        for (let site of gGrid.sites) {
+          if (site && site.url === data) {
+            site.refreshThumbnail();
           }
         }
         break;

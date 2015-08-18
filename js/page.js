@@ -48,7 +48,7 @@ let gPage = {
     gCustomize.init();
 
     // Initialize intro panel.
-    //gIntro.init();
+    gIntro.init();
   },
 
   /**
@@ -247,7 +247,7 @@ let gPage = {
     this.reportLastVisibleTileIndex();
 
     // Show the panel now that anchors are sized
-    //gIntro.showIfNecessary();
+    gIntro.showIfNecessary();
   },
 
   reportLastVisibleTileIndex() {

@@ -38,30 +38,22 @@
     <div id="newtab-customize-overlay"></div>
     <div id="newtab-intro-mask">
         <div id="newtab-intro-modal">
-            <div id="newtab-intro-progress">
-                <div id="newtab-intro-numerical-progress"></div>
-                <div id="newtab-intro-graphical-progress"></div>
-                <span id="indicator"></span>
-            </div>
-        </div>
-        <div id="newtab-intro-header"></div>
-        <div id="newtab-intro-body">
-            <div id="newtab-intro-content">
-                <div id="newtab-intro-image"></div>
-                <div id="newtab-intro-text">
-                    <p></p>
+            <div id="newtab-intro-header"></div>
+            <div id="newtab-intro-body">
+                <div id="newtab-intro-content">
+                    <div id="newtab-intro-text">
+                        <p></p><p></p>
+                    </div>
+                </div>
+                <div id="newtab-intro-buttons">
+                    <input id="newtab-intro-button" type="button" default="true" onclick="gIntro._exitIntro()"></input>
                 </div>
             </div>
-            <div id="newtab-intro-buttons">
-                <button onclick="gIntro._back()"></button>
-                <button onclick="gIntro._next()"></button>
+            <div id="newtab-intro-footer">
+                <ul>
+                    <li id="newtab-intro-link"></li>
+                </ul>
             </div>
-        </div>
-        <div id="newtab-intro-footer">
-            <ul>
-                <li></li>
-                <li></li>
-            </ul>
         </div>
     </div>
     <div id="newtab-scrollbox">
@@ -75,13 +67,17 @@
                     <div id="newtab-undo-close-button" tabindex="-1" class="close-icon tabbable" data-tooltiptext="Hide"></div>
                 </div>
             </div>
+
             <div id="newtab-search-container">
-                <form id="newtab-search-form" name="searchForm">
-                    <div id="newtab-search-logo"></div>
-                    <input type="text" name="q" value="" id="newtab-search-text" maxlength="256">
-                    <input id="newtab-search-submit" type="submit" value="Search">
-                </form>
+              <div id="newtab-search-form">
+                <div id="newtab-search-icon"></div>
+                <input type="text" name="q" value="" id="newtab-search-text"
+                       aria-label="Search query" maxlength="256" dir="auto">
+                <input id="newtab-search-submit" type="button" value=""
+                       aria-label="Submit search">
+              </div>
             </div>
+
             <div id="newtab-horizontal-margin">
                 <div class="newtab-side-margin"></div>
                 <div id="newtab-grid"></div>
@@ -91,6 +87,7 @@
         </div>
         <button id="newtab-customize-button" title="Customize your New Tab page"></button>
     </div>
+    <script type="text/javascript;version=1.8" src="js/intro.js"></script>
     <script type="text/javascript;version=1.8" src="locale/newTab.js"></script>
     <script type="text/javascript;version=1.8" src="js/async.js"></script>
     <script type="text/javascript;version=1.8" src="js/customize.js"></script>

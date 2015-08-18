@@ -9,7 +9,6 @@ const XUL_NAMESPACE = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only
 
 const TILES_EXPLAIN_LINK = "https://support.mozilla.org/kb/how-do-tiles-work-firefox";
 const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
-const TILES_PRIVACY_LINK = "https://www.mozilla.org/privacy/";
 
 let gNewTab = {
 
@@ -50,7 +49,6 @@ let gNewTab = {
         break;
       case "browser.newtabpage.enhanced":
         this.enhanced = data;
-        //gIntro.showIfNecessary();
         break;
       case "browser.newtabpage.rows":
         this.rows = data;
@@ -69,6 +67,7 @@ let gNewTab = {
     this.privateBrowsingMode = message.privateBrowsingMode;
     this.rows = message.rows;
     this.columns = message.columns;
+    this.introShown = message.introShown;
     this.observe("browser.newtabpage.enabled", message.enabled);
     this.observe("browser.newtabpage.enhanced", message.enhanced);
     gPage.init();
@@ -79,10 +78,10 @@ let gNewTab = {
     if (!args) {
       return gStrings[stringName];
     }
-    return formatStringFromName(stringName, args, args.length);
+    return this._formatStringFromName(gStrings[stringName], args, args.length);
   },
 
-  formatStringFromName: function(str, substrArr) {
+  _formatStringFromName: function(str, substrArr) {
     let regExp = /%[0-9]\$S/g;
     let matches;
     while (matches = regExp.exec(str)) {

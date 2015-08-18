@@ -1,5 +1,4 @@
 node_modules
-./js/drop.js
 ./js/dropPreview.js
 ./js/dropTargetShim.js
 ./js/newTab.js

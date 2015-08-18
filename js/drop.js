@@ -55,7 +55,7 @@ let gDrop = {
     this._cancelDelayedArrange();
 
     // Update the grid and move all sites to their new places.
-   // gUpdater.sendUpdate();
+    gUpdater.sendUpdate();
   },
 
   /**

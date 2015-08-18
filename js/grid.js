@@ -53,7 +53,7 @@ let gGrid = {
     addEventListener("resize", this);
 
     gNewTab.sendToBrowser("NewTab:InitializeGrid");
-    gNewTab.registerListener("NewTab:InitializeGrid:UpdateLinks", this.refresh.bind(this));
+    gNewTab.registerListener("NewTab:UpdateLinks", this.refresh.bind(this));
 
     // Resize the grid as soon as the page loads.
     if (!this.isDocumentLoaded) {
@@ -109,9 +109,9 @@ let gGrid = {
 
     // Creates all the cells up to the maximum
     let fragment = document.createDocumentFragment();
-    //let rows = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.rows"));
-    //let columns = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.columns"));
-    for (let i = 0; i < 15/*columns * rows*/; i++) {
+    let rows = Math.max(1, gNewTab.rows);
+    let columns = Math.max(1, gNewTab.columns);
+    for (let i = 0; i < columns * rows; i++) {
       fragment.appendChild(cell.cloneNode(true));
     }
 
@@ -148,7 +148,7 @@ let gGrid = {
    * @param rows Number of rows defaulting to the max
    */
   _computeHeight: function Grid_computeHeight(aRows) {
-    let gridRows = 3; //Math.max(1, Services.prefs.getIntPref("browser.newtabpage.rows"));
+    let gridRows = Math.max(1, gNewTab.rows);
     aRows = aRows === undefined ? gridRows : Math.min(gridRows, aRows);
     return aRows * this._cellHeight + GRID_BOTTOM_EXTRA;
   },
@@ -203,7 +203,7 @@ let gGrid = {
     let availSpace = document.documentElement.clientHeight - this._cellMargin -
                      document.querySelector("#newtab-search-container").offsetHeight;
     let visibleRows = Math.floor(availSpace / this._cellHeight);
-    let columns = 5; //Math.max(1, Services.prefs.getIntPref("browser.newtabpage.columns"));
+    let columns = Math.max(1, gNewTab.columns);
     this._node.style.height = this._computeHeight() + "px";
     this._node.style.maxHeight = this._computeHeight(visibleRows) + "px";
     this._node.style.maxWidth = columns* this._cellWidth +

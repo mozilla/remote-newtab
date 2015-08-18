@@ -27,35 +27,48 @@ let gNewTab = {
 
   // NOTE: @emtwo Get rid of private calls to gPage members!!
   observe: function(topic, data) {
-    if (topic == "page-thumbnail:create" && gGrid.ready) {
-      for (let site of gGrid.sites) {
-        if (site && site.url === data) {
-          site.refreshThumbnail();
+    switch(topic) {
+      case "page-thumbnail:create":
+        if (!gGrid.ready) {
+          return;
         }
-      }
-      return;
+        for (let site of gGrid.sites) {
+          if (site && site.url === data) {
+            site.refreshThumbnail();
+          }
+        }
+        break;
+      case "browser.newtabpage.enabled":
+        this.enabled = data;
+        gPage._updateAttributes(this.enabled);
+        // Initialize the whole page if we haven't done that, yet.
+        if (this.enabled) {
+          gPage._init();
+        } else {
+          gUndoDialog.hide();
+        }
+        break;
+      case "browser.newtabpage.enhanced":
+        this.enhanced = data;
+        //gIntro.showIfNecessary();
+        break;
+      case "browser.newtabpage.rows":
+        this.rows = data;
+        break;
+      case "browser.newtabpage.columns":
+        this.columns = data;
+        break;
     }
 
-    // This must be either "browser.newtabpage.enhanced" or "browser.newtabpage.enabled".
-    // We need to update for both.
-    if (topic == "browser.newtabpage.enabled") {
-      this.enabled = data;
-      gPage._updateAttributes(this.enabled);
-      // Initialize the whole page if we haven't done that, yet.
-      if (this.enabled) {
-        gPage._init();
-      } else {
-        gUndoDialog.hide();
-      }
-    } else {
-      this.enhanced = data;
-      //gIntro.showIfNecessary();
+    if ("browser.newtabpage.enabled" === topic || "browser.newtabpage.enhanced" === topic) {
+      gCustomize.updateSelected();
     }
-    gCustomize.updateSelected();
   },
 
   setState: function(message) {
     this.privateBrowsingMode = message.privateBrowsingMode;
+    this.rows = message.rows;
+    this.columns = message.columns;
     this.observe("browser.newtabpage.enabled", message.enabled);
     this.observe("browser.newtabpage.enhanced", message.enhanced);
     gPage.init();
@@ -107,12 +120,7 @@ let gNewTab = {
       this.listeners[type] = [];
     }
     this.listeners[type].push(callback);
-
-    // If this is the first callback we've created for this message type,
-    // inform the browser to send us these message types.
-    if (this.listeners[type].length == 1) {
-      this.sendToBrowser("NewTab:Register", {type});
-    }
+    this.sendToBrowser("NewTab:Register", {type});
   }
 }
 

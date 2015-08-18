@@ -65,6 +65,10 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ["FirefoxNightly"],
 
+    browserNoActivityTimeout: 10000,
+
+    browserDisconnectTimeout: 2000,
+
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false

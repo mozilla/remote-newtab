@@ -16,6 +16,7 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
+    "codeclimate-test-reporter": "^0.1.0",
     "jscs": "^2.1.0",
     "jshint": "^2.8.0",
     "karma": "~0.13",
@@ -27,6 +28,7 @@
     "karma-mocha": "^0.2.0",
     "karma-requirejs": "^0.2.2",
     "mocha": "^2.2.5",
+    "mozilla-download": "^1.1.1",
     "requirejs": "^2.1.20"
   },
   "scripts": {

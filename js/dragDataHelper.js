@@ -2,19 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-let gDragDataHelper = {
-  get mimeType() {
-    return "text/x-moz-url";
-  },
+"use strict";
+(function(exports) {
+  const gDragDataHelper = {
+    get mimeType() {
+      return "text/x-moz-url";
+    },
 
-  getLinkFromDragEvent: function DragDataHelper_getLinkFromDragEvent(aEvent) {
-    let dt = aEvent.dataTransfer;
-    if (!dt || !dt.types.contains(this.mimeType)) {
-      return null;
+    getLinkFromDragEvent(aEvent) {
+      let dt = aEvent.dataTransfer;
+      if (!dt || !dt.types.contains(this.mimeType)) {
+        return null;
+      }
+
+      let data = dt.getData(this.mimeType) || "";
+      let [url, title] = data.split(/[\r\n]+/);
+      return {
+        url, title
+      };
     }
-
-    let data = dt.getData(this.mimeType) || "";
-    let [url, title] = data.split(/[\r\n]+/);
-    return {url: url, title: title};
-  }
-};
+  };
+  exports.gDragDataHelper = gDragDataHelper;
+}(window));

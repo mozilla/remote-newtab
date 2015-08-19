@@ -1,5 +1,4 @@
 node_modules
 ./js/newTab.js
-./js/transformations.js
 ./js/undo.js
 ./js/updater.js

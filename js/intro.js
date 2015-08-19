@@ -1,101 +1,105 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+/* global gNewTab*/
 
 "use strict";
 
-const TILES_PRIVACY_LINK = "https://www.mozilla.org/privacy/";
+const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
 
-/* global gNewTab, TILES_INTRO_LINK */
-/* exported gIntro */
-let gIntro = {
-  _nodeIDSuffixes: [
-    "mask",
-    "modal",
-    "text",
-    "buttons",
-    "header",
-    "footer"
-  ],
+(function(exports) {
+  const TILES_PRIVACY_LINK = "https://www.mozilla.org/privacy/";
 
-  _paragraphs: [],
+  const gIntro = {
+    _nodeIDSuffixes: [
+      "mask",
+      "modal",
+      "text",
+      "buttons",
+      "header",
+      "footer"
+    ],
 
-  _nodes: {},
+    _paragraphs: [],
 
-  init: function() {
-    for (let idSuffix of this._nodeIDSuffixes) {
-      this._nodes[idSuffix] =
-        document.getElementById("newtab-intro-" + idSuffix);
-    }
-  },
+    _nodes: {},
 
-  _showMessage: function() {
-    // Set the paragraphs
-    let paragraphNodes = this._nodes.text.getElementsByTagName("p");
+    init() {
+      for (let idSuffix of this._nodeIDSuffixes) {
+        this._nodes[idSuffix] =
+          document.getElementById("newtab-intro-" + idSuffix);
+      }
+    },
 
-    this._paragraphs.forEach((arg, index) => {
-      paragraphNodes[index].innerHTML = arg;
-    });
+    _showMessage() {
+      // Set the paragraphs
+      let paragraphNodes = this._nodes.text.getElementsByTagName("p");
 
-    // Set the button
-    document.getElementById("newtab-intro-button").
-             setAttribute("value", gNewTab.newTabString("intro.gotit"));
-  },
+      this._paragraphs.forEach((arg, index) => {
+        paragraphNodes[index].innerHTML = arg;
+      });
 
-  _bold: function(str) {
-    return `<strong>${str}</strong>`;
-  },
+      // Set the button
+      document.getElementById("newtab-intro-button").
+      setAttribute("value", gNewTab.newTabString("intro.gotit"));
+    },
 
-  _link: function(url, text) {
-    return `<a href="${url}" target="_blank">${text}</a>`;
-  },
+    _bold: function(str) {
+      return `<strong>${str}</strong>`;
+    },
 
-  _exitIntro: function() {
-    this._nodes.mask.style.opacity = 0;
-    this._nodes.mask.addEventListener("transitionend", () => {
-      this._nodes.mask.style.display = "none";
-    });
-  },
+    _link: function(url, text) {
+      return `<a href="${url}" target="_blank">${text}</a>`;
+    },
 
-  _generateParagraphs: function() {
-    let customizeIcon =
-      `<input type="button" class="newtab-control newtab-customize"/>`;
-    this._paragraphs.push(gNewTab.newTabString("intro1.paragraph1"));
-    this._paragraphs.push(gNewTab.newTabString("intro1.paragraph2",
-                          [
-                            this._link(TILES_PRIVACY_LINK,
-                                       gNewTab.newTabString("privacy.link")),
-                            customizeIcon
-                          ]));
-  },
+    _exitIntro() {
+      this._nodes.mask.style.opacity = 0;
+      this._nodes.mask.addEventListener("transitionend", () => {
+        this._nodes.mask.style.display = "none";
+      });
+    },
 
-  showIfNecessary: function() {
-    if (!gNewTab.enhanced) {
-      return;
-    }
-    if (!gNewTab.introShown) {
-      this.showPanel();
-      gNewTab.introShown = true;
-      gNewTab.sendToBrowser("NewTab:IntroShown");
-    }
-  },
+    _generateParagraphs() {
+      let customizeIcon =
+        `<input type="button" class="newtab-control newtab-customize"/>`;
+      this._paragraphs.push(gNewTab.newTabString("intro1.paragraph1"));
+      this._paragraphs.push(gNewTab.newTabString("intro1.paragraph2", [
+        this._link(TILES_PRIVACY_LINK,
+          gNewTab.newTabString("privacy.link")),
+        customizeIcon
+      ]));
+    },
 
-  showPanel: function() {
-    this._nodes.mask.style.display = "block";
-    this._nodes.mask.style.opacity = 1;
+    showIfNecessary() {
+      if (!gNewTab.enhanced) {
+        return;
+      }
+      if (!gNewTab.introShown) {
+        this.showPanel();
+        gNewTab.introShown = true;
+        gNewTab.sendToBrowser("NewTab:IntroShown");
+      }
+    },
 
-    if (!this._paragraphs.length) {
-      // It's our first time showing the panel. Do some initial setup
-      this._generateParagraphs();
-    }
-    this._showMessage();
+    showPanel() {
+      this._nodes.mask.style.display = "block";
+      this._nodes.mask.style.opacity = 1;
 
-    // Header text
-    this._nodes.header.innerHTML = gNewTab.newTabString("intro.header.update");
+      if (!this._paragraphs.length) {
+        // It's our first time showing the panel. Do some initial setup
+        this._generateParagraphs();
+      }
+      this._showMessage();
 
-    // Footer links
-    let footerLinkNode = document.getElementById("newtab-intro-link");
-    footerLinkNode.innerHTML =
-      this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn.link2"));
-  },
-};
+      // Header text
+      let text = "intro.header.update";
+      this._nodes.header.innerHTML = gNewTab.newTabString(text);
+
+      // Footer links
+      let footerLinkNode = document.getElementById("newtab-intro-link");
+      footerLinkNode.innerHTML =
+        this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn.link2"));
+    },
+  };
+  exports.gIntro = gIntro;
+}(window));

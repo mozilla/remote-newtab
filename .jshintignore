@@ -1,16 +1,2 @@
 node_modules
-./js/cells.js
-./js/customize.js
-./js/drag.js
-./js/dragDataHelper.js
-./js/drop.js
-./js/dropPreview.js
-./js/dropTargetShim.js
-./js/grid.js
-./js/newTab.js
-./js/page.js
-./js/rect.js
-./js/sites.js
-./js/transformations.js
-./js/undo.js
-./js/updater.js
+

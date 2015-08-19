@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gTransformation, gGrid, HTML_NAMESPACE, gDragDataHelper*/
+/*globals gTransformation, gGrid, gDragDataHelper*/
 
 "use strict";
 (function(exports) {
@@ -159,7 +159,7 @@
 
       // Create and use an empty drag element. We don't want to use the default
       // drag image with its default opacity.
-      let dragElement = document.createElementNS(HTML_NAMESPACE, "div");
+      let dragElement = document.createElement("div");
       dragElement.classList.add("newtab-drag");
       let scrollbox = document.getElementById("newtab-vertical-margin");
       scrollbox.appendChild(dragElement);

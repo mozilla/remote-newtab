@@ -36,7 +36,7 @@ input[type=button] {
   -moz-box-pack: center;
 }
 
-#newtab-undo-container[undo-disabled] {
+#newtab-undo-container[data-undo-disabled=true] {
   opacity: 0;
   pointer-events: none;
 }

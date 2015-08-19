@@ -51,7 +51,7 @@
         timeout: setTimeout(this.hide.bind(this), this.HIDE_TIMEOUT_MS)
       };
 
-      this._undoContainer.removeAttribute("undo-disabled");
+      this._undoContainer.dataset.undoDisabled = false;
       this._undoButton.removeAttribute("tabindex");
       this._undoCloseButton.removeAttribute("tabindex");
       this._undoRestoreButton.removeAttribute("tabindex");
@@ -64,10 +64,9 @@
       if (!this._undoData) {
         return;
       }
-
       clearTimeout(this._undoData.timeout);
       this._undoData = null;
-      this._undoContainer.setAttribute("undo-disabled", "true");
+      this._undoContainer.dataset.undoDisabled = true;
       this._undoButton.setAttribute("tabindex", "-1");
       this._undoCloseButton.setAttribute("tabindex", "-1");
       this._undoRestoreButton.setAttribute("tabindex", "-1");

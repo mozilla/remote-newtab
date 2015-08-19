@@ -5,7 +5,6 @@
   "validateQuoteMarks": true,
   "excludeFiles": [
     "node_modules/**",
-    "./js/undo.js",
     "./js/updater.js"
   ]
 }

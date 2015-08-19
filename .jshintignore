@@ -1,4 +1,3 @@
 node_modules
 ./js/newTab.js
-./js/undo.js
 ./js/updater.js

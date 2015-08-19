@@ -4,7 +4,6 @@
   "esnext": true,
   "validateQuoteMarks": true,
   "excludeFiles": [
-    "node_modules/**",
-    "./js/updater.js"
+    "node_modules/**"
   ]
 }

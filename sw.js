@@ -6,7 +6,7 @@ importScripts("async.js");
 self.addEventListener("install", (ev) => {
   const urlsToCache = [
     "css/newTab.inc.css",
-    "js/async.js",
+    "js/lib/async.js",
     "js/cells.js",
     "js/customize.js",
     "js/drag.js",

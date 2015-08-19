@@ -58,11 +58,16 @@
             return resolve(value);
           }
           if (value instanceof Promise) {
-            value.then(
+            return value.then(
               result => step(gen.next(result)),
-              error => step(gen.throw(error))
-            );
-            return;
+              error => {
+                try {
+                  step(gen.throw(error));
+                } catch (err) {
+                  throw err;
+                }
+              }
+            ).catch(err => reject(err));
           }
           step(gen.next(value));
         }

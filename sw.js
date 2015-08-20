@@ -6,6 +6,15 @@ importScripts("async.js");
 self.addEventListener("install", (ev) => {
   const urlsToCache = [
     "css/newTab.inc.css",
+    "css/images/close.png",
+    "css/images/controls.svg",
+    "css/images/defaultFavicon.png",
+    "css/images/search-arrow-go.svg",
+    "css/images/search-indicator-magnifying-glass.svg",
+    "css/images/shared-menu-check-active.svg",
+    "css/images/shared-menu-check-black.svg",
+    "css/images/shared-menu-check-hover.svg",
+    "css/images/whimsycorn.png",
     "js/lib/async.js",
     "js/cells.js",
     "js/customize.js",

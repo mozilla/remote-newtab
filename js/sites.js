@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gDrag, gNewTab, gGrid, HTML_NAMESPACE, gUndoDialog*/
+/*globals gDrag, gNewTab, gGrid, gUndoDialog*/
 
 "use strict";
 
@@ -329,7 +329,7 @@
 
         button.removeAttribute("active");
       } else {
-        let explain = document.createElementNS(HTML_NAMESPACE, "div");
+        let explain = document.createElement("div");
         explain.className = explanationTextClass.slice(1); // Slice off the first character, '.'
         this.node.appendChild(explain);
 

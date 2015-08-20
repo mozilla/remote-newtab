@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, Site, HTML_NAMESPACE, Cell*/
+/*globals gNewTab, Site, Cell*/
 
 "use strict";
 (function(exports) {
@@ -119,7 +119,7 @@
      */
     refresh(message) {
       let links = message.links;
-      let cell = document.createElementNS(HTML_NAMESPACE, "div");
+      let cell = document.createElement("div");
       cell.classList.add("newtab-cell");
 
       // Creates all the cells up to the maximum
@@ -178,7 +178,7 @@
      * Creates the DOM fragment that is re-used when creating sites.
      */
     _createSiteFragment() {
-      let site = document.createElementNS(HTML_NAMESPACE, "div");
+      let site = document.createElement("div");
       site.classList.add("newtab-site");
       site.setAttribute("draggable", "true");
 

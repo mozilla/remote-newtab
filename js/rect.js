@@ -22,13 +22,13 @@
         return this.bottom - this.top;
       },
       set width(v) {
-        this.right = this.left + v;
+        this.right = this.left + Number(v);
       },
       set height(v) {
-        this.bottom = this.top + v;
+        this.bottom = this.top + Number(v);
       },
 
-      isEmpty() {
+      get isEmpty() {
         return this.left >= this.right || this.top >= this.bottom;
       },
 
@@ -51,7 +51,7 @@
 
       /** Restrict area of this rectangle to the intersection of both rectangles. */
       restrictTo(other) {
-        if (this.isEmpty() || other.isEmpty()) {
+        if (this.isEmpty || other.isEmpty) {
           return this.setRect(0, 0, 0, 0);
         }
 

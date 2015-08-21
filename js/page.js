@@ -197,6 +197,16 @@
       }
     },
 
+    handleEnabled(enabled) {
+      this._updateAttributes(enabled);
+      // Initialize the whole page if we haven't done that, yet.
+      if (enabled) {
+        this._init();
+      } else {
+        gUndoDialog.hide();
+      }
+    },
+
     /**
      * Handles all page events.
      */

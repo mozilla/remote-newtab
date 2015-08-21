@@ -255,7 +255,7 @@
      */
     _getNodeOpacity(aNode) {
       let cstyle = window.getComputedStyle(aNode, null);
-      return cstyle.getPropertyValue("opacity");
+      return Number.parseInt(cstyle.getPropertyValue("opacity"), 10);
     },
 
     /**

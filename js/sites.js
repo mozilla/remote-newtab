@@ -310,7 +310,7 @@
       this._node.addEventListener("dragend", this, false);
       this._node.addEventListener("mouseover", this, false);
 
-      gNewTab.registerListener("NewTab:${this.url}URI",
+      gNewTab.registerListener(`NewTab:${this.url}URI`,
         this._getURI.bind(this));
 
       // Specially treat the sponsored icon & suggested explanation

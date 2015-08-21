@@ -122,7 +122,7 @@
       if (document.hidden) {
         addEventListener("visibilitychange", this);
       } else {
-        setTimeout(this.onPageFirstVisible, 0);
+        setTimeout(this.onPageFirstVisible.bind(this), 0);
       }
 
       // Initialize and render the grid.

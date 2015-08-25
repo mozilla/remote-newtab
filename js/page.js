@@ -76,8 +76,8 @@
       // Do not refresh the entire grid for the page we're on, as refreshing will
       // cause tiles to flash briefly. It is ok to refresh pages not currently visible
       // but ignore updates for the currently visible page.
-      if (currentWindowID === message.outerWindowID || !message.refreshPage
-          && message.reason != "links-changed") {
+      if (currentWindowID === message.outerWindowID || !message.refreshPage &&
+          message.reason !== "links-changed") {
         // We do, however, want to update the grid if the tiles have changed location
         // due to unpinning, blocking or restoring.
         this.sendUpdateToTest();

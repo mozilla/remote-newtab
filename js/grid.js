@@ -133,7 +133,10 @@
       }
 
       // Create cells.
-      let cells = [new Cell(this, cell) for (cell of fragment.childNodes)];
+      let cells = [];
+      for (let cell of fragment.childNodes) {
+        cells.push(new Cell(this, cell));
+      }
 
       // Create sites.
       let numLinks = Math.min(links.length, cells.length);

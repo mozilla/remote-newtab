@@ -200,8 +200,10 @@
       // setup display variables
       let enhanced = this.link;
       let url = this.url;
-      let title = enhanced && enhanced.title && this._enhancedLink ? enhanced.title :
-        this.link.type == "history" && !this._enhancedLink ? this.link.baseDomain :
+      let title = enhanced && enhanced.title &&
+        this._enhancedLink ? enhanced.title :
+        this.link.type === "history" &&
+        !this._enhancedLink ? this.link.baseDomain :
         this.title;
       let tooltip = (this.title === url ? this.title : this.title + "\n" + url);
 

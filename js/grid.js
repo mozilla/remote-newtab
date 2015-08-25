@@ -67,7 +67,8 @@
       addEventListener("resize", this);
 
       gNewTab.sendToBrowser("NewTab:InitializeGrid");
-      gNewTab.registerListener("NewTab:UpdateLinks", this.refresh.bind(this));
+      gNewTab.registerListener("NewTab:InitializeLinks",
+                               this.refresh.bind(this));
 
       // Resize the grid as soon as the page loads.
       if (!this.isDocumentLoaded) {
@@ -82,10 +83,10 @@
      * @param {Cell} aCell The cell that will contain the new site.
      * @return {Site} The newly created site.
      */
-    createSite(aLink, aCell) {
+    createSite(aLink, aCell, aEnhanced) {
       let node = aCell.node;
       node.appendChild(this._siteFragment.cloneNode(true));
-      return new Site(node.firstElementChild, aLink);
+      return new Site(node.firstElementChild, aLink, aEnhanced);
     },
 
     /**
@@ -119,6 +120,7 @@
      */
     refresh(message) {
       let links = message.links;
+      let enhancedLinks = message.enhancedLinks;
       let cell = document.createElement("div");
       cell.classList.add("newtab-cell");
 
@@ -131,16 +133,18 @@
       }
 
       // Create cells.
-      let cells = [];
-      for (let cell of fragment.childNodes) {
-        cells.push(new Cell(this, cell));
-      }
+      let cells = [new Cell(this, cell) for (cell of fragment.childNodes)];
 
       // Create sites.
       let numLinks = Math.min(links.length, cells.length);
       for (let i = 0; i < numLinks; i++) {
         if (links[i]) {
-          this.createSite(links[i], cells[i]);
+          // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
+          if (enhancedLinks[i] && gNewTab.enhanced) {
+            this.createSite(enhancedLinks[i], cells[i], true);
+          } else {
+            this.createSite(links[i], cells[i], false);
+          }
         }
       }
 

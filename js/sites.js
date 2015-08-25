@@ -12,11 +12,12 @@
    * This class represents a site that is contained in a cell and can be pinned,
    * moved around or deleted.
    */
-  function Site(aNode, aLink) {
+  function Site(aNode, aLink, aEnhanced) {
     this._node = aNode;
     this._node._newtabSite = this;
 
     this._link = aLink;
+    this._enhancedLink = aEnhanced;
 
     this._render();
     this._addEventHandlers();
@@ -197,12 +198,10 @@
       // first check for end time, as it may modify the link
       this._checkLinkEndTime();
       // setup display variables
-      //let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced")
-      //                && DirectoryLinksProvider.getEnhancedLink(this.link);
-      let enhanced = gNewTab.enhanced;
+      let enhanced = this.link;
       let url = this.url;
-      let title = enhanced && enhanced.title ? enhanced.title :
-        this.link.type === "history" ? this.link.baseDomain :
+      let title = enhanced && enhanced.title && this._enhancedLink ? enhanced.title :
+        this.link.type == "history" && !this._enhancedLink ? this.link.baseDomain :
         this.title;
       let tooltip = (this.title === url ? this.title : this.title + "\n" + url);
 
@@ -265,20 +264,26 @@
      */
     refreshThumbnail() {
       gNewTab.sendToBrowser("NewTab:PageThumbs", {
-        url: this.url
+        link: this.link
       });
     },
 
-    _getURI(message) {
+    /**
+     * Render the correct thumbnail for the site.
+     *
+     * @param {Object} aData Contains enhanced links and the URI generated from the
+     *        current URL.
+     */
+    _getURI(aData) {
       // Only enhance tiles if that feature is turned on
-      let link = /*message.enhanced && DirectoryLinksProvider.getEnhancedLink(this.link) || */ this.link;
+      let link = aData.enhanced && this.link;
 
       let thumbnail = this._querySelector(".newtab-thumbnail");
       if (link.bgColor) {
         thumbnail.style.backgroundColor = link.bgColor;
       }
 
-      let uri = this.link.imageURI || ("file://" + message.uri);
+      let uri = this.link.imageURI || ("file://" + aData.uri);
       thumbnail.style.backgroundImage = `url("${uri}")`;
 
       if (link.enhancedImageURI) {
@@ -309,9 +314,6 @@
       this._node.addEventListener("dragstart", this, false);
       this._node.addEventListener("dragend", this, false);
       this._node.addEventListener("mouseover", this, false);
-
-      gNewTab.registerListener(`NewTab:${this.url}URI`,
-        this._getURI.bind(this));
 
       // Specially treat the sponsored icon & suggested explanation
       // text to prevent regular hover effects

@@ -31,7 +31,8 @@
       gNewTab.registerListener("NewTab:UpdatePages", this.update.bind(this));
       gNewTab.registerListener("NewTab:PinState", this.setPinState.bind(this));
       gNewTab.registerListener("NewTab:BlockState",
-        this.setBlockState.bind(this));
+                               this.setBlockState.bind(this));
+      gNewTab.registerListener("NewTab:ThumbnailURI", this.findURL.bind(this));
 
       // Listen for 'unload' to unregister this page.
       addEventListener("unload", this, false);
@@ -71,15 +72,15 @@
       }
 
       let currentWindowID = this.windowID;
-      currentWindowID = message.outerWindowID;
 
       // Do not refresh the entire grid for the page we're on, as refreshing will
       // cause tiles to flash briefly. It is ok to refresh pages not currently visible
       // but ignore updates for the currently visible page.
-      if (currentWindowID === message.outerWindowID || !message.refresh) {
+      if (currentWindowID === message.outerWindowID || !message.refreshPage
+          && message.reason != "links-changed") {
         // We do, however, want to update the grid if the tiles have changed location
         // due to unpinning, blocking or restoring.
-        gUpdater.updateGrid(message);
+        this.sendUpdateToTest();
         return;
       }
       // Update immediately if we're visible.
@@ -102,6 +103,13 @@
         }
 
         this._scheduleUpdateTimeout = null;
+      }, SCHEDULE_UPDATE_TIMEOUT_MS);
+    },
+
+    sendUpdateToTest: function() {
+      setTimeout(() => {
+        let event = new CustomEvent("AboutNewTabUpdated", {bubbles: true});
+        document.dispatchEvent(event);
       }, SCHEDULE_UPDATE_TIMEOUT_MS);
     },
 
@@ -290,7 +298,12 @@
       for (let site of gGrid.sites) {
         if (site && site._link.url === message.link.url) {
           site._link.pinState = message.pinState;
+          break;
         }
+      }
+      // If we are unpinning the site, update the grid.
+      if (!message.pinState) {
+        gUpdater.updateGrid(message);
       }
     },
 
@@ -298,9 +311,27 @@
       for (let site of gGrid.sites) {
         if (site && site._link.url === message.link.url) {
           site._link.blockState = message.blockState;
+          break;
         }
       }
+      // If we are blocking the site, update the grid.
+      if (message.blockState) {
+        gUpdater.updateGrid(message);
+      }
     },
+
+    /**
+     * Find the correct URL to display.
+     *
+     * @param {Object} aURL The current URL sent down from the parent.
+     */
+    findURL(aURL) {
+      for (let site of gGrid.sites) {
+        if (site && aURL.url === site.url) {
+          site._getURI(aURL);
+        }
+      }
+    }
   };
   exports.gPage = gPage;
 }(window));

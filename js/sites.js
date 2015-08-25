@@ -8,15 +8,18 @@
 (function(exports) {
   const TILES_EXPLAIN_LINK =
     "https://support.mozilla.org/kb/how-do-tiles-work-firefox";
+  const REGULAR = "regular";
+  const ENHANCED = "enhanced";
   /**
    * This class represents a site that is contained in a cell and can be pinned,
    * moved around or deleted.
    */
-  function Site(aNode, aLink) {
+  function Site(aNode, aLink, aType = REGULAR) {
     this._node = aNode;
     this._node._newtabSite = this;
 
     this._link = aLink;
+    this._type = aType;
 
     this._render();
     this._addEventHandlers();
@@ -197,13 +200,16 @@
       // first check for end time, as it may modify the link
       this._checkLinkEndTime();
       // setup display variables
-      //let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced")
-      //                && DirectoryLinksProvider.getEnhancedLink(this.link);
-      let enhanced = gNewTab.enhanced;
+      let enhanced = this.link;
       let url = this.url;
-      let title = enhanced && enhanced.title ? enhanced.title :
-        this.link.type === "history" ? this.link.baseDomain :
-        this.title;
+
+      let title = this.title;
+      if (enhanced && enhanced.title && this._type === ENHANCED) {
+        title = enhanced.title;
+      } else if (this._type === REGULAR) {
+        title = this.link.baseDomain;
+      }
+
       let tooltip = (this.title === url ? this.title : this.title + "\n" + url);
 
       let link = this._querySelector(".newtab-link");
@@ -265,29 +271,32 @@
      */
     refreshThumbnail() {
       gNewTab.sendToBrowser("NewTab:PageThumbs", {
-        url: this.url
+        link: this.link
       });
     },
 
-    _getURI(message) {
-      // Only enhance tiles if that feature is turned on
-      let link = /*message.enhanced && DirectoryLinksProvider.getEnhancedLink(this.link) || */ this.link;
-
+    /**
+     * Render the correct thumbnail for the site.
+     *
+     * @param {Object} aData Contains enhanced links and the URI generated from the
+     *        current URL.
+     */
+    getURI(aData) {
       let thumbnail = this._querySelector(".newtab-thumbnail");
-      if (link.bgColor) {
-        thumbnail.style.backgroundColor = link.bgColor;
+      if (this.link.bgColor) {
+        thumbnail.style.backgroundColor = this.link.bgColor;
       }
 
-      let uri = this.link.imageURI || ("file://" + message.uri);
+      let uri = this.link.imageURI || aData.uri;
       thumbnail.style.backgroundImage = `url("${uri}")`;
 
-      if (link.enhancedImageURI) {
+      if (this.link.enhancedImageURI) {
         let enhanced = this._querySelector(".enhanced-content");
-        enhanced.style.backgroundImage = `url("${link.enhancedImageURI}")`;
+        enhanced.style.backgroundImage = `url("${this.link.enhancedImageURI}")`;
 
-        if (this.link.type !== link.type) {
+        if (this.link.type !== this.link.type) {
           this.node.setAttribute("type", "enhanced");
-          this.enhancedId = link.directoryId;
+          this.enhancedId = this.link.directoryId;
         }
       }
     },
@@ -309,9 +318,6 @@
       this._node.addEventListener("dragstart", this, false);
       this._node.addEventListener("dragend", this, false);
       this._node.addEventListener("mouseover", this, false);
-
-      gNewTab.registerListener(`NewTab:${this.url}URI`,
-        this._getURI.bind(this));
 
       // Specially treat the sponsored icon & suggested explanation
       // text to prevent regular hover effects
@@ -373,12 +379,12 @@
           });
           action = "click";
         }
-      // Handle sponsored explanation link click
+        // Handle sponsored explanation link click
       } else if (target.parentElement.classList.contains("sponsored-explain")) {
         action = "sponsored_link";
       } else if (target.parentElement.classList.contains("suggested-explain")) {
         action = "suggested_link";
-      // Only handle primary clicks for the remaining targets
+        // Only handle primary clicks for the remaining targets
       } else if (button === 0) {
         aEvent.preventDefault();
         if (target.classList.contains("newtab-control-block")) {

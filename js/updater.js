@@ -191,14 +191,16 @@
       } = gGrid;
 
       // Find empty cells and fill them.
-      Promise.all(sites.map((aSite, aIndex) => {
+      Promise.all(sites.map((aSite, aIndex, aEnhancedLinks) => {
         if (aSite || !aLinks[aIndex]) {
           return null;
         }
 
         return new Promise(resolve => {
           // Create the new site and fade it in.
-          let site = gGrid.createSite(aLinks[aIndex], cells[aIndex]);
+          let isEnhanced = aEnhancedLinks[aIndex] ? true : false;
+          let site = gGrid.createSite(aLinks[aIndex],
+            cells[aIndex], isEnhanced);
 
           // Set the site's initial opacity to zero.
           site.node.style.opacity = 0;

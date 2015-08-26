@@ -34,7 +34,11 @@ self.addEventListener("install", (ev) => {
   ];
   var populateCacheTask = async(function*() {
     var cache = yield caches.open(CACHE_NAME);
-    cache.addAll(urlsToCache);
+    try {
+        yield cache.addAll(urlsToCache);
+    } catch (err){
+        console.log("Could not add a file", err);
+    }
   });
   ev.waitUntil(populateCacheTask());
 });

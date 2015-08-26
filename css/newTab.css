@@ -594,7 +594,7 @@ input[type=button] {
 
 .newtab-customize-complex-option:hover > .selectable:not([selected]),
 .selectable:not([selected]):hover {
-  background: url("images/shared-menu-check-hover.svg") no-repeat #FFFFFF;
+  background: url("images/shared-menu-check.svg#hover-view") no-repeat #FFFFFF;
   background-size: 16px 16px;
   background-position: 15px 15px;
   color: #171F26;
@@ -605,7 +605,7 @@ input[type=button] {
 }
 
 .newtab-customize-panel-item[selected] {
-  background: url("images/shared-menu-check-active.svg") no-repeat transparent;
+  background: url("images/shared-menu-check.svg#active-view") no-repeat transparent;
   background-size: 16px 16px;
   background-position: 15px 15px;
   color: black;
@@ -621,7 +621,7 @@ input[type=button] {
 }
 
 .newtab-customize-panel-subitem[selected] > .checkbox {
-  background: url("images/shared-menu-check-black.svg") no-repeat #FFFFFF;
+  background: url("images/shared-menu-check.svg#black-view") no-repeat #FFFFFF;
   background-size: 9px 9px;
   background-position: center;
   color: #333333;

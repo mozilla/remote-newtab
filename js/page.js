@@ -150,7 +150,7 @@
     },
 
     /**
-     * Updates the 'page-disabled' attributes of the respective DOM nodes.
+     * Updates the 'data-page-disabled' attributes of the respective DOM nodes.
      *
      * @param {Boolean} aValue Whether the New Tab Page is enabled or not.
      */
@@ -159,9 +159,9 @@
       let nodeSelector = "#newtab-grid, #newtab-search-container";
       for (let node of document.querySelectorAll(nodeSelector)) {
         if (aValue) {
-          node.removeAttribute("page-disabled");
+          node.data.pageDisabled = false;
         } else {
-          node.setAttribute("page-disabled", "true");
+          node.data.pageDisabled = true;
         }
       }
 

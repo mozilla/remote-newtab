@@ -112,12 +112,12 @@ input[type=button] {
   transition-property: opacity;
 }
 
-#newtab-grid[page-disabled] {
+#newtab-grid[data-page-disabled] {
   opacity: 0;
 }
 
 #newtab-grid[locked],
-#newtab-grid[page-disabled] {
+#newtab-grid[data-page-disabled] {
   pointer-events: none;
 }
 
@@ -342,7 +342,7 @@ input[type=button] {
   margin: 15px 0px;
 }
 
-#newtab-search-container[page-disabled] {
+#newtab-search-container[data-page-disabled] {
   opacity: 0;
   pointer-events: none;
 }

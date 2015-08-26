@@ -1,7 +1,7 @@
 /*globals async, importScripts, self, caches*/
 "use strict";
 const CACHE_NAME = "newtab-v2";
-importScripts("async.js");
+importScripts("lib/async.js");
 
 self.addEventListener("install", (ev) => {
   const urlsToCache = [

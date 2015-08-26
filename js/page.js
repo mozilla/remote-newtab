@@ -159,9 +159,9 @@
       let nodeSelector = "#newtab-grid, #newtab-search-container";
       for (let node of document.querySelectorAll(nodeSelector)) {
         if (aValue) {
-          node.data.pageDisabled = false;
+          node.pageDisabled = false;
         } else {
-          node.data.pageDisabled = true;
+          node.pageDisabled = true;
         }
       }
 

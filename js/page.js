@@ -28,10 +28,14 @@
      * Initializes the page.
      */
     init() {
-      gNewTab.registerListener("NewTab:UpdatePages", this.update.bind(this));
-      gNewTab.registerListener("NewTab:PinState", this.setPinState.bind(this));
+      gNewTab.registerListener("NewTab:UpdatePages",
+        this.update.bind(this));
+      gNewTab.registerListener("NewTab:PinState",
+        this.setPinState.bind(this));
       gNewTab.registerListener("NewTab:BlockState",
         this.setBlockState.bind(this));
+      gNewTab.registerListener("NewTab:ThumbnailURI",
+        this.filterURL.bind(this));
 
       // Listen for 'unload' to unregister this page.
       addEventListener("unload", this, false);
@@ -71,15 +75,15 @@
       }
 
       let currentWindowID = this.windowID;
-      currentWindowID = message.outerWindowID;
 
       // Do not refresh the entire grid for the page we're on, as refreshing will
       // cause tiles to flash briefly. It is ok to refresh pages not currently visible
       // but ignore updates for the currently visible page.
-      if (currentWindowID === message.outerWindowID || !message.refresh) {
+      if (currentWindowID === message.outerWindowID || !message.refreshPage &&
+        message.reason !== "links-changed") {
         // We do, however, want to update the grid if the tiles have changed location
         // due to unpinning, blocking or restoring.
-        gUpdater.updateGrid(message);
+        this.sendUpdateToTest();
         return;
       }
       // Update immediately if we're visible.
@@ -102,6 +106,13 @@
         }
 
         this._scheduleUpdateTimeout = null;
+      }, SCHEDULE_UPDATE_TIMEOUT_MS);
+    },
+
+    sendUpdateToTest: function() {
+      setTimeout(() => {
+        let event = new CustomEvent("AboutNewTabUpdated");
+        document.dispatchEvent(event);
       }, SCHEDULE_UPDATE_TIMEOUT_MS);
     },
 
@@ -287,19 +298,39 @@
     },
 
     setPinState(message) {
-      for (let site of gGrid.sites) {
-        if (site && site._link.url === message.link.url) {
-          site._link.pinState = message.pinState;
-        }
+      // Filter through URLs to find the correct site.
+      gGrid.sites
+        .filter(site => site && site._link.url === message.link.url)
+        .forEach(site => site._link.pinState = message.pinState);
+
+      // If we are unpinning the site, update the grid.
+      if (!message.pinState) {
+        gUpdater.updateGrid(message);
       }
     },
 
     setBlockState(message) {
-      for (let site of gGrid.sites) {
-        if (site && site._link.url === message.link.url) {
-          site._link.blockState = message.blockState;
-        }
+      // Filter through URLs to find the correct site.
+      gGrid.sites
+        .filter(site => site && site._link.url === message.link.url)
+        .forEach(site => site._link.blockState = message.blockState);
+
+      // If we are blocking the site, update the grid.
+      if (message.blockState) {
+        gUpdater.updateGrid(message);
       }
+    },
+
+    /**
+     * Filters through all URLs and finds the correct URL associated
+     * with the site to display.
+     *
+     * @param {Object} aURL The current URL sent down from the parent.
+     */
+    filterURL(aURL) {
+      gGrid.sites
+        .filter(site => site && aURL.url === site.url)
+        .forEach(site => site.getURI(aURL));
     },
   };
   exports.gPage = gPage;

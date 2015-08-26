@@ -10,6 +10,8 @@
    */
   const GRID_BOTTOM_EXTRA = 7; // title's line-height extends 7px past the margin
   const GRID_WIDTH_EXTRA = 1; // provide 1px buffer to allow for rounding error
+  const REGULAR = "regular";
+  const ENHANCED = "enhanced";
 
   /**
    * This singleton represents the grid that contains all sites.
@@ -67,7 +69,8 @@
       addEventListener("resize", this);
 
       gNewTab.sendToBrowser("NewTab:InitializeGrid");
-      gNewTab.registerListener("NewTab:UpdateLinks", this.refresh.bind(this));
+      gNewTab.registerListener("NewTab:InitializeLinks",
+        this.refresh.bind(this));
 
       // Resize the grid as soon as the page loads.
       if (!this.isDocumentLoaded) {
@@ -80,12 +83,13 @@
      *
      * @param {Link} aLink The new site's link.
      * @param {Cell} aCell The cell that will contain the new site.
+     * @param {Type} aType The type of the site. Type defaults to regular
      * @return {Site} The newly created site.
      */
-    createSite(aLink, aCell) {
+    createSite(aLink, aCell, aType = REGULAR) {
       let node = aCell.node;
       node.appendChild(this._siteFragment.cloneNode(true));
-      return new Site(node.firstElementChild, aLink);
+      return new Site(node.firstElementChild, aLink, aType);
     },
 
     /**
@@ -119,6 +123,7 @@
      */
     refresh(message) {
       let links = message.links;
+      let enhancedLinks = message.enhancedLinks;
       let cell = document.createElement("div");
       cell.classList.add("newtab-cell");
 
@@ -140,7 +145,12 @@
       let numLinks = Math.min(links.length, cells.length);
       for (let i = 0; i < numLinks; i++) {
         if (links[i]) {
-          this.createSite(links[i], cells[i]);
+          // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
+          if (enhancedLinks[i] && gNewTab.enhanced) {
+            this.createSite(enhancedLinks[i], cells[i], ENHANCED);
+          } else {
+            this.createSite(links[i], cells[i], REGULAR);
+          }
         }
       }
 

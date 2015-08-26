@@ -2,6 +2,7 @@
 "use strict";
 const CACHE_NAME = "newtab-v2";
 importScripts("lib/async.js");
+console.log("dsadfasdfs");
 
 self.addEventListener("install", (ev) => {
   const urlsToCache = [
@@ -35,9 +36,9 @@ self.addEventListener("install", (ev) => {
   var populateCacheTask = async(function*() {
     var cache = yield caches.open(CACHE_NAME);
     try {
-        yield cache.addAll(urlsToCache);
-    } catch (err){
-        console.log("Could not add a file", err);
+      yield cache.addAll(urlsToCache);
+    } catch (err) {
+      console.log("Could not add a file", err);
     }
   });
   ev.waitUntil(populateCacheTask());

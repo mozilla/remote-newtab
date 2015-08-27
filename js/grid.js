@@ -108,14 +108,14 @@
      * Locks the grid to block all pointer events.
      */
     lock() {
-      this.node.setAttribute("locked", "true");
+      this.node.data.locked = true;
     },
 
     /**
      * Unlocks the grid to allow all pointer events.
      */
     unlock() {
-      this.node.removeAttribute("locked");
+      delete this.node.data.locked;
     },
 
     /**
@@ -190,7 +190,7 @@
     _createSiteFragment() {
       let site = document.createElement("div");
       site.classList.add("newtab-site");
-      site.setAttribute("draggable", "true");
+      site.data.draggable = true;
 
       // Create the site's inner HTML code.
       site.innerHTML = `

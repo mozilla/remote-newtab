@@ -169,9 +169,9 @@
       let inputSelector = ".newtab-control, .newtab-link";
       for (let input of document.querySelectorAll(inputSelector)) {
         if (aValue) {
-          input.removeAttribute("tabindex");
+          delete input.data.tabindex;
         } else {
-          input.setAttribute("tabindex", "-1");
+          input.data.tabindex = -1;
         }
       }
     },

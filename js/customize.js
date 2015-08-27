@@ -37,14 +37,14 @@
         gCustomize._nodes.overlay.style.display = "none";
       });
       this._nodes.overlay.style.opacity = 0;
-      this._nodes.button.removeAttribute("active");
-      this._nodes.panel.removeAttribute("open");
+      delete this._nodes.button.data.active;
+      delete this._nodes.panel.data.open;
       document.removeEventListener("click", this);
       document.removeEventListener("keydown", this);
     },
 
     showPanel(event) {
-      if (this._nodes.panel.getAttribute("open") === "true") {
+      if (this._nodes.panel.getAttribute("data-open") === "true") {
         return;
       }
 
@@ -52,8 +52,8 @@
         panel, button, overlay
       } = this._nodes;
       overlay.style.display = "block";
-      panel.setAttribute("open", "true");
-      button.setAttribute("active", "true");
+      panel.data.open = true;
+      button.data.active = true;
       setTimeout(() => {
         // Wait for display update to take place, then animate.
         overlay.style.opacity = 0.8;
@@ -91,7 +91,7 @@
         });
         break;
       case "newtab-customize-classic":
-        if (this._nodes.enhanced.getAttribute("selected")) {
+        if (this._nodes.enhanced.getAttribute("data-selected")) {
           gNewTab.sendToBrowser("NewTab:Customize", {
             enabled: true,
             enhanced: true
@@ -139,15 +139,15 @@
       ["enhanced", "classic", "blank"].forEach(id => {
         let node = this._nodes[id];
         if (id === selected) {
-          node.setAttribute("selected", true);
+          node.data.selected = true;
         } else {
-          node.removeAttribute("selected");
+          delete node.data.selected;
         }
       });
       if (selected === "enhanced") {
         // If enhanced is selected, so is classic (since enhanced is a subitem
         // of classic)
-        this._nodes.classic.setAttribute("selected", true);
+        this._nodes.classic.data.selected = true;
       }
     },
   };

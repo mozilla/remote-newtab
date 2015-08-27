@@ -116,7 +116,7 @@ input[type=button] {
   opacity: 0;
 }
 
-#newtab-grid[locked],
+#newtab-grid[data-locked=true],
 #newtab-grid[data-page-disabled] {
   pointer-events: none;
 }
@@ -148,7 +148,7 @@ input[type=button] {
   transition-property: top, left, opacity;
 }
 
-.newtab-site[frozen] {
+.newtab-site[data-frozen=true] {
   position: absolute;
   pointer-events: none;
 }
@@ -231,18 +231,18 @@ input[type=button] {
   top: -15px;
 }
 
-.newtab-site[suggested=true] > .newtab-sponsored {
+.newtab-site[data-suggested=true] > .newtab-sponsored {
   background-color: #E2E2E2;
   border: none;
 }
 
-.newtab-site > .newtab-sponsored:-moz-any(:hover, [active]) {
+.newtab-site > .newtab-sponsored:-moz-any(:hover, [data-active=true]) {
   background-color: #4A90E2;
   border: 0;
   color: white;
 }
 
-.newtab-site > .newtab-sponsored[active] {
+.newtab-site > .newtab-sponsored[data-active=true] {
   background-color: #000000;
 }
 
@@ -251,11 +251,11 @@ input[type=button] {
   left: auto;
 }
 
-.newtab-site:-moz-any([type=enhanced], [type=sponsored], [suggested]) .newtab-sponsored {
+.newtab-site:-moz-any([data-type=enhanced], [data-type=sponsored], [data-suggested=true]) .newtab-sponsored {
   display: block;
 }
 
-.newtab-site[suggested] .newtab-suggested {
+.newtab-site[data-suggested=true] .newtab-suggested {
   display: table;
 }
 
@@ -295,7 +295,7 @@ input[type=button] {
 }
 
 .newtab-control:-moz-focusring,
-.newtab-cell:not([ignorehover]) > .newtab-site:hover > .newtab-control,
+.newtab-cell:not([data-ignorehover]) > .newtab-site:hover > .newtab-control,
 .newtab-intro-cell-hover .newtab-control {
   opacity: 1;
 }
@@ -497,7 +497,7 @@ input[type=button] {
   right: auto;
 }
 
-#newtab-customize-panel[open="true"] {
+#newtab-customize-panel[data-open="true"] {
   transform: translate(-30px, -20px) scale(1) translate(30px, 20px);
 }
 
@@ -568,12 +568,12 @@ input[type=button] {
   background-color: #F9F9F9;
 }
 
-.newtab-customize-panel-item[selected]:-moz-locale-dir(rtl) {
+.newtab-customize-panel-item[data-selected=true]:-moz-locale-dir(rtl) {
   background-position: right 15px center;
 }
 
-.newtab-customize-complex-option:hover > .selectable:not([selected]):-moz-locale-dir(rtl),
-.selectable:not([selected]):hover:-moz-locale-dir(rtl) {
+.newtab-customize-complex-option:hover > .selectable:not([data-selected="true"]):-moz-locale-dir(rtl),
+.selectable:not([data-selected="true"]):hover:-moz-locale-dir(rtl) {
   background-position: right 15px center;
 }
 
@@ -582,29 +582,29 @@ input[type=button] {
   max-width: 100%;
 }
 
-.newtab-customize-panel-item:not([selected]),
-.newtab-customize-panel-subitem:not([selected]){
+.newtab-customize-panel-item:not([data-selected="true"]),
+.newtab-customize-panel-subitem:not([data-selected="true"]){
   color: #7A7A7A;
 }
 
-.newtab-customize-panel-item:not([selected]):hover {
+.newtab-customize-panel-item:not([data-selected="true"]):hover {
   color: #FFFFFF;
   background-color: #4A90E2
 }
 
-.newtab-customize-complex-option:hover > .selectable:not([selected]),
-.selectable:not([selected]):hover {
+.newtab-customize-complex-option:hover > .selectable:not([data-selected="true"]),
+.selectable:not([data-selected="true"]):hover {
   background: url("images/shared-menu-check.svg#hover-view") no-repeat #FFFFFF;
   background-size: 16px 16px;
   background-position: 15px 15px;
   color: #171F26;
 }
 
-.newtab-customize-complex-option:hover > .selectable:not([selected]) + .newtab-customize-panel-subitem {
+.newtab-customize-complex-option:hover > .selectable:not([data-selected="true"]) + .newtab-customize-panel-subitem {
   background-color: #FFFFFF;
 }
 
-.newtab-customize-panel-item[selected] {
+.newtab-customize-panel-item[data-selected=true] {
   background: url("images/shared-menu-check.svg#active-view") no-repeat transparent;
   background-size: 16px 16px;
   background-position: 15px 15px;
@@ -620,7 +620,7 @@ input[type=button] {
   border: solid 1px threedshadow;
 }
 
-.newtab-customize-panel-subitem[selected] > .checkbox {
+.newtab-customize-panel-subitem[data-selected=true] > .checkbox {
   background: url("images/shared-menu-check.svg#black-view") no-repeat #FFFFFF;
   background-size: 9px 9px;
   background-position: center;

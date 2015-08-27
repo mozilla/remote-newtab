@@ -52,9 +52,9 @@
       };
 
       this._undoContainer.dataset.undoDisabled = false;
-      this._undoButton.removeAttribute("tabindex");
-      this._undoCloseButton.removeAttribute("tabindex");
-      this._undoRestoreButton.removeAttribute("tabindex");
+      delete this._undoButton.data.tabindex;
+      delete this._undoCloseButton.data.tabindex;
+      delete this._undoRestoreButton.data.tabindex;
     },
 
     /**
@@ -67,9 +67,9 @@
       clearTimeout(this._undoData.timeout);
       this._undoData = null;
       this._undoContainer.dataset.undoDisabled = true;
-      this._undoButton.setAttribute("tabindex", "-1");
-      this._undoCloseButton.setAttribute("tabindex", "-1");
-      this._undoRestoreButton.setAttribute("tabindex", "-1");
+      this._undoButton.data.tabindex = -1;
+      this._undoCloseButton.data.tabindex = -1;
+      this._undoRestoreButton.data.tabindex = -1;
     },
 
     /**

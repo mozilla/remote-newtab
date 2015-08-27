@@ -214,5 +214,4 @@
     }
   };
   exports.gUpdater = gUpdater;
-  gUpdater.init();
 }(window));

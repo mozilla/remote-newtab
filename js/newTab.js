@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gCustomize, gStrings*/
+/*globals gGrid, gPage, gCustomize, gStrings, gUpdater*/
 
 "use strict";
 
@@ -60,6 +60,7 @@
       this.windowID = message.windowID;
       this.observe("browser.newtabpage.enabled", message.enabled);
       this.observe("browser.newtabpage.enhanced", message.enhanced);
+      gUpdater.init();
       gPage.init();
     },
 

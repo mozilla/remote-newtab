@@ -248,23 +248,23 @@
 
       let searchContainer = document.querySelector("#newtab-search-container");
       // Save search-container margin height
-      if (this._searchContainerMargin  === undefined) {
+      if (this._searchContainerMargin === undefined) {
         this._searchContainerMargin = parseFloat(getComputedStyle(searchContainer).marginBottom) +
-                                      parseFloat(getComputedStyle(searchContainer).marginTop);
+          parseFloat(getComputedStyle(searchContainer).marginTop);
       }
 
       // Find the number of rows we can place into view port
       let availHeight = document.documentElement.clientHeight - this._cellMargin -
-                        searchContainer.offsetHeight - this._searchContainerMargin;
+        searchContainer.offsetHeight - this._searchContainerMargin;
       let visibleRows = Math.floor(availHeight / this._cellHeight);
 
       // Find the number of columns that fit into view port
       let maxGridWidth = gNewTab.columns * this._cellWidth + GRID_WIDTH_EXTRA;
       // available width is current grid width, but no greater than maxGridWidth
       let availWidth = Math.min(document.querySelector("#newtab-grid").clientWidth,
-                                maxGridWidth);
+        maxGridWidth);
       // finally get the number of columns we can fit into view port
-      let gridColumns =  Math.floor(availWidth / this._cellWidth);
+      let gridColumns = Math.floor(availWidth / this._cellWidth);
       // walk sites backwords until a pinned or history tile is found or visibleRows reached
       let tileIndex = Math.min(gNewTab.rows * gridColumns, this.sites.length) - 1;
       while (tileIndex >= visibleRows * gridColumns) {

@@ -57,6 +57,7 @@
       this.rows = message.rows;
       this.columns = message.columns;
       this.introShown = message.introShown;
+      this.windowID = message.windowID;
       this.observe("browser.newtabpage.enabled", message.enabled);
       this.observe("browser.newtabpage.enhanced", message.enhanced);
       gPage.init();

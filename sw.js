@@ -24,7 +24,7 @@ self.addEventListener("install", (ev) => {
     "js/grid.js",
     "js/newTab.js",
     "js/page.js",
-    "js/rect.js",
+    "js/rectangle.js",
     "js/sites.js",
     "js/transformations.js",
     "js/undo.js",

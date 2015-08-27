@@ -14,6 +14,7 @@ body {
   padding: 0;
   margin: 0;
   background-color: #F9F9F9;
+  display: -moz-box;
   position: relative;
   -moz-box-flex: 1;
   -moz-user-focus: normal;
@@ -60,6 +61,7 @@ input[type=button] {
   position: relative;
   -moz-box-flex: 1;
   -moz-box-orient: vertical;
+  width: 100%;
 }
 
 #newtab-margin-undo-container {
@@ -212,6 +214,8 @@ input[type=button] {
 .newtab-title {
   left: 0;
   padding: 0 4px;
+  border: 1px solid #FFFFFF;
+  border-radius: 0px 0px 8px 8px;
 }
 
 .newtab-sponsored {
@@ -339,7 +343,7 @@ input[type=button] {
   display: -moz-box;
   position: relative;
   -moz-box-pack: center;
-  margin: 15px 0px;
+  margin: 40px 0 15px;
 }
 
 #newtab-search-container[data-page-disabled] {
@@ -522,7 +526,7 @@ input[type=button] {
   border-radius: 5px 5px 0px 0px;
   max-width: 300px;
   overflow: hidden;
-  display: block;
+  display: table-cell;
   border-top: none;
 }
 
@@ -825,11 +829,4 @@ input[type=button] {
 #newtab-intro-buttons > input:hover {
   background-color: #2C72E2;
   color: #FFFFFF;
-}
-
-#meep {
-  width: 100%;
-  height: 100%;
-  border: none;
-  position: absolute;
 }

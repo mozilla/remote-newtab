@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gCustomize, gStrings*/
+/*globals gGrid, gPage, gCustomize, gStrings, gUpdater*/
 
 "use strict";
 
@@ -52,13 +52,15 @@
       }
     },
 
-    setState(message) {
+    setInitialState(message) {
       this.privateBrowsingMode = message.privateBrowsingMode;
       this.rows = message.rows;
       this.columns = message.columns;
       this.introShown = message.introShown;
+      this.windowID = message.windowID;
       this.observe("browser.newtabpage.enabled", message.enabled);
       this.observe("browser.newtabpage.enhanced", message.enhanced);
+      gUpdater.init();
       gPage.init();
     },
 
@@ -118,7 +120,7 @@
     gNewTab.registerListener("NewTab:Observe", message => {
       gNewTab.observe(message.topic, message.data);
     });
-    gNewTab.registerListener("NewTab:State", gNewTab.setState.bind(gNewTab));
+    gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
     gNewTab.sendToBrowser("NewTab:GetInitialState");
   });
   exports.gNewTab = gNewTab;

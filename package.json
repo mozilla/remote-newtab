@@ -33,6 +33,7 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/karma start --single-run",
-    "pretest": "jshint *.js js/**.js test/**.js && jscs *.js test/**.js js/**.js"
+    "pretest": "jshint *.js js/**.js test/**.js && jscs *.js test/**.js js/**.js",
+    "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
   }
 }

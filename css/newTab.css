@@ -155,7 +155,7 @@ input[type=button] {
   pointer-events: none;
 }
 
-.newtab-site[dragged] {
+.newtab-site[data-dragged=true] {
   transition-property: none;
   z-index: 10;
 }
@@ -304,7 +304,7 @@ input[type=button] {
   opacity: 1;
 }
 
-.newtab-control[dragged] {
+.newtab-control[data-dragged=true] {
   opacity: 0 !important;
 }
 

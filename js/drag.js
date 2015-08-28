@@ -48,10 +48,10 @@
       let selector = ".newtab-site, .newtab-control, .newtab-thumbnail";
       let parentCell = aSite.node.parentNode;
       for (let node of parentCell.querySelectorAll(selector)) {
-        node.setAttribute("dragged", "true");
+        node.dataset.dragged = true;
       }
 
-      parentCell.setAttribute("dragged", "true");
+      parentCell.dataset.dragged = true;
 
       this._setDragData(aSite, aEvent);
 
@@ -109,8 +109,8 @@
      * @param {Site} aSite The site that's being dragged.
      */
     end(aSite) {
-      for (let node of gGrid.node.querySelectorAll("[dragged]")) {
-        node.removeAttribute("dragged");
+      for (let node of gGrid.node.querySelectorAll("[data-dragged]")) {
+        node.dataset.dragged = false;
       }
 
       // Slide the dragged site back into its cell (may be the old or the new cell).

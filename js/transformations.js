@@ -127,7 +127,7 @@
       style.width = comp.getPropertyValue("width");
       style.height = comp.getPropertyValue("height");
 
-      aSite.node.setAttribute("frozen", "true");
+      aSite.node.dataset.frozen = true;
       this.setSitePosition(aSite, this.getNodePosition(aSite.node));
     },
 
@@ -143,7 +143,7 @@
 
       let style = aSite.node.style;
       style.left = style.top = style.width = style.height = "";
-      aSite.node.removeAttribute("frozen");
+      aSite.node.dataset.frozen = false;
     },
 
     /**
@@ -297,7 +297,7 @@
      * @return {Boolean} Whether the given site is frozen.
      */
     _isFrozen(aSite) {
-      return aSite.node.hasAttribute("frozen");
+      return aSite.node.hasAttribute("data-frozen");
     }
   };
   exports.gTransformation = gTransformation;

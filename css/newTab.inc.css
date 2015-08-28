@@ -79,7 +79,7 @@
   width: 28px;
 }
 
-#newtab-customize-button:-moz-any(:hover, :active, [active]) {
+#newtab-customize-button:-moz-any(:hover, :active, [data-active=true]) {
   background-image: -moz-image-rect(url(images/controls.svg), 0, 64, 32, 32);
   background-color: #FFFFFF;
   border: solid 1px #CCCCCC;
@@ -105,9 +105,9 @@
   transition-property: top, left, opacity, box-shadow, background-color;
 }
 
-.newtab-cell:not([ignorehover]) .newtab-control:hover ~ .newtab-link,
-.newtab-cell:not([ignorehover]) .newtab-link:hover,
-.newtab-site[data-dragged=true] {
+.newtab-cell:not([data-ignore-hover=true]) .newtab-control:hover ~ .newtab-link,
+.newtab-cell:not([data-ignore-hover=true]) .newtab-link:hover,
+.newtab-site[dragged] {
   border: 2px solid white;
   box-shadow: 0 0 6px 1px #add6ff;
   margin: -2px;
@@ -135,14 +135,11 @@
   transition: opacity 100ms ease-out;
 }
 
-.newtab-cell:not([ignorehover]) .newtab-site:hover .newtab-thumbnail.enhanced-content {
+.newtab-cell:not([data-ignore-hover=true]) .newtab-site:hover .newtab-thumbnail.enhanced-content {
   opacity: 0;
 }
 
-.newtab-site[type=affiliate] .newtab-thumbnail,
-.newtab-site[type=enhanced] .newtab-thumbnail,
-.newtab-site[type=organic] .newtab-thumbnail,
-.newtab-site[type=sponsored] .newtab-thumbnail {
+.newtab-site[data-type] .newtab-thumbnail {
   background-position: center center;
   background-size: auto;
 }
@@ -154,7 +151,7 @@
   color: #5c5c5c;
 }
 
-.newtab-suggested[active] {
+.newtab-suggested[data-active=true] {
   background-color: rgba(51, 51, 51, 0.95);
   border: 0;
   color: white;
@@ -167,11 +164,11 @@
   border-top: 1px solid white;
 }
 
-.newtab-site[pinned] .newtab-title {
+.newtab-site[data-pinned=true] .newtab-title {
   -moz-padding-start: 24px;
 }
 
-.newtab-site[pinned] .newtab-title::before {
+.newtab-site[data-pinned=true] .newtab-title::before {
   background-image: -moz-image-rect(url("images/controls.svg"), 7, 278, 28, 266);
   background-size: 10px;
   content: "";
@@ -183,7 +180,7 @@
   margin-top: 6px;
 }
 
-.newtab-site[pinned] .newtab-title:-moz-dir(rtl)::before {
+.newtab-site[data-pinned=true] .newtab-title:-moz-dir(rtl)::before {
   left: auto;
   right: 0;
 }
@@ -198,17 +195,17 @@
 }
 
 .newtab-control-pin,
-.newtab-site[pinned] .newtab-control-pin:hover:active {
+.newtab-site[data-pinned=true] .newtab-control-pin:hover:active {
   background-image: -moz-image-rect(url(images/controls.svg), 0, 96, 32, 64);
 }
 
 .newtab-control-pin:hover,
-.newtab-site[pinned] .newtab-control-pin:hover {
+.newtab-site[data-pinned] .newtab-control-pin:hover {
   background-image: -moz-image-rect(url(images/controls.svg), 0, 160, 32, 128);
 }
 
 .newtab-control-pin:hover:active,
-.newtab-site[pinned] .newtab-control-pin {
+.newtab-site[data-pinned=true] .newtab-control-pin {
   background-image: -moz-image-rect(url(images/controls.svg), 0, 128, 32, 96);
 }
 

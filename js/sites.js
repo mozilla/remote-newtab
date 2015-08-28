@@ -142,11 +142,11 @@
       let control = this._querySelector(".newtab-control-pin");
 
       if (aPinned) {
-        this.node.setAttribute("pinned", true);
-        control.setAttribute("title", gNewTab.newTabString("unpin"));
+        this.node.dataset.pinned = true;
+        control.dataset.title = gNewTab.newTabString("unpin");
       } else {
-        this.node.removeAttribute("pinned");
-        control.setAttribute("title", gNewTab.newTabString("pin"));
+        this.node.dataset.pinned = false;
+        control.dataset.title = gNewTab.newTabString("pin");
       }
     },
 
@@ -213,18 +213,17 @@
       let tooltip = (this.title === url ? this.title : this.title + "\n" + url);
 
       let link = this._querySelector(".newtab-link");
-      link.setAttribute("title", tooltip);
-      link.setAttribute("href", url);
+      link.dataset.title = tooltip;
+      link.dataset.href = url;
       this._querySelector(".newtab-title").textContent = title;
-      this.node.setAttribute("type", this.link.type);
+      this.node.dataset.type = this.link.type;
 
       if (this.link.targetedSite) {
-        if (this.node.getAttribute("type") !== "sponsored") {
+        if (this.node.dataset.type !== "sponsored") {
           this._querySelector(".newtab-sponsored").textContent =
             gNewTab.newTabString("suggested.tag");
         }
-
-        this.node.setAttribute("suggested", true);
+        this.node.dataset.suggested = true;
         let explanation = this._getSuggestedTileExplanation();
         this._querySelector(".newtab-suggested").innerHTML =
           `<div class='newtab-suggested-bounds'> ${explanation} </div>`;
@@ -295,7 +294,7 @@
         enhanced.style.backgroundImage = `url("${this.link.enhancedImageURI}")`;
 
         if (this.link.type !== this.link.type) {
-          this.node.setAttribute("type", "enhanced");
+          this.node.dataset.type = "enhanced";
           this.enhancedId = this.link.directoryId;
         }
       }
@@ -303,10 +302,10 @@
 
     _ignoreHoverEvents(element) {
       element.addEventListener("mouseover", () => {
-        this.cell.node.setAttribute("ignorehover", "true");
+        this.cell.node.dataset.ignoreHover = true;
       });
       element.addEventListener("mouseout", () => {
-        this.cell.node.removeAttribute("ignorehover");
+        this.cell.node.dataset.ignoreHover = false;
       });
     },
 
@@ -329,11 +328,11 @@
 
     _toggleLegalText(buttonClass, explanationTextClass) {
       let button = this._querySelector(buttonClass);
-      if (button.hasAttribute("active")) {
+      if (!button.dataset.active) {
         let explain = this._querySelector(explanationTextClass);
         explain.parentNode.removeChild(explain);
 
-        button.removeAttribute("active");
+        button.dataset.active = false;
       } else {
         let explain = document.createElement("div");
         explain.className = explanationTextClass.slice(1); // Slice off the first character, '.'
@@ -343,9 +342,9 @@
           <a href="${TILES_EXPLAIN_LINK}">
             ${gNewTab.newTabString("learn.link")}
           </a>`;
-        let linkType = this.node.getAttribute("type");
+        let linkType = this.node.dataset.type;
         let isAffiliate = linkType === "affiliate";
-        let isSuggested = this.node.getAttribute("suggested");
+        let isSuggested = this.node.dataset.suggested;
         let type = (isSuggested && isAffiliate) ? "suggested" : linkType;
         let tabClass = (type === "enhanced") ? "customize" : "control-block";
         let icon = `<input type="button"
@@ -354,7 +353,7 @@
           type + (type === "sponsored" ? ".explain2" : ".explain"), [icon, link]
         );
 
-        button.setAttribute("active", "true");
+        button.dataset.active = true;
       }
     },
 

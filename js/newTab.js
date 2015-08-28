@@ -52,7 +52,7 @@
       }
     },
 
-    setState(message) {
+    setInitialState(message) {
       this.privateBrowsingMode = message.privateBrowsingMode;
       this.rows = message.rows;
       this.columns = message.columns;
@@ -120,7 +120,7 @@
     gNewTab.registerListener("NewTab:Observe", message => {
       gNewTab.observe(message.topic, message.data);
     });
-    gNewTab.registerListener("NewTab:State", gNewTab.setState.bind(gNewTab));
+    gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
     gNewTab.sendToBrowser("NewTab:GetInitialState");
   });
   exports.gNewTab = gNewTab;

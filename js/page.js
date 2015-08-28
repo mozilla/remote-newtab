@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, gGrid, gIntro, gDrag, gCustomize, gUpdater, gDropTargetShim */
+/*global gNewTab, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim */
 
 "use strict";
 (function(exports) {
@@ -194,6 +194,16 @@
           probe: "NEWTAB_PAGE_LIFE_SPAN",
           value: delta
         });
+      }
+    },
+
+    handleEnabled(enabled) {
+      this._updateAttributes(enabled);
+      // Initialize the whole page if we haven't done that, yet.
+      if (enabled) {
+        this._init();
+      } else {
+        gUndoDialog.hide();
       }
     },
 

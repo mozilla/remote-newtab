@@ -57,26 +57,6 @@
   background-image: -moz-image-rect(url(images/close.png), 0, 32, 16, 16);
 }
 
-#newtab-undo-close-button:active {
-  background-image: -moz-image-rect(url(images/close.png), 0, 48, 16, 32);
-}
-
-#newtab-undo-close-button {
-  -moz-appearance: none;
-  padding: 0;
-  border: none;
-  height: 16px;
-  width: 16px;
-  float: right;
-  right: 0;
-  background-image: -moz-image-rect(url(images/close.png), 0, 16, 16, 0);
-  background-color: transparent;
-}
-
-#newtab-undo-close-button:hover {
-  background-image: -moz-image-rect(url(images/close.png), 0, 32, 16, 16);
-}
-
 #newtab-undo-close-button:hover:active {
   background-image: -moz-image-rect(url(images/close.png), 0, 48, 16, 32);
 }
@@ -129,11 +109,11 @@
 .newtab-cell:not([data-ignore-hover=true]) .newtab-link:hover,
 .newtab-site[dragged] {
   border: 2px solid white;
-  box-shadow: 0 0 6px 2px #4cb1ff;
+  box-shadow: 0 0 6px 1px #add6ff;
   margin: -2px;
 }
 
-.newtab-site[dragged] {
+.newtab-site[data-dragged=true] {
   transition-property: box-shadow, background-color;
   background-color: rgb(242,242,242);
 }
@@ -178,7 +158,10 @@
 }
 
 .newtab-site:hover .newtab-title {
-  color: #222;
+  color: white;
+  background-color: #333;
+  border: 1px solid #333;
+  border-top: 1px solid white;
 }
 
 .newtab-site[data-pinned=true] .newtab-title {

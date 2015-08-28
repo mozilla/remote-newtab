@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gUndoDialog, gCustomize, gStrings*/
+/*globals gGrid, gPage, gCustomize, gStrings*/
 
 "use strict";
 
@@ -16,10 +16,9 @@
         for (let callback of this.listeners[message.data.name]) {
           callback(message.data.data);
         }
-      }, false);
+      });
     },
 
-    // NOTE: @emtwo Get rid of private calls to gPage members!!
     observe(topic, data) {
       switch (topic) {
       case "page-thumbnail:create":
@@ -34,13 +33,7 @@
         break;
       case "browser.newtabpage.enabled":
         this.enabled = data;
-        gPage._updateAttributes(this.enabled);
-        // Initialize the whole page if we haven't done that, yet.
-        if (this.enabled) {
-          gPage._init();
-        } else {
-          gUndoDialog.hide();
-        }
+        gPage.handleEnabled(data);
         break;
       case "browser.newtabpage.enhanced":
         this.enhanced = data;
@@ -79,6 +72,7 @@
     },
 
     _formatStringFromName(str, substrArr) {
+      // Match regex that looks like "%<int>$S" representing variables in our strings
       let regExp = /%[0-9]\$S/g;
       let matches;
       while (matches = regExp.exec(str)) { // jshint ignore:line
@@ -92,7 +86,7 @@
     stringifySites() {
       let stringifiedSites = [];
       for (let site of gGrid.sites) {
-        stringifiedSites.push(site ? JSON.stringify(site._link) : site);
+        stringifiedSites.push(site ? JSON.stringify(site.link) : site);
       }
       return stringifiedSites;
     },
@@ -104,11 +98,7 @@
           data: data
         }
       });
-      try {
-        document.dispatchEvent(event);
-      } catch (e) {
-        console.log(e);
-      }
+      document.dispatchEvent(event);
     },
 
     registerListener(type, callback) {

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gDrag, gNewTab, gGrid, gUndoDialog*/
+/*globals gDrag, gNewTab, gGrid, gUndoDialog, async*/
 
 "use strict";
 
@@ -203,11 +203,40 @@
       let enhanced = this.link;
       let url = this.url;
 
+      var getRegularThumbnail = async(function*() {
+        var sw = (yield navigator.serviceWorker.ready).active;
+        var host = new URL(url).host;
+        var thumbURL = new URL(`/pagethumbs/${host}`, window.location);
+        // Send a message to the SW to check if we have stored this thumb already
+        var thumbInCache = yield new Promise((resolve) => {
+          navigator.serviceWorker.addEventListener("message", function msgHandler({data}) {
+            if (data.name === "SW:HasThumb" && data.url === url) {
+              navigator.serviceWorker.removeEventListener("message", msgHandler);
+              resolve(data.result);
+            }
+          });
+          sw.postMessage({
+            name: "NewTab:HasThumb",
+            url,
+            thumbURL: thumbURL.href,
+          });
+        });
+        if (thumbInCache) {
+          this.showRegularThumbnail(thumbURL);
+          return;
+        }
+        // Capture the page if the thumbnail is missing, which will cause page.js
+        // to be notified and call our refreshThumbnail() method.
+        this.captureIfMissing();
+      }, this);
+
       let title = this.title;
-      if (enhanced && enhanced.title && this._type === ENHANCED) {
+      if (enhanced && enhanced.title && (this._type === ENHANCED || this.link.imageURI)) {
         title = enhanced.title;
+        this.showEnhancedThumbnail();
       } else if (this._type === REGULAR) {
         title = this.link.baseDomain;
+        getRegularThumbnail();
       }
 
       let tooltip = (this.title === url ? this.title : this.title + "\n" + url);
@@ -232,11 +261,6 @@
       if (this.isPinned()) {
         this._updateAttributes(true);
       }
-      // Capture the page if the thumbnail is missing, which will cause page.js
-      // to be notified and call our refreshThumbnail() method.
-      this.captureIfMissing();
-      // but still display whatever thumbnail might be available now.
-      this.refreshThumbnail();
     },
 
     /**
@@ -259,35 +283,23 @@
      */
     captureIfMissing() {
       if (!document.hidden && !this.link.imageURI) {
-        gNewTab.sendToBrowser("NewTab:BackgroundPageThumbs", {
-          url: this.url
+        gNewTab.sendToBrowser("NewTab:CaptureBackgroundPageThumbs", {
+          link: this.link,
+          type: this._type,
         });
       }
     },
 
     /**
-     * Refreshes the thumbnail for the site.
+     * Show the enhanced thumbnail.
      */
-    refreshThumbnail() {
-      gNewTab.sendToBrowser("NewTab:PageThumbs", {
-        link: this.link
-      });
-    },
-
-    /**
-     * Render the correct thumbnail for the site.
-     *
-     * @param {Object} aData Contains enhanced links and the URI generated from the
-     *        current URL.
-     */
-    getURI(aData) {
+    showEnhancedThumbnail() {
       let thumbnail = this._querySelector(".newtab-thumbnail");
       if (this.link.bgColor) {
         thumbnail.style.backgroundColor = this.link.bgColor;
       }
 
-      let uri = this.link.imageURI || aData.uri;
-      thumbnail.style.backgroundImage = `url("${uri}")`;
+      thumbnail.style.background = `url("${this.link.imageURI}")`;
 
       if (this.link.enhancedImageURI) {
         let enhanced = this._querySelector(".enhanced-content");
@@ -298,6 +310,14 @@
           this.enhancedId = this.link.directoryId;
         }
       }
+    },
+
+    /**
+     * Show the regular thumbnail.
+     */
+    showRegularThumbnail(thumbPath) {
+      let thumbnail = this._querySelector(".newtab-thumbnail");
+      thumbnail.style.backgroundImage = `url("${thumbPath}")`;
     },
 
     _ignoreHoverEvents(element) {

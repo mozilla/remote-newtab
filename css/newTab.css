@@ -255,7 +255,11 @@ input[type=button] {
   left: auto;
 }
 
-.newtab-site:-moz-any([data-type=enhanced], [data-type=sponsored], [data-suggested=true]) .newtab-sponsored {
+.newtab-site:-moz-any(
+  [data-type=enhanced],
+  [data-type=organic],
+  [data-type=sponsored],
+  [data-suggested=true]) .newtab-sponsored {
   display: block;
 }
 

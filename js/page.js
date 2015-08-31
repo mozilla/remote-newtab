@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim */
+/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim */
 
 "use strict";
 (function(exports) {
@@ -24,8 +24,8 @@
         this.setPinState.bind(this));
       gNewTab.registerListener("NewTab:BlockState",
         this.setBlockState.bind(this));
-      gNewTab.registerListener("NewTab:ThumbnailURI",
-        this.filterURL.bind(this));
+      gNewTab.registerListener("NewTab:RegularThumbnailURI",
+        this.storeAndShowRegularThumb.bind(this));
 
       // Listen for 'unload' to unregister this page.
       addEventListener("unload", this, false);
@@ -319,17 +319,39 @@
       }
     },
 
-    /**
-     * Filters through all URLs and finds the correct URL associated
-     * with the site to display.
-     *
-     * @param {Object} aURL The current URL sent down from the parent.
-     */
-    filterURL(aURL) {
-      gGrid.sites
-        .filter(site => site && aURL.url === site.url)
-        .forEach(site => site.getURI(aURL));
-    },
+    storeAndShowRegularThumb: async(function* (message) {
+      var site = gGrid.sites.find(site => site && message.url === site.url);
+      if (!site) {
+        console.log("returning early");
+        return;
+      }
+      var fileReader = new FileReader();
+      var arrayBuffer;
+      try {
+        arrayBuffer = yield new Promise((resolve, reject) => {
+          fileReader.onload = function() {
+            resolve(this.result);
+          };
+          fileReader.onerror = function() {
+            reject(new Error("Could not create ArrayBuffer."));
+          };
+          fileReader.readAsArrayBuffer(message.blob);
+        });
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+      var sw = (yield navigator.serviceWorker.ready).active;
+      sw.postMessage({
+        name: "NewTab:StoreSiteThumb",
+        thumbPath: message.thumbPath,
+        url: message.url,
+        arrayBuffer,
+        type: message.blob.type
+      }, [arrayBuffer]);
+      var imgSrc = URL.createObjectURL(message.blob);
+      site.showRegularThumbnail(imgSrc);
+    }),
   };
   exports.gPage = gPage;
 }(window));

@@ -1,52 +1,94 @@
-/*globals async, importScripts, self, caches*/
+/*globals async, CacheTasks, importScripts, self */
 "use strict";
-const CACHE_NAME = "newtab-v2";
-importScripts("js/lib/async.js");
+
+importScripts("js/lib/async.js"); // inports async()
+importScripts("js/lib/cachetasks.js"); //imports CacheTasks
+
+const SKELETON_CACHE = "newtab-v2";
+const THUMBS_CACHE = "thumbs-v1";
+
+// The main files of remote new tab website.
+const mainSiteFiles = [
+  "./",
+  "css/images/close.png",
+  "css/images/controls.svg",
+  "css/images/defaultFavicon.png",
+  "css/images/search-arrow-go.svg",
+  "css/images/search-indicator-magnifying-glass.svg",
+  "css/images/shared-menu-check.svg",
+  "css/images/whimsycorn.png",
+  "css/newTab.inc.css",
+  "js/cells.js",
+  "js/customize.js",
+  "js/drag.js",
+  "js/dragDataHelper.js",
+  "js/drop.js",
+  "js/dropPreview.js",
+  "js/dropTargetShim.js",
+  "js/grid.js",
+  "js/lib/async.js",
+  "js/newTab.js",
+  "js/page.js",
+  "js/rect.js",
+  "js/sites.js",
+  "js/transformations.js",
+  "js/undo.js",
+  "js/updater.js",
+  "locale/newTab.js",
+];
+
+const PageThumbTask = {
+  storeSiteThumb: async(function* ({arrayBuffer, type, thumbPath}) {
+    var thumbURL = new URL(thumbPath, self.location);
+    try {
+      yield CacheTasks.saveBinaryToCache(THUMBS_CACHE, arrayBuffer, type, thumbURL);
+    } catch (err) {
+      console.warn("Could not store the URL!", err);
+    }
+    return thumbURL.href;
+  }),
+};
 
 self.addEventListener("install", (ev) => {
-  const urlsToCache = [
-    "css/newTab.inc.css",
-    "css/images/close.png",
-    "css/images/controls.svg",
-    "css/images/defaultFavicon.png",
-    "css/images/search-arrow-go.svg",
-    "css/images/search-indicator-magnifying-glass.svg",
-    "css/images/shared-menu-check.svg",
-    "css/images/whimsycorn.png",
-    "js/lib/async.js",
-    "js/cells.js",
-    "js/customize.js",
-    "js/drag.js",
-    "js/dragDataHelper.js",
-    "js/drop.js",
-    "js/dropPreview.js",
-    "js/dropTargetShim.js",
-    "js/grid.js",
-    "js/newTab.js",
-    "js/page.js",
-    "js/rectangle.js",
-    "js/sites.js",
-    "js/transformations.js",
-    "js/undo.js",
-    "js/updater.js",
-    "locale/newTab.js",
-    "newTab.html"
+  var installTasks = [
+    CacheTasks.clearAllCaches(),
+    // Save the site's skeleton.
+    CacheTasks.populateCache(SKELETON_CACHE, mainSiteFiles),
+    //Add other tasks in this array...
   ];
-  var populateCacheTask = async(function*() {
-    var cache = yield caches.open(CACHE_NAME);
-    try {
-      yield cache.addAll(urlsToCache);
-    } catch (err) {
-      console.log("Could not add a file", err);
-    }
-  });
-  ev.waitUntil(populateCacheTask());
+  ev.waitUntil(Promise.all([installTasks]));
 });
 
+self.addEventListener("message", async(function* ({data, source}) {
+  switch (data.name) {
+  case "NewTab:StoreSiteThumb":
+    yield PageThumbTask.storeSiteThumb(data);
+    break;
+  case "NewTab:HasThumb":
+    var result = yield CacheTasks.hasCacheEntry(data.thumbURL, THUMBS_CACHE);
+    source.postMessage({
+      name: "SW:HasThumb",
+      url: data.url,
+      result,
+    });
+    break;
+  default:
+    console.warn("Unhandled message", data.name);
+  }
+}));
+
 self.addEventListener("fetch", (ev) => {
-  var lookInCacheTask = async(function*() {
-    var response = yield caches.match(ev.request);
-    return response || fetch(ev.request);
-  });
-  ev.respondWith(lookInCacheTask());
+  var key = getSwitchKeyFromURL(ev.request.url);
+  switch (key){
+    case "pagethumbs":
+      ev.respondWith(CacheTasks.respondFromCache(ev.request, THUMBS_CACHE));
+      break;
+    default:
+      ev.respondWith(CacheTasks.respondFromCache(ev.request, SKELETON_CACHE));
+  }
+  function getSwitchKeyFromURL(url) {
+    // split and return the first path segment
+    var key = new URL(url).pathname.split("/")[1];
+    return key;
+  }
 });

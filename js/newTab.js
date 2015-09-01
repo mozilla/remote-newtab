@@ -117,11 +117,13 @@
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
   document.addEventListener("NewTabCommandReady", () => {
-    gNewTab.registerListener("NewTab:Observe", message => {
-      gNewTab.observe(message.topic, message.data);
+    gUserDatabase.init(gPinnedLinks.setLinks).then(() => {
+      gNewTab.registerListener("NewTab:Observe", message => {
+        gNewTab.observe(message.topic, message.data);
+      });
+      gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
+      gNewTab.sendToBrowser("NewTab:GetInitialState");
     });
-    gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
-    gNewTab.sendToBrowser("NewTab:GetInitialState");
   });
   exports.gNewTab = gNewTab;
 }(window));

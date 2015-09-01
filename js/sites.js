@@ -72,11 +72,12 @@
         aIndex = this.cell.index;
       }
 
-      gNewTab.sendToBrowser("NewTab:PinLink", {
+      gNewTab.sendToBrowser("NewTab:GetUpdatePages", {
         link: this._link,
         index: aIndex
       });
       this._updateAttributes(true);
+      gPinnedLinks.pin(this._link, aIndex);
     },
 
     /**
@@ -84,10 +85,11 @@
      */
     unpin() {
       if (this.isPinned()) {
-        gNewTab.sendToBrowser("NewTab:UnpinLink", {
+        gNewTab.sendToBrowser("NewTab:GetUpdatePages", {
           link: this._link
         });
         this._updateAttributes(false);
+        gPinnedLinks.unpin(this._link);
       }
     },
 
@@ -97,7 +99,7 @@
      * @return {Boolean} Whether this site is pinned.
      */
     isPinned() {
-      return this._link.pinState;
+      return gPinnedLinks.isPinned(this._link);
     },
 
     /**

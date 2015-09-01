@@ -183,6 +183,7 @@
           value: delta
         });
       }
+      gUserDatabase.close();
     },
 
     handleEnabled(enabled) {

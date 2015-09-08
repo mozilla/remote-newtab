@@ -1,8 +1,8 @@
 /*globals async, CacheTasks, importScripts, self */
 "use strict";
 
-importScripts("js/lib/async.js"); // inports async()
-importScripts("js/lib/cachetasks.js"); //imports CacheTasks
+// imports async(), CacheTasks
+importScripts("js/lib/async.js", "js/lib/cachetasks.js");
 
 const SKELETON_CACHE = "newtab-v2";
 const THUMBS_CACHE = "thumbs-v1";

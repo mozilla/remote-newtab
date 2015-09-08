@@ -86,10 +86,10 @@ self.addEventListener("fetch", (ev) => {
   default:
     ev.respondWith(CacheTasks.respondFromCache(ev.request, SKELETON_CACHE));
   }
-
-  function getSwitchKeyFromURL(url) {
-    // split and return the first path segment
-    var key = new URL(url).pathname.split("/")[1];
-    return key;
-  }
 });
+
+function getSwitchKeyFromURL(url) {
+  // split and return the first path segment
+  var key = new URL(url).pathname.split("/")[1];
+  return key;
+}

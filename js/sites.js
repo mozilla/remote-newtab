@@ -200,14 +200,18 @@
       // first check for end time, as it may modify the link
       this._checkLinkEndTime();
       // setup display variables
-      let enhanced = this.link;
       let url = this.url;
 
+      // generate a regular thumbnail
       var getRegularThumbnail = async(function*() {
         var sw = (yield navigator.serviceWorker.ready).active;
         var host = new URL(url).host;
         var thumbURL = new URL(`/pagethumbs/${host}`, window.location);
 
+        // get an ID for the link that we are on. The reason why we do this is
+        // because we cannot guarantee that each link has a unique URL, so
+        // checking against an ID gives us some assurance that we have in fact
+        // received a message from the correct link.
         var id = Math.random();
         // Send a message to the SW to check if we have stored this thumb already
         var thumbInCache = yield new Promise((resolve) => {
@@ -233,8 +237,8 @@
       }, this);
 
       let title = this.title;
-      if (enhanced && enhanced.title && (this._type === ENHANCED || this.link.imageURI)) {
-        title = enhanced.title;
+      if (this.link && this.link.title && (this._type === ENHANCED || this.link.imageURI)) {
+        title = this.link.title;
         this.showEnhancedThumbnail();
       } else if (this._type === REGULAR) {
         title = this.link.baseDomain;
@@ -300,7 +304,7 @@
         thumbnail.style.backgroundColor = this.link.bgColor;
       }
 
-      thumbnail.style.background = `url("${this.link.imageURI}")`;
+      thumbnail.style.backgroundImage = `url("${this.link.imageURI}")`;
 
       if (this.link.enhancedImageURI) {
         let enhanced = this._querySelector(".enhanced-content");

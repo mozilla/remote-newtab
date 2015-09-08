@@ -207,10 +207,12 @@
         var sw = (yield navigator.serviceWorker.ready).active;
         var host = new URL(url).host;
         var thumbURL = new URL(`/pagethumbs/${host}`, window.location);
+
+        var id = Math.random();
         // Send a message to the SW to check if we have stored this thumb already
         var thumbInCache = yield new Promise((resolve) => {
           navigator.serviceWorker.addEventListener("message", function msgHandler({data}) {
-            if (data.name === "SW:HasThumb" && data.url === url) {
+            if (data.name === "SW:HasThumb" && data.id === id) {
               navigator.serviceWorker.removeEventListener("message", msgHandler);
               resolve(data.result);
             }
@@ -218,6 +220,7 @@
           sw.postMessage({
             name: "NewTab:HasThumb",
             url,
+            id,
             thumbURL: thumbURL.href,
           });
         });
@@ -285,7 +288,6 @@
       if (!document.hidden && !this.link.imageURI) {
         gNewTab.sendToBrowser("NewTab:CaptureBackgroundPageThumbs", {
           link: this.link,
-          type: this._type,
         });
       }
     },

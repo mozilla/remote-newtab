@@ -66,11 +66,11 @@ self.addEventListener("message", async(function* ({data, source}) {
     break;
   case "NewTab:HasThumb":
     var result = yield CacheTasks.hasCacheEntry(data.thumbURL, THUMBS_CACHE);
-    source.postMessage({
+    var responseData = Object.assign({
       name: "SW:HasThumb",
-      url: data.url,
-      result,
-    });
+      result
+    }, data);
+    source.postMessage(responseData);
     break;
   default:
     console.warn("Unhandled message", data.name);
@@ -79,13 +79,14 @@ self.addEventListener("message", async(function* ({data, source}) {
 
 self.addEventListener("fetch", (ev) => {
   var key = getSwitchKeyFromURL(ev.request.url);
-  switch (key){
-    case "pagethumbs":
-      ev.respondWith(CacheTasks.respondFromCache(ev.request, THUMBS_CACHE));
-      break;
-    default:
-      ev.respondWith(CacheTasks.respondFromCache(ev.request, SKELETON_CACHE));
+  switch (key) {
+  case "pagethumbs":
+    ev.respondWith(CacheTasks.respondFromCache(ev.request, THUMBS_CACHE));
+    break;
+  default:
+    ev.respondWith(CacheTasks.respondFromCache(ev.request, SKELETON_CACHE));
   }
+
   function getSwitchKeyFromURL(url) {
     // split and return the first path segment
     var key = new URL(url).pathname.split("/")[1];

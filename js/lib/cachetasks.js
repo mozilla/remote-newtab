@@ -98,9 +98,8 @@ const CacheTasks = {
    * @optional {String} cacheName The cache's name to look in.
    */
   hasCacheEntry: async(function* (request, cacheName) {
-    // TODO: marcosc - fix this to use caches.matches()!
     var cache = yield caches.open(cacheName);
-    var response = yield cache.match(request)
+    var response = yield cache.match(request);
     if (response) {
       return true;
     }

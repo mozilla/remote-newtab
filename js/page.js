@@ -322,7 +322,6 @@
     storeAndShowRegularThumb: async(function* (message) {
       var site = gGrid.sites.find(site => site && message.url === site.url);
       if (!site) {
-        console.log("returning early");
         return;
       }
       var fileReader = new FileReader();

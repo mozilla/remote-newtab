@@ -4,55 +4,50 @@
 
 "use strict";
 
+const OBJECT_STORE_PREFS = "prefs";
+const PINNED_LINKS_PREF = "pinnedLinks";
+
 (function(exports) {
+  const DATABASE_VERSION = 1;
+  const DATABASE_NAME = "NewTabData";
+
+  const OBJECT_STORE_PREFS_KEY = "prefType";
+  const OBJECT_STORE_PREFS_VALUE = "data";
+
+  const OPEN_DATABASE_TRANSACTION_STRING = "Open NewTabData connection";
+  const LOAD_DATA_TRANSACTION_STRING = "Load data ";
+  const UPDATE_DATA_TRANSACTION_STRING = "Update data ";
+  const READ_WRITE_TRANSACTION_STRING = "readwrite";
+
   const gUserDatabase = {
     _database: null,
 
     init(callback) {
       return new Promise((resolve, reject) => {
-        //window.indexedDB.deleteDatabase("NewTabData");
-        let request = window.indexedDB.open("NewTabData", 1);
+        let request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
 
-        request.onerror = function(event) {
-          reject(event.target.errorCode);
+        request.onerror = event => {
+          gUserDatabase._logError(event, OPEN_DATABASE_TRANSACTION_STRING, reject);
         };
-        request.onsuccess = function(event) {
-          gUserDatabase._database = event.target.result;
-          gUserDatabase.load("prefs", "pinnedLinks").then((pinnedLinks) => {
-            callback(pinnedLinks);
-            resolve();
-          });
+        request.onsuccess = event => {
+          gUserDatabase._onDatabaseOpenSuccess(event, resolve, callback);
         };
-        request.onupgradeneeded = function(event) {
-          let db = event.target.result;
-          let objStore = db.createObjectStore("prefs", { keyPath : "objectStoreType" });
-
-          objStore.transaction.oncomplete = function(event) {
-            // Store values in the newly created objectStore.
-            let prefObjectStore = db.transaction("prefs", "readwrite").objectStore("prefs");
-            prefObjectStore.add({"objectStoreType": "pinnedLinks", "data": []});
-          }
+        request.onupgradeneeded = event => {
+          gUserDatabase._onDatabaseUpgrade(event);
         };
       });
     },
 
     save(objectStoreToWrite, objectStoreType, data) {
-      let transaction = gUserDatabase._database.transaction([objectStoreToWrite], "readwrite");
+      let transaction = gUserDatabase._database.transaction([objectStoreToWrite], READ_WRITE_TRANSACTION_STRING);
       let objectStore = transaction.objectStore(objectStoreToWrite);
 
       let request = objectStore.get(objectStoreType);
-      //let request = objectStore.add({objectStoreType, data});
-      request.onsuccess = function(event) {
-        let result = request.result;
-        result.data = data;
-        let requestUpdate = objectStore.put(result);
-        requestUpdate.onerror = function(event) {
-          // Do something with the error
-          console.log("error wtf " + event.target.errorCode);
-        };
-        requestUpdate.onsuccess = function(event) {
-          console.log("SUCCESS OF SAVE " + result.data);
-        };
+      request.onsuccess = () => {
+        gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType);
+      };
+      request.onerror = event => {
+        gUserDatabase._logError(event, LOAD_DATA_TRANSACTION_STRING + objectStoreType);
       };
     },
 
@@ -61,18 +56,76 @@
         let transaction = gUserDatabase._database.transaction([objectStoreToRead]);
         let objectStore = transaction.objectStore(objectStoreToRead);
         let request = objectStore.get(objectStoreType);
-        request.onerror = function(event) {
-          reject();
-        };
-        request.onsuccess = function(event) {
-          resolve(event.target.result.data);
-        };
+        let transactionDescription = LOAD_DATA_TRANSACTION_STRING + objectStoreType;
+        gUserDatabase._setSimpleRequestHandlers(request, transactionDescription, resolve, reject);
       });
+    },
+
+    _logSuccess(event, transactionDescription, resolve) {
+      let success = "Success: " + transactionDescription;
+      console.log(success);
+      if (resolve) {
+        resolve(event.target.result.data);
+      }
+    },
+
+    _logError(event, errorString, reject) {
+      let error = "Error: " + event.target.errorCode + ": " + errorString;
+      console.log(error);
+      if (reject) {
+        reject(error);
+      }
+    },
+
+    _setSimpleRequestHandlers(request, logString, resolve, reject) {
+      request.onerror = (event) => {
+        gUserDatabase._logError(event, logString, reject);
+      };
+      request.onsuccess = (event) => {
+        gUserDatabase._logSuccess(event, logString, resolve);
+      };
+    },
+
+    _createPrefsData(dataType, data) {
+      let prefsData = {};
+      prefsData[OBJECT_STORE_PREFS_KEY] = dataType;
+      prefsData[OBJECT_STORE_PREFS_VALUE] = data;
+      return prefsData;
+    },
+
+    _onWriteFetchRequestSuccess(request, dataToWrite, objectStore, objectStoreType) {
+      let result = request.result;
+      result.data = dataToWrite;
+      let requestUpdate = objectStore.put(result);
+      let transactionDescription = UPDATE_DATA_TRANSACTION_STRING + objectStoreType;
+      gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription);
+    },
+
+    _onDatabaseOpenSuccess(event, resolve, callback) {
+      // Save the database connection and pass back the existing pinned links.
+      gUserDatabase._database = event.target.result;
+      gUserDatabase.load(OBJECT_STORE_PREFS, PINNED_LINKS_PREF).then((pinnedLinks) => {
+        callback(pinnedLinks);
+        resolve();
+      });
+    },
+
+    _onDatabaseUpgrade(event) {
+      // For version 1, we start with an empty list of pinned links.
+      // (Migration of existing pinned links & other prefs in another bug).
+      let db = event.target.result;
+      let objStore = db.createObjectStore(OBJECT_STORE_PREFS, {keyPath: OBJECT_STORE_PREFS_KEY});
+
+      objStore.transaction.oncomplete = () => {
+        let prefObjectStore = db.transaction(OBJECT_STORE_PREFS,
+          READ_WRITE_TRANSACTION_STRING).objectStore(OBJECT_STORE_PREFS);
+        prefObjectStore.add(gUserDatabase._createPrefsData(PINNED_LINKS_PREF, []));
+      };
     },
 
     close() {
       this._database.close();
     }
-  }
+  };
   exports.gUserDatabase = gUserDatabase;
 }(window));

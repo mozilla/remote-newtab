@@ -219,7 +219,6 @@
           });
           sw.postMessage({
             name: "NewTab:HasThumb",
-            url,
             id,
             thumbURL: thumbURL.href,
           });

@@ -24,7 +24,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
 
     init(callback) {
       return new Promise((resolve, reject) => {
-        let request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
+        var request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
 
         request.onerror = event => {
           gUserDatabase._logError(event, OPEN_DATABASE_TRANSACTION_STRING, reject);
@@ -39,10 +39,10 @@ const PINNED_LINKS_PREF = "pinnedLinks";
     },
 
     save(objectStoreToWrite, objectStoreType, data) {
-      let transaction = gUserDatabase._database.transaction([objectStoreToWrite], READ_WRITE_TRANSACTION_STRING);
-      let objectStore = transaction.objectStore(objectStoreToWrite);
+      var transaction = gUserDatabase._database.transaction([objectStoreToWrite], READ_WRITE_TRANSACTION_STRING);
+      var objectStore = transaction.objectStore(objectStoreToWrite);
 
-      let request = objectStore.get(objectStoreType);
+      var request = objectStore.get(objectStoreType);
       request.onsuccess = () => {
         gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType);
       };
@@ -53,16 +53,16 @@ const PINNED_LINKS_PREF = "pinnedLinks";
 
     load(objectStoreToRead, objectStoreType) {
       return new Promise((resolve, reject) => {
-        let transaction = gUserDatabase._database.transaction([objectStoreToRead]);
-        let objectStore = transaction.objectStore(objectStoreToRead);
-        let request = objectStore.get(objectStoreType);
-        let transactionDescription = LOAD_DATA_TRANSACTION_STRING + objectStoreType;
+        var transaction = gUserDatabase._database.transaction([objectStoreToRead]);
+        var objectStore = transaction.objectStore(objectStoreToRead);
+        var request = objectStore.get(objectStoreType);
+        var transactionDescription = LOAD_DATA_TRANSACTION_STRING + objectStoreType;
         gUserDatabase._setSimpleRequestHandlers(request, transactionDescription, resolve, reject);
       });
     },
 
     _logSuccess(event, transactionDescription, resolve) {
-      let success = "Success: " + transactionDescription;
+      var success = "Success: " + transactionDescription;
       console.log(success);
       if (resolve) {
         resolve(event.target.result.data);
@@ -70,7 +70,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
     },
 
     _logError(event, errorString, reject) {
-      let error = "Error: " + event.target.errorCode + ": " + errorString;
+      var error = "Error: " + event.target.errorCode + ": " + errorString;
       console.log(error);
       if (reject) {
         reject(error);
@@ -87,17 +87,17 @@ const PINNED_LINKS_PREF = "pinnedLinks";
     },
 
     _createPrefsData(dataType, data) {
-      let prefsData = {};
+      var prefsData = {};
       prefsData[OBJECT_STORE_PREFS_KEY] = dataType;
       prefsData[OBJECT_STORE_PREFS_VALUE] = data;
       return prefsData;
     },
 
     _onWriteFetchRequestSuccess(request, dataToWrite, objectStore, objectStoreType) {
-      let result = request.result;
+      var result = request.result;
       result.data = dataToWrite;
-      let requestUpdate = objectStore.put(result);
-      let transactionDescription = UPDATE_DATA_TRANSACTION_STRING + objectStoreType;
+      var requestUpdate = objectStore.put(result);
+      var transactionDescription = UPDATE_DATA_TRANSACTION_STRING + objectStoreType;
       gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription);
     },
 
@@ -113,11 +113,11 @@ const PINNED_LINKS_PREF = "pinnedLinks";
     _onDatabaseUpgrade(event) {
       // For version 1, we start with an empty list of pinned links.
       // (Migration of existing pinned links & other prefs in another bug).
-      let db = event.target.result;
-      let objStore = db.createObjectStore(OBJECT_STORE_PREFS, {keyPath: OBJECT_STORE_PREFS_KEY});
+      var db = event.target.result;
+      var objStore = db.createObjectStore(OBJECT_STORE_PREFS, {keyPath: OBJECT_STORE_PREFS_KEY});
 
       objStore.transaction.oncomplete = () => {
-        let prefObjectStore = db.transaction(OBJECT_STORE_PREFS,
+        var prefObjectStore = db.transaction(OBJECT_STORE_PREFS,
           READ_WRITE_TRANSACTION_STRING).objectStore(OBJECT_STORE_PREFS);
         prefObjectStore.add(gUserDatabase._createPrefsData(PINNED_LINKS_PREF, []));
       };

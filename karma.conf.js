@@ -15,6 +15,8 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      "js/pinnedLinks.js",
+      "js/userDatabase.js",
       "js/lib/async.js",
       "js/rectangle.js",
       "test/*.js",

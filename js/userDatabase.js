@@ -39,16 +39,18 @@ const PINNED_LINKS_PREF = "pinnedLinks";
     },
 
     save(objectStoreToWrite, objectStoreType, data) {
-      var transaction = gUserDatabase._database.transaction([objectStoreToWrite], READ_WRITE_TRANSACTION_STRING);
-      var objectStore = transaction.objectStore(objectStoreToWrite);
+      return new Promise((resolve, reject) => {
+        var transaction = gUserDatabase._database.transaction([objectStoreToWrite], READ_WRITE_TRANSACTION_STRING);
+        var objectStore = transaction.objectStore(objectStoreToWrite);
 
-      var request = objectStore.get(objectStoreType);
-      request.onsuccess = () => {
-        gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType);
-      };
-      request.onerror = event => {
-        gUserDatabase._logError(event, LOAD_DATA_TRANSACTION_STRING + objectStoreType);
-      };
+        var request = objectStore.get(objectStoreType);
+        request.onsuccess = () => {
+          gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType, resolve, reject);
+        };
+        request.onerror = event => {
+          gUserDatabase._logError(event, LOAD_DATA_TRANSACTION_STRING + objectStoreType, reject);
+        };
+      });
     },
 
     load(objectStoreToRead, objectStoreType) {
@@ -93,12 +95,12 @@ const PINNED_LINKS_PREF = "pinnedLinks";
       return prefsData;
     },
 
-    _onWriteFetchRequestSuccess(request, dataToWrite, objectStore, objectStoreType) {
+    _onWriteFetchRequestSuccess(request, dataToWrite, objectStore, objectStoreType, resolve, reject) {
       var result = request.result;
       result.data = dataToWrite;
       var requestUpdate = objectStore.put(result);
       var transactionDescription = UPDATE_DATA_TRANSACTION_STRING + objectStoreType;
-      gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription);
+      gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription, resolve, reject);
     },
 
     _onDatabaseOpenSuccess(event, resolve, callback) {

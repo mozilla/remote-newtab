@@ -38,13 +38,15 @@
      * @param {Number} aIndex The grid index to pin the cell at.
      */
     pin(aLink, aIndex) {
-      // Clear the link's old position, if any.
-      this.unpin(aLink);
+      return new Promise((resolve, reject) => {
+        // Clear the link's old position, if any.
+        this.unpin(aLink);
 
-      // change pinned link into a history link and update pin state
-      this._makeHistoryLink(aLink);
-      this.links[aIndex] = aLink;
-      this.save();
+        // change pinned link into a history link and update pin state
+        this._makeHistoryLink(aLink);
+        this.links[aIndex] = aLink;
+        this.save().then(resolve, reject);
+      });
     },
 
     /**
@@ -53,26 +55,31 @@
      * @param {Link} aLink The link to unpin.
      */
     unpin(aLink) {
-      var index = this._indexOfLink(aLink);
-      if (index === -1) {
-        return;
-      }
-      var links = this.links;
-      links[index] = null;
-      // trim trailing nulls
-      var i = links.length - 1;
-      while (i >= 0 && links[i] === null) {
-        i--;
-      }
-      links.splice(i + 1);
-      this.save();
+      return new Promise((resolve, reject) => {
+        var index = this._indexOfLink(aLink);
+        if (index === -1) {
+          return;
+        }
+        var links = this.links;
+        links[index] = null;
+        // trim trailing nulls
+        var i = links.length - 1;
+        while (i >= 0 && links[i] === null) {
+          i--;
+        }
+        links.splice(i + 1);
+        this.save().then(resolve, reject);
+      });
     },
 
     /**
      * Saves the current list of pinned links.
      */
     save() {
-      gUserDatabase.save(OBJECT_STORE_PREFS, PINNED_LINKS_PREF, JSON.stringify(this.links));
+      return new Promise((resolve, reject) => {
+        gUserDatabase.save(OBJECT_STORE_PREFS, PINNED_LINKS_PREF,
+          JSON.stringify(this.links)).then(resolve, reject);
+      });
     },
 
     /**

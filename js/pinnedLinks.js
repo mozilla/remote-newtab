@@ -53,14 +53,14 @@
      * @param {Link} aLink The link to unpin.
      */
     unpin(aLink) {
-      let index = this._indexOfLink(aLink);
+      var index = this._indexOfLink(aLink);
       if (index === -1) {
         return;
       }
-      let links = this.links;
+      var links = this.links;
       links[index] = null;
       // trim trailing nulls
-      let i = links.length - 1;
+      var i = links.length - 1;
       while (i >= 0 && links[i] === null) {
         i--;
       }
@@ -99,8 +99,8 @@
      * @return {Number} The link's index.
      */
     _indexOfLink(aLink) {
-      for (let i = 0; i < this.links.length; i++) {
-        let link = this.links[i];
+      for (var i = 0; i < this.links.length; i++) {
+        var link = this.links[i];
         if (link && link.url === aLink.url) {
           return i;
         }
@@ -133,7 +133,7 @@
      * @param {Link} aLink The replacement link
      */
     replace(aUrl, aLink) {
-      let index = this._indexOfLink({url: aUrl});
+      var index = this._indexOfLink({url: aUrl});
       if (index === -1) {
         return;
       }

@@ -297,7 +297,7 @@
      * @return {Boolean} Whether the given site is frozen.
      */
     _isFrozen(aSite) {
-      return aSite.node.hasAttribute("data-frozen");
+      return aSite.node.dataset.frozen === "true";
     }
   };
   exports.gTransformation = gTransformation;

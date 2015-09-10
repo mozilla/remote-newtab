@@ -37,7 +37,7 @@ input[type=button] {
   -moz-box-pack: center;
 }
 
-#newtab-undo-container[data-undo-disabled=true] {
+#newtab-undo-container[data-undo-disabled="true"] {
   opacity: 0;
   pointer-events: none;
 }
@@ -114,12 +114,12 @@ input[type=button] {
   transition-property: opacity;
 }
 
-#newtab-grid[data-page-disabled] {
+#newtab-grid[data-page-disabled="true"] {
   opacity: 0;
 }
 
-#newtab-grid[data-locked=true],
-#newtab-grid[data-page-disabled] {
+#newtab-grid[data-locked="true"],
+#newtab-grid[data-page-disabled="true"] {
   pointer-events: none;
 }
 
@@ -150,12 +150,12 @@ input[type=button] {
   transition-property: top, left, opacity;
 }
 
-.newtab-site[data-frozen=true] {
+.newtab-site[data-frozen="true"] {
   position: absolute;
   pointer-events: none;
 }
 
-.newtab-site[data-dragged=true] {
+.newtab-site[data-dragged="true"] {
   transition-property: none;
   z-index: 10;
 }
@@ -235,18 +235,18 @@ input[type=button] {
   top: -15px;
 }
 
-.newtab-site[data-suggested=true] > .newtab-sponsored {
+.newtab-site[data-suggested="true"] > .newtab-sponsored {
   background-color: #E2E2E2;
   border: none;
 }
 
-.newtab-site > .newtab-sponsored:-moz-any(:hover, [data-active=true]) {
+.newtab-site > .newtab-sponsored:-moz-any(:hover, [data-active="true"]) {
   background-color: #4A90E2;
   border: 0;
   color: white;
 }
 
-.newtab-site > .newtab-sponsored[data-active=true] {
+.newtab-site > .newtab-sponsored[data-active="true"] {
   background-color: #000000;
 }
 
@@ -259,11 +259,11 @@ input[type=button] {
   [data-type=enhanced],
   [data-type=organic],
   [data-type=sponsored],
-  [data-suggested=true]) .newtab-sponsored {
+  [data-suggested="true"]) .newtab-sponsored {
   display: block;
 }
 
-.newtab-site[data-suggested=true] .newtab-suggested {
+.newtab-site[data-suggested="true"] .newtab-suggested {
   display: table;
 }
 
@@ -303,12 +303,12 @@ input[type=button] {
 }
 
 .newtab-control:-moz-focusring,
-.newtab-cell:not([data-ignore-hover]) > .newtab-site:hover > .newtab-control,
+.newtab-cell:not([data-ignore-hover="true"]) > .newtab-site:hover > .newtab-control,
 .newtab-intro-cell-hover .newtab-control {
   opacity: 1;
 }
 
-.newtab-control[data-dragged=true] {
+.newtab-control[data-dragged="true"] {
   opacity: 0 !important;
 }
 
@@ -350,7 +350,7 @@ input[type=button] {
   margin: 40px 0 15px;
 }
 
-#newtab-search-container[data-page-disabled] {
+#newtab-search-container[data-page-disabled="true"] {
   opacity: 0;
   pointer-events: none;
 }
@@ -505,7 +505,7 @@ input[type=button] {
   right: auto;
 }
 
-#newtab-customize-panel[data-open=true] {
+#newtab-customize-panel[data-open="true"] {
   transform: translate(-30px, -20px) scale(1) translate(30px, 20px);
 }
 
@@ -576,7 +576,7 @@ input[type=button] {
   background-color: #F9F9F9;
 }
 
-.newtab-customize-panel-item[data-selected=true]:-moz-locale-dir(rtl) {
+.newtab-customize-panel-item[data-selected="true"]:-moz-locale-dir(rtl) {
   background-position: right 15px center;
 }
 
@@ -612,7 +612,7 @@ input[type=button] {
   background-color: #FFFFFF;
 }
 
-.newtab-customize-panel-item[data-selected=true] {
+.newtab-customize-panel-item[data-selected="true"] {
   background: url("images/shared-menu-check.svg#active-view") no-repeat transparent;
   background-size: 16px 16px;
   background-position: 15px 15px;
@@ -628,7 +628,7 @@ input[type=button] {
   border: solid 1px threedshadow;
 }
 
-.newtab-customize-panel-subitem[data-selected=true] > .checkbox {
+.newtab-customize-panel-subitem[data-selected="true"] > .checkbox {
   background: url("images/shared-menu-check.svg#black-view") no-repeat #FFFFFF;
   background-size: 9px 9px;
   background-position: center;
@@ -825,7 +825,7 @@ input[type=button] {
   padding: 0px 10px;
 }
 
-#newtab-intro-buttons > input[default] {
+#newtab-intro-buttons > input[data-default] {
   background-color: #4A90E2;
   color: #FFFFFF;
 }

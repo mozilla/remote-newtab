@@ -18,7 +18,8 @@ module.exports = function(config) {
       "js/lib/async.js",
       "js/rectangle.js",
       "test/*.js",
-      "test/**/*.js"
+      "test/**/*.js",
+      "test/fixtures/**/*.html",
     ],
 
     // list of files to exclude
@@ -31,7 +32,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "js/**/*.js": ["coverage"]
+      "js/**/*.js": ["coverage"],
+      "test/fixtures/**/*.html": ["html2js"],
     },
 
     // test results reporter to use

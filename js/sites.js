@@ -213,7 +213,7 @@
       let tooltip = (this.title === url ? this.title : this.title + "\n" + url);
 
       let link = this._querySelector(".newtab-link");
-      link.dataset.title = tooltip;
+      link.title = tooltip;
       link.href = url;
       this._querySelector(".newtab-title").textContent = title;
       this.node.dataset.type = this.link.type;

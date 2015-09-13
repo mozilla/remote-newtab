@@ -12,16 +12,20 @@
  */
 "use strict";
 const mainSiteFiles = [ // jshint ignore:line
+  "css/contentSearchUI.css",
   "css/images/close.png",
   "css/images/controls.svg",
   "css/images/defaultFavicon.png",
+  "css/images/history-icon.svg",
   "css/images/search-arrow-go.svg",
+  "css/images/search-engine-placeholder.png",
   "css/images/search-indicator-magnifying-glass.svg",
   "css/images/shared-menu-check.svg",
   "css/images/whimsycorn.png",
   "css/newTab.css",
   "js/blockedLinks.js",
   "js/cells.js",
+  "js/contentSearchUI.js",
   "js/customize.js",
   "js/drag.js",
   "js/dragDataHelper.js",
@@ -38,6 +42,7 @@ const mainSiteFiles = [ // jshint ignore:line
   "js/page.js",
   "js/pinnedLinks.js",
   "js/rectangle.js",
+  "js/search.js",
   "js/sites.js",
   "js/transformations.js",
   "js/undo.js",

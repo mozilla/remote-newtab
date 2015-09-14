@@ -189,9 +189,7 @@
         delete this.link.endTime;
         // clear enhanced-content image that may still exist in preloaded page
         this._querySelector(".enhanced-content").style.backgroundImage = "";
-        gNewTab.sendToBrowser("NewTab:ReplacePinLink", {
-          oldUrl, link: this.link
-        });
+        gPinnedLinks.replace(oldUrl, this.link);
       }
     },
 

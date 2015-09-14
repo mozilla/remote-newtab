@@ -27,7 +27,8 @@ const PINNED_LINKS_PREF = "pinnedLinks";
         var request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
 
         request.onerror = event => {
-          gUserDatabase._logError(event, OPEN_DATABASE_TRANSACTION_STRING, reject);
+          gUserDatabase._logError(event, OPEN_DATABASE_TRANSACTION_STRING);
+          reject(event.target.errorCode);
         };
         request.onsuccess = event => {
           gUserDatabase._onDatabaseOpenSuccess(event, resolve);
@@ -48,7 +49,8 @@ const PINNED_LINKS_PREF = "pinnedLinks";
           gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType, resolve, reject);
         };
         request.onerror = event => {
-          gUserDatabase._logError(event, LOAD_DATA_TRANSACTION_STRING + objectStoreType, reject);
+          gUserDatabase._logError(event, LOAD_DATA_TRANSACTION_STRING + objectStoreType);
+          reject(event.target.errorCode);
         };
       });
     },
@@ -63,28 +65,18 @@ const PINNED_LINKS_PREF = "pinnedLinks";
       });
     },
 
-    _logSuccess(event, transactionDescription, resolve) {
-      var success = "Success: " + transactionDescription;
-      console.log(success);
-      if (resolve) {
-        resolve(event.target.result.data);
-      }
-    },
-
-    _logError(event, errorString, reject) {
+    _logError(event, errorString) {
       var error = "Error: " + event.target.errorCode + ": " + errorString;
       console.log(error);
-      if (reject) {
-        reject(error);
-      }
     },
 
     _setSimpleRequestHandlers(request, logString, resolve, reject) {
       request.onerror = (event) => {
-        gUserDatabase._logError(event, logString, reject);
+        gUserDatabase._logError(event, logString);
+        reject(event.target.errorCode);
       };
       request.onsuccess = (event) => {
-        gUserDatabase._logSuccess(event, logString, resolve);
+        resolve(event.target.result.data);
       };
     },
 

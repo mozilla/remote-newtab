@@ -8,6 +8,7 @@ describe("Pinned Links API", () => {
 
   var firstLink = {url: "http://example0.com/", title: "site#0"};
   var secondLink = {url: "http://example1.com/", title: "site#1"};
+  var directoryLink = {url: "http://directorylink.com", title: "DirectoryLink", type: "affiliate"};
 
   var linksToSet = JSON.stringify([
     firstLink, secondLink,
@@ -18,7 +19,7 @@ describe("Pinned Links API", () => {
 
   afterEach(function(done) {
     // Clear the database and cached links.
-    gPinnedLinks.setLinks(null);
+    gPinnedLinks.resetCache();
     gUserDatabase.init(gPinnedLinks.setLinks).then(() => {
       gUserDatabase.save("prefs", "pinnedLinks", []).then(() => {
         gUserDatabase.close();
@@ -81,6 +82,39 @@ describe("Pinned Links API", () => {
         assert.equal(pinnedLinks, storedPinnedLinks);
         assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
       });
+    });
+  });
+
+  it("Pinning a directory link turns it to history", () => {
+    return gUserDatabase.init().then(pinnedLinks => {
+      gPinnedLinks.setLinks(pinnedLinks);
+      assert.lengthOf(gPinnedLinks.links, 0);
+
+      gPinnedLinks.pin(directoryLink, 2);
+      return gUserDatabase.load("prefs", "pinnedLinks").then(pinnedLinks => {
+        var storedPinnedLinks = JSON.stringify([null, null, directoryLink]);
+        assert.equal(pinnedLinks, storedPinnedLinks);
+        assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
+        assert.equal(directoryLink.type, "history");
+      });
+    });
+  });
+
+  it("Test replacing a pinned link with another (Used for ended campaigns)", () => {
+    return gUserDatabase.init().then(pinnedLinks => {
+      gPinnedLinks.setLinks(pinnedLinks);
+
+      // Attempting to replace a link that isn't pinned does nothing.
+      gPinnedLinks.replace("http://example0.com/", secondLink);
+      assert.lengthOf(gPinnedLinks.links, 0);
+
+      // Pin firstLink
+      gPinnedLinks.pin(firstLink, 2);
+      assert.equal(gPinnedLinks.links[2], firstLink);
+
+      // Replace the pinned firstLink with secondLink
+      gPinnedLinks.replace(firstLink.url, secondLink);
+      assert.equal(gPinnedLinks.links[2], secondLink);
     });
   });
 });

@@ -4,20 +4,12 @@
 
 "use strict";
 
-const OBJECT_STORE_PREFS = "prefs";
-const PINNED_LINKS_PREF = "pinnedLinks";
-
 (function(exports) {
   const DATABASE_VERSION = 1;
   const DATABASE_NAME = "NewTabData";
 
-  const OBJECT_STORE_PREFS_KEY = "prefType";
-  const OBJECT_STORE_PREFS_VALUE = "data";
-
-  const OPEN_DATABASE_TRANSACTION_STRING = "Open NewTabData connection";
-  const LOAD_DATA_TRANSACTION_STRING = "Load data ";
-  const UPDATE_DATA_TRANSACTION_STRING = "Update data ";
-  const READ_WRITE_TRANSACTION_STRING = "readwrite";
+  const OBJECT_STORE_PREFS = "prefs";
+  const PINNED_LINKS_PREF = "pinnedLinks";
 
   const gUserDatabase = {
     _database: null,
@@ -27,7 +19,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
         var request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
 
         request.onerror = event => {
-          gUserDatabase._logError(event, OPEN_DATABASE_TRANSACTION_STRING);
+          gUserDatabase._logError(event, "Cannot open an indexedDB connection");
           reject(event.target.errorCode);
         };
         request.onsuccess = event => {
@@ -41,7 +33,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
 
     save(objectStoreToWrite, objectStoreType, data) {
       return new Promise((resolve, reject) => {
-        var transaction = gUserDatabase._database.transaction([objectStoreToWrite], READ_WRITE_TRANSACTION_STRING);
+        var transaction = gUserDatabase._database.transaction([objectStoreToWrite], "readwrite");
         var objectStore = transaction.objectStore(objectStoreToWrite);
 
         var request = objectStore.get(objectStoreType);
@@ -49,7 +41,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
           gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType, resolve, reject);
         };
         request.onerror = event => {
-          gUserDatabase._logError(event, LOAD_DATA_TRANSACTION_STRING + objectStoreType);
+          gUserDatabase._logError(event, `Failed to store object of type ${objectStoreType}`);
           reject(event.target.errorCode);
         };
       });
@@ -60,14 +52,14 @@ const PINNED_LINKS_PREF = "pinnedLinks";
         var transaction = gUserDatabase._database.transaction([objectStoreToRead]);
         var objectStore = transaction.objectStore(objectStoreToRead);
         var request = objectStore.get(objectStoreType);
-        var transactionDescription = LOAD_DATA_TRANSACTION_STRING + objectStoreType;
+        var transactionDescription = `Load data ${objectStoreType}`;
         gUserDatabase._setSimpleRequestHandlers(request, transactionDescription, resolve, reject);
       });
     },
 
     _logError(event, errorString) {
-      var error = "Error: " + event.target.errorCode + ": " + errorString;
-      console.log(error);
+      var error = `Error: ${event.target.errorCode}: ${errorString}`;
+      console.error(error);
     },
 
     _setSimpleRequestHandlers(request, logString, resolve, reject) {
@@ -82,8 +74,8 @@ const PINNED_LINKS_PREF = "pinnedLinks";
 
     _createPrefsData(dataType, data) {
       var prefsData = {};
-      prefsData[OBJECT_STORE_PREFS_KEY] = dataType;
-      prefsData[OBJECT_STORE_PREFS_VALUE] = data;
+      prefsData.prefType = dataType;
+      prefsData.data = data;
       return prefsData;
     },
 
@@ -91,7 +83,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
       var result = request.result;
       result.data = dataToWrite;
       var requestUpdate = objectStore.put(result);
-      var transactionDescription = UPDATE_DATA_TRANSACTION_STRING + objectStoreType;
+      var transactionDescription = `Update data ${objectStoreType}`;
       gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription, resolve, reject);
     },
 
@@ -107,11 +99,10 @@ const PINNED_LINKS_PREF = "pinnedLinks";
       // For version 1, we start with an empty list of pinned links.
       // (Migration of existing pinned links & other prefs in another bug).
       var db = event.target.result;
-      var objStore = db.createObjectStore(OBJECT_STORE_PREFS, {keyPath: OBJECT_STORE_PREFS_KEY});
+      var objStore = db.createObjectStore(OBJECT_STORE_PREFS, {keyPath: "prefType"});
 
       objStore.transaction.oncomplete = () => {
-        var prefObjectStore = db.transaction(OBJECT_STORE_PREFS,
-          READ_WRITE_TRANSACTION_STRING).objectStore(OBJECT_STORE_PREFS);
+        var prefObjectStore = db.transaction(OBJECT_STORE_PREFS, "readwrite").objectStore(OBJECT_STORE_PREFS);
         prefObjectStore.add(gUserDatabase._createPrefsData(PINNED_LINKS_PREF, []));
       };
     },
@@ -121,4 +112,6 @@ const PINNED_LINKS_PREF = "pinnedLinks";
     }
   };
   exports.gUserDatabase = gUserDatabase;
+  exports.OBJECT_STORE_PREFS = OBJECT_STORE_PREFS;
+  exports.PINNED_LINKS_PREF = PINNED_LINKS_PREF;
 }(window));

@@ -15,13 +15,13 @@
     /**
      * The cached list of pinned links.
      */
-    _links: null,
+    _links: [],
 
     /**
      * Set the array of pinned links.
      */
     setLinks(loadedLinks) {
-      gPinnedLinks._links = loadedLinks && loadedLinks.length ? JSON.parse(loadedLinks) : [];
+      gPinnedLinks._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : [];
     },
 
     /**
@@ -96,7 +96,7 @@
      * Resets the links cache.
      */
     resetCache() {
-      this._links = null;
+      this._links = [];
     },
 
     /**
@@ -106,31 +106,21 @@
      * @return {Number} The link's index.
      */
     _indexOfLink(aLink) {
-      for (var i = 0; i < this.links.length; i++) {
-        var link = this.links[i];
-        if (link && link.url === aLink.url) {
-          return i;
-        }
-      }
-
-      // The given link is unpinned.
-      return -1;
+      return this.links.findIndex(link => link && link.url === aLink.url);
     },
 
     /**
      * Transforms link into a "history" link
      *
      * @param {Link} aLink The link to change
-     * @return {Boolean} true if link changes, false otherwise
      */
     _makeHistoryLink(aLink) {
       if (!aLink.type || aLink.type === "history") {
-        return false;
+        return;
       }
       aLink.type = "history";
       // always remove targetedSite
       delete aLink.targetedSite;
-      return true;
     },
 
     /**

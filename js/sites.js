@@ -72,10 +72,7 @@
         aIndex = this.cell.index;
       }
 
-      gNewTab.sendToBrowser("NewTab:GetUpdatePages", {
-        link: this._link,
-        index: aIndex
-      });
+      gNewTab.sendToBrowser("NewTab:UpdatePages");
       this._updateAttributes(true);
       gPinnedLinks.pin(this._link, aIndex);
     },
@@ -85,9 +82,7 @@
      */
     unpin() {
       if (this.isPinned()) {
-        gNewTab.sendToBrowser("NewTab:GetUpdatePages", {
-          link: this._link
-        });
+        gNewTab.sendToBrowser("NewTab:UpdatePages");
         this._updateAttributes(false);
         gPinnedLinks.unpin(this._link);
       }

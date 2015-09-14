@@ -28,9 +28,9 @@ describe("Pinned Links API", () => {
     });
   });
 
-  it("Links should be null initially", () => {
+  it("Links should be empty initially", () => {
     var links = gPinnedLinks.links;
-    assert.equal(links, null);
+    assert.equal(links.length, 0);
   });
 
   it("Setting links to empty array", () => {

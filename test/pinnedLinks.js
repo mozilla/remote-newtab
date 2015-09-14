@@ -48,9 +48,9 @@ describe("Pinned Links API", () => {
   });
 
   it("Pinning a link updates the database and links", () => {
-    return gUserDatabase.init(gPinnedLinks.setLinks).then(() => {
-      var links = gPinnedLinks.links;
-      assert.lengthOf(links, 0);
+    return gUserDatabase.init().then(pinnedLinks => {
+      gPinnedLinks.setLinks(pinnedLinks);
+      assert.lengthOf(gPinnedLinks.links, 0);
 
       gPinnedLinks.pin(firstLink, 2);
       return gUserDatabase.load("prefs", "pinnedLinks").then(pinnedLinks => {
@@ -62,9 +62,9 @@ describe("Pinned Links API", () => {
   });
 
   it("Unpinning a link updates the database and links", () => {
-    return gUserDatabase.init(gPinnedLinks.setLinks).then(() => {
-      var links = gPinnedLinks.links;
-      assert.lengthOf(links, 0);
+    return gUserDatabase.init().then(pinnedLinks => {
+      gPinnedLinks.setLinks(pinnedLinks);
+      assert.lengthOf(gPinnedLinks.links, 0);
 
       gPinnedLinks.pin(firstLink, 2);
       gPinnedLinks.pin(secondLink, 1);

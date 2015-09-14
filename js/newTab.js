@@ -117,7 +117,8 @@
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
   document.addEventListener("NewTabCommandReady", () => {
-    gUserDatabase.init(gPinnedLinks.setLinks).then(() => {
+    gUserDatabase.init().then(pinnedLinks => {
+      gPinnedLinks.setLinks(pinnedLinks);
       gNewTab.registerListener("NewTab:Observe", message => {
         gNewTab.observe(message.topic, message.data);
       });

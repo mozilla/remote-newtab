@@ -22,7 +22,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
   const gUserDatabase = {
     _database: null,
 
-    init(callback) {
+    init() {
       return new Promise((resolve, reject) => {
         var request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
 
@@ -30,7 +30,7 @@ const PINNED_LINKS_PREF = "pinnedLinks";
           gUserDatabase._logError(event, OPEN_DATABASE_TRANSACTION_STRING, reject);
         };
         request.onsuccess = event => {
-          gUserDatabase._onDatabaseOpenSuccess(event, resolve, callback);
+          gUserDatabase._onDatabaseOpenSuccess(event, resolve);
         };
         request.onupgradeneeded = event => {
           gUserDatabase._onDatabaseUpgrade(event);
@@ -103,12 +103,11 @@ const PINNED_LINKS_PREF = "pinnedLinks";
       gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription, resolve, reject);
     },
 
-    _onDatabaseOpenSuccess(event, resolve, callback) {
+    _onDatabaseOpenSuccess(event, resolve) {
       // Save the database connection and pass back the existing pinned links.
       gUserDatabase._database = event.target.result;
       gUserDatabase.load(OBJECT_STORE_PREFS, PINNED_LINKS_PREF).then((pinnedLinks) => {
-        callback(pinnedLinks);
-        resolve();
+        resolve(pinnedLinks);
       });
     },
 

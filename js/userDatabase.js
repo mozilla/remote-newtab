@@ -20,10 +20,12 @@
 
         request.onerror = event => {
           gUserDatabase._logError(event, "Cannot open an indexedDB connection");
-          reject(event.target.errorCode);
+          reject(new Error(event.target.errorCode));
         };
         request.onsuccess = event => {
-          gUserDatabase._onDatabaseOpenSuccess(event, resolve);
+          gUserDatabase._onDatabaseOpenSuccess(event).then(pinnedLinks => {
+            resolve(pinnedLinks);
+          });
         };
         request.onupgradeneeded = event => {
           gUserDatabase._onDatabaseUpgrade(event);
@@ -38,11 +40,11 @@
 
         var request = objectStore.get(objectStoreType);
         request.onsuccess = () => {
-          gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType, resolve, reject);
+          gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType).then(resolve, reject);
         };
         request.onerror = event => {
           gUserDatabase._logError(event, `Failed to store object of type ${objectStoreType}`);
-          reject(event.target.errorCode);
+          reject(new Error(event.target.errorCode));
         };
       });
     },
@@ -53,7 +55,7 @@
         var objectStore = transaction.objectStore(objectStoreToRead);
         var request = objectStore.get(objectStoreType);
         var transactionDescription = `Load data ${objectStoreType}`;
-        gUserDatabase._setSimpleRequestHandlers(request, transactionDescription, resolve, reject);
+        gUserDatabase._setSimpleRequestHandlers(request, transactionDescription).then(resolve, reject);
       });
     },
 
@@ -62,14 +64,16 @@
       console.error(error);
     },
 
-    _setSimpleRequestHandlers(request, logString, resolve, reject) {
-      request.onerror = (event) => {
-        gUserDatabase._logError(event, logString);
-        reject(event.target.errorCode);
-      };
-      request.onsuccess = (event) => {
-        resolve(event.target.result.data);
-      };
+    _setSimpleRequestHandlers(request, logString) {
+      return new Promise((resolve, reject) => {
+        request.onerror = (event) => {
+          gUserDatabase._logError(event, logString);
+          reject(new Error(event.target.errorCode));
+        };
+        request.onsuccess = (event) => {
+          resolve(event.target.result.data);
+        };
+      });
     },
 
     _createPrefsData(dataType, data) {
@@ -79,20 +83,18 @@
       return prefsData;
     },
 
-    _onWriteFetchRequestSuccess(request, dataToWrite, objectStore, objectStoreType, resolve, reject) {
+    _onWriteFetchRequestSuccess(request, dataToWrite, objectStore, objectStoreType) {
       var result = request.result;
       result.data = dataToWrite;
       var requestUpdate = objectStore.put(result);
       var transactionDescription = `Update data ${objectStoreType}`;
-      gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription, resolve, reject);
+      return gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription);
     },
 
-    _onDatabaseOpenSuccess(event, resolve) {
+    _onDatabaseOpenSuccess(event) {
       // Save the database connection and pass back the existing pinned links.
       gUserDatabase._database = event.target.result;
-      gUserDatabase.load(OBJECT_STORE_PREFS, PINNED_LINKS_PREF).then((pinnedLinks) => {
-        resolve(pinnedLinks);
-      });
+      return gUserDatabase.load(OBJECT_STORE_PREFS, PINNED_LINKS_PREF);
     },
 
     _onDatabaseUpgrade(event) {

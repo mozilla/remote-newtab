@@ -20,7 +20,8 @@ describe("Pinned Links API", () => {
   afterEach(function(done) {
     // Clear the database and cached links.
     gPinnedLinks.resetCache();
-    gUserDatabase.init(gPinnedLinks.setLinks).then(() => {
+    gUserDatabase.init().then(pinnedLinks => {
+      gPinnedLinks.setLinks(pinnedLinks);
       gUserDatabase.save("prefs", "pinnedLinks", []).then(() => {
         gUserDatabase.close();
         done();

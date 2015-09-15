@@ -14,18 +14,17 @@
   const gUserDatabase = {
     _database: null,
 
-    init() {
+    init(mockDB) {
       return new Promise((resolve, reject) => {
-        var request = window.indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
+        var db = mockDB || window.indexedDB;
+        var request = db.open(DATABASE_NAME, DATABASE_VERSION);
 
         request.onerror = event => {
           gUserDatabase._logError(event, "Cannot open an indexedDB connection");
           reject(new Error(event.target.errorCode));
         };
         request.onsuccess = event => {
-          gUserDatabase._onDatabaseOpenSuccess(event).then(pinnedLinks => {
-            resolve(pinnedLinks);
-          });
+          gUserDatabase._onDatabaseOpenSuccess(event).then(resolve);
         };
         request.onupgradeneeded = event => {
           gUserDatabase._onDatabaseUpgrade(event);
@@ -33,17 +32,17 @@
       });
     },
 
-    save(objectStoreToWrite, objectStoreType, data) {
+    save(objectStoreToWrite, objectStoreType, data, mockObjectStore) {
       return new Promise((resolve, reject) => {
         var transaction = gUserDatabase._database.transaction([objectStoreToWrite], "readwrite");
-        var objectStore = transaction.objectStore(objectStoreToWrite);
+        var objectStore = mockObjectStore || transaction.objectStore(objectStoreToWrite);
 
         var request = objectStore.get(objectStoreType);
         request.onsuccess = () => {
           gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType).then(resolve, reject);
         };
         request.onerror = event => {
-          gUserDatabase._logError(event, `Failed to store object of type ${objectStoreType}`);
+          gUserDatabase._logError(event, "Failed to store object of type " + objectStoreType);
           reject(new Error(event.target.errorCode));
         };
       });
@@ -54,23 +53,23 @@
         var transaction = gUserDatabase._database.transaction([objectStoreToRead]);
         var objectStore = transaction.objectStore(objectStoreToRead);
         var request = objectStore.get(objectStoreType);
-        var transactionDescription = `Load data ${objectStoreType}`;
+        var transactionDescription = "Load data " + objectStoreType;
         gUserDatabase._setSimpleRequestHandlers(request, transactionDescription).then(resolve, reject);
       });
     },
 
     _logError(event, errorString) {
-      var error = `Error: ${event.target.errorCode}: ${errorString}`;
+      var error = "Error: " + event.target.errorCode + ": " + errorString;
       console.error(error);
     },
 
     _setSimpleRequestHandlers(request, logString) {
       return new Promise((resolve, reject) => {
-        request.onerror = (event) => {
+        request.onerror = event => {
           gUserDatabase._logError(event, logString);
           reject(new Error(event.target.errorCode));
         };
-        request.onsuccess = (event) => {
+        request.onsuccess = event => {
           resolve(event.target.result.data);
         };
       });
@@ -87,7 +86,7 @@
       var result = request.result;
       result.data = dataToWrite;
       var requestUpdate = objectStore.put(result);
-      var transactionDescription = `Update data ${objectStoreType}`;
+      var transactionDescription = "Update data " + objectStoreType;
       return gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription);
     },
 

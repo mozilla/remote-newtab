@@ -118,4 +118,31 @@ describe("Pinned Links API", () => {
       assert.equal(gPinnedLinks.links[2], secondLink);
     });
   });
+
+  it("Handling of open database errors", () => {
+    return gUserDatabase.init(gMockObject).then(() => {
+      throw new Error("There should be an error");
+    }, val => {
+      assert.equal(val, "Error: Error during open");
+    });
+  });
+
+  it("Handling of save database errors", () => {
+    return gUserDatabase.init().then(() => {
+      return gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject).then(() => {
+        throw new Error("There should be an error");
+      }, val => {
+        assert.equal(val, "Error: Error during save");
+      });
+    });
+  });
+
+  it("Test setSimpleRequestHandlers() errors", () => {
+    return gUserDatabase._setSimpleRequestHandlers(gMockObject.generateFaultyRequest("Simple Handler Error"),
+      "This is a request handler error").then(() => {
+        throw new Error("There should be an error");
+      }, val => {
+        assert.equal(val, "Error: Simple Handler Error");
+      });
+  });
 });

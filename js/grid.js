@@ -43,9 +43,7 @@
      * All sites contained in the grid's cells. Sites may be empty.
      */
     get sites() {
-      return [
-        for (cell of this.cells) cell.site
-      ];
+      return this.cells.map(cell => cell.site);
     },
 
     // Tells whether the grid has already been initialized.

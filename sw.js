@@ -7,6 +7,7 @@ importScripts("js/lib/cachetasks.js");
 
 // The main files of remote new tab website.
 const mainSiteFiles = [
+  "./",
   "css/images/close.png",
   "css/images/controls.svg",
   "css/images/defaultFavicon.png",
@@ -35,39 +36,40 @@ const mainSiteFiles = [
   "locale/newTab.js",
 ];
 
+const initTasks = [
+  CacheTasks.deleteAllCaches(),
+  // Save the site's skeleton.
+  CacheTasks.populateCache("skeleton_cache", mainSiteFiles),
+  //Add other tasks in this array...
+];
+
 const PageThumbTask = {
-  storeSiteThumb: async(function* ({arrayBuffer, type, thumbPath, cacheControl}) {
-    var thumbURL = new URL(thumbPath, self.location);
+  storeSiteThumb: async(function* ({arrayBuffer, type, thumbURL}) {
+    var thumbURL = new URL(thumbURL, self.location).href;
     var success = true;
-    try {
-      var ops = {
-        cacheName: "thumbs_cache",
-        arrayBuffer,
-        type,
-        requestURL: thumbURL,
-        cacheControl: cacheControl || [],
-      };
-      yield CacheTasks.saveBinaryToCache(ops);
-    } catch (err) {
+    var isValidURL = thumbURL.startsWith(`${self.location.origin}/pagethumbs/`);
+    // prevent thumbs trashing other URLs
+    if(!isValidURL){
       success = false;
+    }else{
+      try {
+        yield CacheTasks.saveBinaryToCache("thumbs_cache", arrayBuffer, type, thumbURL);
+      } catch (err) {
+        success = false;
+      }
     }
     return success;
   }),
 };
 
 self.addEventListener("install", (ev) => {
-  var installTasks = [
-    CacheTasks.clearAllCaches(),
-    // Save the site's skeleton.
-    CacheTasks.populateCache("skeleton_cache", mainSiteFiles),
-    //Add other tasks in this array...
-  ];
-  ev.waitUntil(Promise.all([installTasks]));
+  ev.waitUntil(Promise.all([initTasks]));
 });
 
 self.addEventListener("message", async(function* ({data, source}) {
   var result;
-  switch (data.name) {
+  var {name, id} = data;
+  switch (name) {
   case "NewTab:PutSiteThumb":
     result = yield PageThumbTask.storeSiteThumb(data);
     break;
@@ -77,16 +79,22 @@ self.addEventListener("message", async(function* ({data, source}) {
   case "NewTab:DeleteSiteThumb":
     result = yield CacheTasks.deleteCacheEntry(data.thumbURL, "thumbs_cache");
     break;
-  case "deleteAllCaches": {
+  case "SW:InitializeSite":
+    yield Promise.all(initTasks);
+    result = true;
+    break;
+  case "SW:DeleteAllCaches":
     result = yield CacheTasks.deleteAllCaches();
     break;
-  }
   default:
     console.warn("Unhandled message", data.name);
-    return; // don't post message a response
   }
-  var responseData = Object.assign({result}, data);
-  source.postMessage(responseData);
+  // Only respond to messages that have an id, even if unhandeled.
+  // This is to prevents locking any expecting promises.
+  if (!id) {
+    return;
+  }
+  source.postMessage({result, id});
 }));
 
 self.addEventListener("fetch", (ev) => {

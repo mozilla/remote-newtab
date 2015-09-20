@@ -5,7 +5,7 @@
 
 "use strict";
 
-(function (exports) {
+(function(exports) {
   const TILES_EXPLAIN_LINK =
     "https://support.mozilla.org/kb/how-do-tiles-work-firefox";
   const REGULAR = "regular";
@@ -138,7 +138,7 @@
      *
      * @param {Boolean} aPinned Whether this site is now pinned or unpinned.
      */
-    _updateAttributes: function (aPinned) {
+    _updateAttributes: function(aPinned) {
       let control = this._querySelector(".newtab-control-pin");
 
       if (aPinned) {
@@ -222,7 +222,7 @@
             }
           });
           sw.postMessage({
-            name: "NewTab:HasThumb",
+            name: "NewTab:HasSiteThumb",
             id,
             thumbURL: thumbURL.href,
           });

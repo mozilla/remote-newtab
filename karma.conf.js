@@ -14,13 +14,40 @@ module.exports = function(config) {
     frameworks: ["mocha", "chai-as-promised", "chai"],
 
     // list of files / patterns to load in the browser
-    files: [
+    files: [{
+        pattern: "sw.js",
+        served: true,
+        watched: true,
+        included: false,
+      },
       "js/lib/async.js",
       "js/rectangle.js",
-      "test/*.js",
-      "test/**/*.js",
+      "js/lib/swMessage.js",
       "test/fixtures/**/*.html",
+      "test/**/*.js", {
+        pattern: "css/**/*.*",
+        watched: true,
+        served: true,
+        included: false
+      }, {
+        pattern: "js/**/*.js",
+        watched: true,
+        served: true,
+        included: false
+      }, {
+        pattern: "locale/newTab.js",
+        watched: true,
+        served: true,
+        included: false
+      },
     ],
+
+    proxies: {
+      "/sw.js": "http://localhost:9876/base/sw.js",
+      "/css/": "http://localhost:9876/base/css/",
+      "/js/": "http://localhost:9876/base/js/",
+      "/locale/": "http://localhost:9876/base/locale/",
+    },
 
     // list of files to exclude
     exclude: [
@@ -43,12 +70,21 @@ module.exports = function(config) {
 
     coverageReporter: {
       dir: "build/reports/coverage",
-      reporters: [
-        {type: "lcov", subdir: "lcov"},
-        {type: "html", subdir: "html"},
-        {type: "text", subdir: ".", file: "text.txt"},
-        {type: "text-summary", subdir: ".", file: "text-summary.txt"},
-      ]
+      reporters: [{
+        type: "lcov",
+        subdir: "lcov"
+      }, {
+        type: "html",
+        subdir: "html"
+      }, {
+        type: "text",
+        subdir: ".",
+        file: "text.txt"
+      }, {
+        type: "text-summary",
+        subdir: ".",
+        file: "text-summary.txt"
+      },]
     },
 
     // web server port
@@ -66,7 +102,28 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["FirefoxNightly"],
+    browsers: ["SWNightly"],
+
+    customLaunchers: {
+      SWNightly: {
+        base: "FirefoxNightly",
+        prefs: {
+          "browser.dom.window.dump.enabled": true,
+          "browser.newtabpage.enhanced": false,
+          "browser.newtabpage.introShown": true,
+          "browser.newtabpage.updateIntroShown": true,
+          "devtools.chrome.enabled": true,
+          "devtools.debugger.prompt-connection": false,
+          "devtools.debugger.remote-enabled": true,
+          "devtools.debugger.workers": true,
+          "devtools.serviceWorkers.testing.enabled": true,
+          "devtools.webconsole.filter.serviceworkers": true,
+          "dom.serviceWorkers.enabled": true,
+          "dom.serviceWorkers.exemptFromPerDomainMax": true,
+          "dom.serviceWorkers.interception.opaque.enabled": true,
+        }
+      }
+    },
 
     browserNoActivityTimeout: 10000,
 
@@ -77,3 +134,4 @@ module.exports = function(config) {
     singleRun: false
   });
 };
+

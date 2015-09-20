@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gDrag, gNewTab, gGrid, gUndoDialog, async*/
+/*globals gDrag, gNewTab, gGrid, gUndoDialog, async, swMessage*/
 
 "use strict";
 
@@ -206,27 +206,9 @@
       var getRegularThumbnail = async(function*() {
         var sw = (yield navigator.serviceWorker.ready).active;
         var host = new URL(url).host;
-        var thumbURL = new URL(`/pagethumbs/${host}`, window.location);
-
-        // get an ID for the link that we are on. The reason why we do this is
-        // because we cannot guarantee that each link has a unique URL, so
-        // checking against an ID gives us some assurance that we have in fact
-        // received a message from the correct link.
-        var id = Math.random();
-        // Send a message to the SW to check if we have stored this thumb already
-        var thumbInCache = yield new Promise((resolve) => {
-          navigator.serviceWorker.addEventListener("message", function msgHandler({data}) {
-            if (data.name === "SW:HasThumb" && data.id === id) {
-              navigator.serviceWorker.removeEventListener("message", msgHandler);
-              resolve(data.result);
-            }
-          });
-          sw.postMessage({
-            name: "NewTab:HasSiteThumb",
-            id,
-            thumbURL: thumbURL.href,
-          });
-        });
+        var thumbURL = new URL(`/pagethumbs/${host}`, window.location).href;
+        var hasSiteThumb = swMessage(sw, "NewTab:HasSiteThumb");
+        var thumbInCache = yield hasSiteThumb({thumbURL});
         if (thumbInCache) {
           this.showRegularThumbnail(thumbURL);
           return;
@@ -320,9 +302,9 @@
     /**
      * Show the regular thumbnail.
      */
-    showRegularThumbnail(thumbPath) {
+    showRegularThumbnail(thumbURL) {
       let thumbnail = this._querySelector(".newtab-thumbnail");
-      thumbnail.style.backgroundImage = `url("${thumbPath}")`;
+      thumbnail.style.backgroundImage = `url("${thumbURL}")`;
     },
 
     _ignoreHoverEvents(element) {

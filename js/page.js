@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim */
+/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim */
 
 "use strict";
 (function(exports) {
@@ -320,36 +320,45 @@
     },
 
     storeAndShowRegularThumb: async(function* (message) {
-      var site = gGrid.sites.find(site => site && message.url === site.url);
+      let {blob, url, thumbPath: thumbURL} = message;
+      let site = gGrid.sites.find(site => site && url === site.url);
       if (!site) {
         return;
       }
-      var fileReader = new FileReader();
-      var arrayBuffer;
+      // show it
+      let imgSrc = URL.createObjectURL(blob);
+      site.showRegularThumbnail(imgSrc);
+
+      // Store it
+      let promisedArrayBuffer = new Promise((resolve, reject) => {
+        let fileReader = new FileReader();
+        fileReader.onload = function() {
+          resolve(this.result);
+        };
+        fileReader.onerror = function() {
+          reject(new Error("Could not create ArrayBuffer."));
+        };
+        fileReader.readAsArrayBuffer(blob);
+      });
+      let arrayBuffer;
       try {
-        arrayBuffer = yield new Promise((resolve, reject) => {
-          fileReader.onload = function() {
-            resolve(this.result);
-          };
-          fileReader.onerror = function() {
-            reject(new Error("Could not create ArrayBuffer."));
-          };
-          fileReader.readAsArrayBuffer(message.blob);
-        });
+        arrayBuffer = yield promisedArrayBuffer;
       } catch (err) {
         console.error(err);
         return;
       }
-      var sw = (yield navigator.serviceWorker.ready).active;
-      sw.postMessage({
-        name: "NewTab:PutSiteThumb",
-        thumbPath: message.thumbPath,
-        url: message.url,
+      // Store the page thumb image.
+      let sw = (yield navigator.serviceWorker.ready).active;
+      let putThumb = swMessage(sw, "NewTab:PutSiteThumb");
+      let result = yield putThumb({
+        thumbURL,
+        url,
         arrayBuffer,
-        type: message.blob.type
+        type: blob.type
       }, [arrayBuffer]);
-      var imgSrc = URL.createObjectURL(message.blob);
-      site.showRegularThumbnail(imgSrc);
+      if (!result){
+        console.warn("Failed to store thumbnail image:", thumbURL);
+      }
     }),
   };
   exports.gPage = gPage;

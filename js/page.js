@@ -342,7 +342,7 @@
       }
       var sw = (yield navigator.serviceWorker.ready).active;
       sw.postMessage({
-        name: "NewTab:StoreSiteThumb",
+        name: "NewTab:PutSiteThumb",
         thumbPath: message.thumbPath,
         url: message.url,
         arrayBuffer,

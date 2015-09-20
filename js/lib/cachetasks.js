@@ -36,8 +36,7 @@ const CacheTasks = {
    * @param {String} type MimeType of the data being stored.
    * @param {String|URL} requestURL The URL this request maps to.
    */
-  saveBinaryToCache: async(function* (ops) {
-    var {cacheName, arrayBuffer, type, requestURL} = ops;
+  saveBinaryToCache: async(function* (cacheName, arrayBuffer, type, requestURL) {
     var cache = yield caches.open(cacheName);
     var dataView = new DataView(arrayBuffer);
     var blob = new Blob([dataView], {
@@ -62,8 +61,8 @@ const CacheTasks = {
    * Respond to a request from the SW's caches.
    *
    * @param {Request|String} request The request
-   * @optional {String} cacheName The name of the cache to look in.
-   * @optional {String} strategy  The strategy to use when the response
+   * @param {String} [cacheName] The name of the cache to look in.
+   * @param {String} [strategy] The strategy to use when the response
    *                              is not found. "throw" causes this to throw
    *                              otherwise, it passes the request to the
    *                              network via fetch.
@@ -96,7 +95,7 @@ const CacheTasks = {
    * Checks if there is a cache entry for a particular request.
    *
    * @param {Request|String} request The request to check for.
-   * @optional {String} cacheName The cache's name to look in.
+   * @param {String} [cacheName] The cache's name to look in.
    * @return {Boolean} True if it has the request, false otherwise.
    */
   hasCacheEntry: async(function* (request, cacheName) {
@@ -106,8 +105,9 @@ const CacheTasks = {
   }),
   /**
    * Deletes a cache entry.
-   * @param {[Request|String]} request The request.
-   * @param {[type]} cacheName The cache name from where to delete.
+   *
+   * @param {Request[]|String[]} request The request.
+   * @param {String} cacheName The cache name from where to delete.
    * @returns {Booleam}
    */
   deleteCacheEntry: async(function* (request, cacheName, options={}) {
@@ -118,7 +118,7 @@ const CacheTasks = {
   /**
    * Delete all the SW's caches.
    */
-  clearAllCaches: async(function* () {
+  deleteAllCaches: async(function* () {
     var keys = yield caches.keys();
     for (var name of keys) {
       caches.delete(name);

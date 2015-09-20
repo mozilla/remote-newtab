@@ -36,7 +36,8 @@ const CacheTasks = {
    * @param {String} type MimeType of the data being stored.
    * @param {String|URL} requestURL The URL this request maps to.
    */
-  saveBinaryToCache: async(function* (cacheName, arrayBuffer, type, requestURL) {
+  saveBinaryToCache: async(function* (ops) {
+    var {cacheName, arrayBuffer, type, requestURL} = ops;
     var cache = yield caches.open(cacheName);
     var dataView = new DataView(arrayBuffer);
     var blob = new Blob([dataView], {
@@ -44,22 +45,19 @@ const CacheTasks = {
     });
     var responseInit = {
       headers: {
-        "Content-Type": type
+        "Content-Type": type,
       }
     };
     var request = new Request(requestURL);
     var response = new Response(blob, responseInit);
-    var success = true;
     try {
       yield cache.put(request, response);
     } catch (err) {
-      var msg = `Error putting blob in cache ${cacheName} for ${requestURL}.`;
+      var msg = `putting blob in cache ${cacheName} for ${requestURL}.`;
       console.warn(msg, err);
-      success = false;
+      throw err;
     }
-    return success;
   }),
-
   /**
    * Respond to a request from the SW's caches.
    *
@@ -79,11 +77,13 @@ const CacheTasks = {
     switch (strategy) {
     case "throw":
       if (!response) {
-        var msg = `Not found in cache: ${request.url || request}`;
-        throw new Error(msg);
+        var msg = `Not found in ${cacheName} cache: ${request.url || request}`;
+        var err = new Error(msg);
+        console.warn(err);
+        throw err;
       }
       break;
-      //Default passes the request to network using fetch()
+    //Default passes the request to network using fetch()
     default:
       if (!response) {
         response = yield fetch(request);
@@ -94,16 +94,26 @@ const CacheTasks = {
   }),
   /**
    * Checks if there is a cache entry for a particular request.
+   *
    * @param {Request|String} request The request to check for.
    * @optional {String} cacheName The cache's name to look in.
+   * @return {Boolean} True if it has the request, false otherwise.
    */
   hasCacheEntry: async(function* (request, cacheName) {
     var cache = yield caches.open(cacheName);
     var response = yield cache.match(request);
-    if (response) {
-      return true;
-    }
-    return false;
+    return (response) ? true : false;
+  }),
+  /**
+   * Deletes a cache entry.
+   * @param {[Request|String]} request The request.
+   * @param {[type]} cacheName The cache name from where to delete.
+   * @returns {Booleam}
+   */
+  deleteCacheEntry: async(function* (request, cacheName, options={}) {
+    var cache = yield caches.open(cacheName);
+    var result = yield cache.delete(request, options);
+    return result;
   }),
   /**
    * Delete all the SW's caches.
@@ -113,5 +123,6 @@ const CacheTasks = {
     for (var name of keys) {
       caches.delete(name);
     }
+    return true;
   }),
 };

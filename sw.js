@@ -2,14 +2,11 @@
 "use strict";
 
 // imports async(), CacheTasks
-importScripts("js/lib/async.js", "js/lib/cachetasks.js");
-
-const SKELETON_CACHE = "newtab-v2";
-const THUMBS_CACHE = "thumbs-v1";
+importScripts("js/lib/async.js");
+importScripts("js/lib/cachetasks.js");
 
 // The main files of remote new tab website.
 const mainSiteFiles = [
-  "./",
   "css/images/close.png",
   "css/images/controls.svg",
   "css/images/defaultFavicon.png",
@@ -17,6 +14,7 @@ const mainSiteFiles = [
   "css/images/search-indicator-magnifying-glass.svg",
   "css/images/shared-menu-check.svg",
   "css/images/whimsycorn.png",
+  "css/newTab.css",
   "css/newTab.inc.css",
   "js/cells.js",
   "js/customize.js",
@@ -29,7 +27,7 @@ const mainSiteFiles = [
   "js/lib/async.js",
   "js/newTab.js",
   "js/page.js",
-  "js/rect.js",
+  "js/rectangle.js",
   "js/sites.js",
   "js/transformations.js",
   "js/undo.js",
@@ -38,14 +36,22 @@ const mainSiteFiles = [
 ];
 
 const PageThumbTask = {
-  storeSiteThumb: async(function* ({arrayBuffer, type, thumbPath}) {
+  storeSiteThumb: async(function* ({arrayBuffer, type, thumbPath, cacheControl}) {
     var thumbURL = new URL(thumbPath, self.location);
+    var success = true;
     try {
-      yield CacheTasks.saveBinaryToCache(THUMBS_CACHE, arrayBuffer, type, thumbURL);
+      var ops = {
+        cacheName: "thumbs_cache",
+        arrayBuffer,
+        type,
+        requestURL: thumbURL,
+        cacheControl: cacheControl || [],
+      };
+      yield CacheTasks.saveBinaryToCache(ops);
     } catch (err) {
-      console.warn("Could not store the URL!", err);
+      success = false;
     }
-    return thumbURL.href;
+    return success;
   }),
 };
 
@@ -53,38 +59,44 @@ self.addEventListener("install", (ev) => {
   var installTasks = [
     CacheTasks.clearAllCaches(),
     // Save the site's skeleton.
-    CacheTasks.populateCache(SKELETON_CACHE, mainSiteFiles),
+    CacheTasks.populateCache("skeleton_cache", mainSiteFiles),
     //Add other tasks in this array...
   ];
   ev.waitUntil(Promise.all([installTasks]));
 });
 
 self.addEventListener("message", async(function* ({data, source}) {
+  var result;
   switch (data.name) {
-  case "NewTab:StoreSiteThumb":
-    yield PageThumbTask.storeSiteThumb(data);
+  case "NewTab:PutSiteThumb":
+    result = yield PageThumbTask.storeSiteThumb(data);
     break;
-  case "NewTab:HasThumb":
-    var result = yield CacheTasks.hasCacheEntry(data.thumbURL, THUMBS_CACHE);
-    var responseData = Object.assign({
-      name: "SW:HasThumb",
-      result
-    }, data);
-    source.postMessage(responseData);
+  case "NewTab:HasSiteThumb":
+    result = yield CacheTasks.hasCacheEntry(data.thumbURL, "thumbs_cache");
     break;
+  case "NewTab:DeleteSiteThumb":
+    result = yield CacheTasks.deleteCacheEntry(data.thumbURL, "thumbs_cache");
+    break;
+  case "deleteAllCaches": {
+    result = yield CacheTasks.deleteAllCaches();
+    break;
+  }
   default:
     console.warn("Unhandled message", data.name);
+    return; // don't post message a response
   }
+  var responseData = Object.assign({result}, data);
+  source.postMessage(responseData);
 }));
 
 self.addEventListener("fetch", (ev) => {
   var key = getSwitchKeyFromURL(ev.request.url);
   switch (key) {
   case "pagethumbs":
-    ev.respondWith(CacheTasks.respondFromCache(ev.request, THUMBS_CACHE));
+    ev.respondWith(CacheTasks.respondFromCache(ev.request, "thumbs_cache", "throw"));
     break;
   default:
-    ev.respondWith(CacheTasks.respondFromCache(ev.request, SKELETON_CACHE));
+    ev.respondWith(CacheTasks.respondFromCache(ev.request, "skeleton_cache"));
   }
 });
 

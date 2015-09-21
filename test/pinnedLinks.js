@@ -10,6 +10,24 @@ describe("Pinned Links API", () => {
   var secondLink = {url: "http://example1.com/", title: "site#1"};
   var directoryLink = {url: "http://directorylink.com", title: "DirectoryLink", type: "affiliate"};
 
+  const gMockObject = {
+    open() {
+      return this.generateFaultyRequest("Attempting to open user DB");
+    },
+
+    get() {
+      return this.generateFaultyRequest("Attempting to save user DB");
+    },
+
+    generateFaultyRequest(errorCode) {
+      var request = {};
+      setTimeout(() => {
+        request.onerror({target: {errorCode}});
+      }, 0);
+      return request;
+    }
+  };
+
   afterEach(function(done) {
     // Clear the database and cached links.
     gPinnedLinks.resetCache();

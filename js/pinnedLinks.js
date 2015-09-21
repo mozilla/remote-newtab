@@ -48,7 +48,7 @@
       // change pinned link into a history link and update pin state
       this._makeHistoryLink(aLink);
       this.links[aIndex] = aLink;
-      this.save();
+      return this.save();
     },
 
     /**

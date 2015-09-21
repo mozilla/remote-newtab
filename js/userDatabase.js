@@ -18,7 +18,9 @@
           reject(new Error(errorString));
         };
         request.onsuccess = event => {
-          gUserDatabase._onDatabaseOpenSuccess(event).then(resolve);
+          // Save the database connection.
+          gUserDatabase._database = event.target.result;
+          resolve();
         };
         request.onupgradeneeded = event => {
           // Note: After a successful upgrade, onsuccess will be triggered.
@@ -78,12 +80,6 @@
       var requestUpdate = objectStore.put(result);
       var transactionDescription = "Update data " + objectStoreType;
       return this._setSimpleRequestHandlers(requestUpdate, transactionDescription);
-    },
-
-    _onDatabaseOpenSuccess(event) {
-      // Save the database connection and pass back the existing pinned links.
-      this._database = event.target.result;
-      return this.load("prefs", "pinnedLinks");
     },
 
     _onDatabaseUpgrade(event) {

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim */
+/*global gNewTab, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim, gUserDatabase */
 
 "use strict";
 (function(exports) {
@@ -183,6 +183,9 @@
           value: delta
         });
       }
+
+      // Close the database connection when a tab is closed.
+      gUserDatabase.close();
     },
 
     handleEnabled(enabled) {

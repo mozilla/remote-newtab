@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gDrag, gNewTab, gGrid, gUndoDialog*/
+/*globals gDrag, gNewTab, gGrid, gUndoDialog, gPinnedLinks*/
 
 "use strict";
 
@@ -72,11 +72,9 @@
         aIndex = this.cell.index;
       }
 
-      gNewTab.sendToBrowser("NewTab:PinLink", {
-        link: this._link,
-        index: aIndex
-      });
+      gNewTab.sendToBrowser("NewTab:UpdatePages");
       this._updateAttributes(true);
+      gPinnedLinks.pin(this._link, aIndex);
     },
 
     /**
@@ -84,10 +82,9 @@
      */
     unpin() {
       if (this.isPinned()) {
-        gNewTab.sendToBrowser("NewTab:UnpinLink", {
-          link: this._link
-        });
+        gNewTab.sendToBrowser("NewTab:UpdatePages");
         this._updateAttributes(false);
+        gPinnedLinks.unpin(this._link);
       }
     },
 
@@ -97,7 +94,7 @@
      * @return {Boolean} Whether this site is pinned.
      */
     isPinned() {
-      return this._link.pinState;
+      return gPinnedLinks.isPinned(this._link);
     },
 
     /**
@@ -187,9 +184,7 @@
         delete this.link.endTime;
         // clear enhanced-content image that may still exist in preloaded page
         this._querySelector(".enhanced-content").style.backgroundImage = "";
-        gNewTab.sendToBrowser("NewTab:ReplacePinLink", {
-          oldUrl, link: this.link
-        });
+        gPinnedLinks.replace(oldUrl, this.link);
       }
     },
 

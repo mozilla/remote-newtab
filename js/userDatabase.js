@@ -8,7 +8,8 @@
   const gUserDatabase = {
     _database: null,
 
-    init(db =  window.indexedDB) {
+    init(keys, db =  window.indexedDB) {
+      this._keys = keys;
       return new Promise((resolve, reject) => {
         var request = db.open("NewTabData", 1);
 
@@ -83,14 +84,16 @@
     },
 
     _onDatabaseUpgrade(event) {
-      // For version 1, we start with an empty list of pinned links.
-      // (Migration of existing pinned links & other prefs in another bug).
+      // For version 1, we start with an empty list for each key.
+      // (Migration of existing prefs in another bug).
       var db = event.target.result;
       var objStore = db.createObjectStore("prefs", {keyPath: "prefType"});
 
       objStore.transaction.oncomplete = () => {
         var prefObjectStore = db.transaction("prefs", "readwrite").objectStore("prefs");
-        prefObjectStore.add(gUserDatabase._createPrefsData("pinnedLinks", []));
+        for (var key of this._keys) {
+          prefObjectStore.add(gUserDatabase._createPrefsData(key, []));
+        }
       };
     },
 

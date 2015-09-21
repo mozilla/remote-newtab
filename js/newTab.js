@@ -7,6 +7,8 @@
 
 (function(exports) {
   const gNewTab = {
+    _prefsObjectStoreKeys: ["pinnedLinks"],
+
     listeners: {},
 
     init() {
@@ -117,7 +119,7 @@
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
   document.addEventListener("NewTabCommandReady", () => {
-    gUserDatabase.init().then(() => {
+    gUserDatabase.init(this._prefsObjectStoreKeys).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         gNewTab.registerListener("NewTab:Observe", message => {
           gNewTab.observe(message.topic, message.data);

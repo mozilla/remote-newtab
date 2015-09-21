@@ -13,7 +13,7 @@ describe("Pinned Links API", () => {
   afterEach(function(done) {
     // Clear the database and cached links.
     gPinnedLinks.resetCache();
-    gUserDatabase.init().then(() => {
+    gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         gUserDatabase.save("prefs", "pinnedLinks", []).then(() => {
           gUserDatabase.close();
@@ -29,7 +29,7 @@ describe("Pinned Links API", () => {
   });
 
   it("Pinning a link updates the database and links", () => {
-    return gUserDatabase.init().then(() => {
+    return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
@@ -44,7 +44,7 @@ describe("Pinned Links API", () => {
   });
 
   it("Unpinning a link updates the database and links", () => {
-    return gUserDatabase.init().then(() => {
+    return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
@@ -68,7 +68,7 @@ describe("Pinned Links API", () => {
   });
 
   it("Pinning a directory link turns it to history", () => {
-    return gUserDatabase.init().then(() => {
+    return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
@@ -84,7 +84,7 @@ describe("Pinned Links API", () => {
   });
 
   it("Test replacing a pinned link with another (Used for ended campaigns)", () => {
-    return gUserDatabase.init().then(() => {
+    return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         // Attempting to replace a link that isn't pinned does nothing.
         gPinnedLinks.replace("http://example0.com/", secondLink);
@@ -102,7 +102,7 @@ describe("Pinned Links API", () => {
   });
 
   it("Handling of open database errors", () => {
-    return gUserDatabase.init(gMockObject).then(() => {
+    return gUserDatabase.init(["pinnedLinks"], gMockObject).then(() => {
       throw new Error("There should be an error");
     }, val => {
       assert.equal(val, "Error: Attempting to open user DB: Cannot open an indexedDB connection");
@@ -110,7 +110,7 @@ describe("Pinned Links API", () => {
   });
 
   it("Handling of save database errors", () => {
-    return gUserDatabase.init().then(() => {
+    return gUserDatabase.init(["pinnedLinks"]).then(() => {
       return gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject).then(() => {
         throw new Error("There should be an error");
       }, val => {

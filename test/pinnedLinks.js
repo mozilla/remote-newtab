@@ -123,7 +123,7 @@ describe("Pinned Links API", () => {
     return gUserDatabase.init(gMockObject).then(() => {
       throw new Error("There should be an error");
     }, val => {
-      assert.equal(val, "Error: Error during open");
+      assert.equal(val, "Error: Attempting to open user DB: Cannot open an indexedDB connection");
     });
   });
 
@@ -132,7 +132,7 @@ describe("Pinned Links API", () => {
       return gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject).then(() => {
         throw new Error("There should be an error");
       }, val => {
-        assert.equal(val, "Error: Error during save");
+        assert.equal(val, "Error: Attempting to save user DB: Failed to store object of type pinnedLinks");
       });
     });
   });
@@ -142,7 +142,7 @@ describe("Pinned Links API", () => {
       "This is a request handler error").then(() => {
         throw new Error("There should be an error");
       }, val => {
-        assert.equal(val, "Error: Simple Handler Error");
+        assert.equal(val, "Error: Simple Handler Error: This is a request handler error");
       });
   });
 });

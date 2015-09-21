@@ -5,28 +5,23 @@
 "use strict";
 
 (function(exports) {
-  const DATABASE_VERSION = 1;
-  const DATABASE_NAME = "NewTabData";
-
-  const OBJECT_STORE_PREFS = "prefs";
-  const PINNED_LINKS_PREF = "pinnedLinks";
-
   const gUserDatabase = {
     _database: null,
 
-    init(mockDB) {
+    init(db =  window.indexedDB) {
       return new Promise((resolve, reject) => {
-        var db = mockDB || window.indexedDB;
-        var request = db.open(DATABASE_NAME, DATABASE_VERSION);
+        var request = db.open("NewTabData", 1);
 
         request.onerror = event => {
-          gUserDatabase._logError(event, "Cannot open an indexedDB connection");
-          reject(new Error(event.target.errorCode));
+          var errorString = event.target.errorCode + ": Cannot open an indexedDB connection";
+          console.error(errorString);
+          reject(new Error(errorString));
         };
         request.onsuccess = event => {
           gUserDatabase._onDatabaseOpenSuccess(event).then(resolve);
         };
         request.onupgradeneeded = event => {
+          // Note: After a successful upgrade, onsuccess will be triggered.
           gUserDatabase._onDatabaseUpgrade(event);
         };
       });
@@ -42,32 +37,27 @@
           gUserDatabase._onWriteFetchRequestSuccess(request, data, objectStore, objectStoreType).then(resolve, reject);
         };
         request.onerror = event => {
-          gUserDatabase._logError(event, "Failed to store object of type " + objectStoreType);
-          reject(new Error(event.target.errorCode));
+          var errorString = event.target.errorCode + ": Failed to store object of type " + objectStoreType;
+          console.error(errorString);
+          reject(new Error(errorString));
         };
       });
     },
 
     load(objectStoreToRead, objectStoreType) {
-      return new Promise((resolve, reject) => {
-        var transaction = gUserDatabase._database.transaction([objectStoreToRead]);
-        var objectStore = transaction.objectStore(objectStoreToRead);
-        var request = objectStore.get(objectStoreType);
-        var transactionDescription = "Load data " + objectStoreType;
-        gUserDatabase._setSimpleRequestHandlers(request, transactionDescription).then(resolve, reject);
-      });
-    },
-
-    _logError(event, errorString) {
-      var error = "Error: " + event.target.errorCode + ": " + errorString;
-      console.error(error);
+      var transaction = gUserDatabase._database.transaction([objectStoreToRead]);
+      var objectStore = transaction.objectStore(objectStoreToRead);
+      var request = objectStore.get(objectStoreType);
+      var transactionDescription = "Load data " + objectStoreType;
+      return gUserDatabase._setSimpleRequestHandlers(request, transactionDescription);
     },
 
     _setSimpleRequestHandlers(request, logString) {
       return new Promise((resolve, reject) => {
         request.onerror = event => {
-          gUserDatabase._logError(event, logString);
-          reject(new Error(event.target.errorCode));
+          var errorString = event.target.errorCode + ": " + logString;
+          console.error(errorString);
+          reject(new Error(errorString));
         };
         request.onsuccess = event => {
           resolve(event.target.result.data);
@@ -87,24 +77,24 @@
       result.data = dataToWrite;
       var requestUpdate = objectStore.put(result);
       var transactionDescription = "Update data " + objectStoreType;
-      return gUserDatabase._setSimpleRequestHandlers(requestUpdate, transactionDescription);
+      return this._setSimpleRequestHandlers(requestUpdate, transactionDescription);
     },
 
     _onDatabaseOpenSuccess(event) {
       // Save the database connection and pass back the existing pinned links.
-      gUserDatabase._database = event.target.result;
-      return gUserDatabase.load(OBJECT_STORE_PREFS, PINNED_LINKS_PREF);
+      this._database = event.target.result;
+      return this.load("prefs", "pinnedLinks");
     },
 
     _onDatabaseUpgrade(event) {
       // For version 1, we start with an empty list of pinned links.
       // (Migration of existing pinned links & other prefs in another bug).
       var db = event.target.result;
-      var objStore = db.createObjectStore(OBJECT_STORE_PREFS, {keyPath: "prefType"});
+      var objStore = db.createObjectStore("prefs", {keyPath: "prefType"});
 
       objStore.transaction.oncomplete = () => {
-        var prefObjectStore = db.transaction(OBJECT_STORE_PREFS, "readwrite").objectStore(OBJECT_STORE_PREFS);
-        prefObjectStore.add(gUserDatabase._createPrefsData(PINNED_LINKS_PREF, []));
+        var prefObjectStore = db.transaction("prefs", "readwrite").objectStore("prefs");
+        prefObjectStore.add(gUserDatabase._createPrefsData("pinnedLinks", []));
       };
     },
 
@@ -113,6 +103,4 @@
     }
   };
   exports.gUserDatabase = gUserDatabase;
-  exports.OBJECT_STORE_PREFS = OBJECT_STORE_PREFS;
-  exports.PINNED_LINKS_PREF = PINNED_LINKS_PREF;
 }(window));

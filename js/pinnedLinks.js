@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
- /*globals gUserDatabase, OBJECT_STORE_PREFS, PINNED_LINKS_PREF */
+ /*globals gUserDatabase */
 
 "use strict";
 
@@ -21,7 +21,7 @@
      * Set the array of pinned links.
      */
     setLinks(loadedLinks) {
-      gPinnedLinks._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : [];
+      this._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : [];
     },
 
     /**
@@ -38,15 +38,13 @@
      * @param {Number} aIndex The grid index to pin the cell at.
      */
     pin(aLink, aIndex) {
-      return new Promise((resolve, reject) => {
-        // Clear the link's old position, if any.
-        this.unpin(aLink);
+      // Clear the link's old position, if any.
+      this.unpin(aLink);
 
-        // change pinned link into a history link and update pin state
-        this._makeHistoryLink(aLink);
-        this.links[aIndex] = aLink;
-        this.save().then(resolve, reject);
-      });
+      // change pinned link into a history link and update pin state
+      this._makeHistoryLink(aLink);
+      this.links[aIndex] = aLink;
+      this.save();
     },
 
     /**
@@ -55,31 +53,25 @@
      * @param {Link} aLink The link to unpin.
      */
     unpin(aLink) {
-      return new Promise((resolve, reject) => {
-        var index = this._indexOfLink(aLink);
-        if (index === -1) {
-          return;
-        }
-        var links = this.links;
-        links[index] = null;
-        // trim trailing nulls
-        var i = links.length - 1;
-        while (i >= 0 && links[i] === null) {
-          i--;
-        }
-        links.splice(i + 1);
-        this.save().then(resolve, reject);
-      });
+      var index = this._indexOfLink(aLink);
+      if (index === -1) {
+        return;
+      }
+      this._links[index] = null;
+      // trim trailing nulls
+      var i = this._links.length - 1;
+      while (i >= 0 && this._links[i] === null) {
+        i--;
+      }
+      this._links.splice(i + 1);
+      return this.save();
     },
 
     /**
      * Saves the current list of pinned links.
      */
     save() {
-      return new Promise((resolve, reject) => {
-        gUserDatabase.save(OBJECT_STORE_PREFS, PINNED_LINKS_PREF,
-          JSON.stringify(this.links)).then(resolve, reject);
-      });
+      return gUserDatabase.save("prefs", "pinnedLinks", JSON.stringify(this.links));
     },
 
     /**
@@ -135,7 +127,7 @@
         return;
       }
       this.links[index] = aLink;
-      this.save();
+      return this.save();
     },
   };
   exports.gPinnedLinks = gPinnedLinks;

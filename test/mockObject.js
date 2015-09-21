@@ -7,11 +7,11 @@
 (function(exports) {
   const gMockObject = {
     open() {
-      return this.generateFaultyRequest("Error during open");
+      return this.generateFaultyRequest("Attempting to open user DB");
     },
 
     get() {
-      return this.generateFaultyRequest("Error during save");
+      return this.generateFaultyRequest("Attempting to save user DB");
     },
 
     generateFaultyRequest(errorCode) {

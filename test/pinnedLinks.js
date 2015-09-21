@@ -102,29 +102,21 @@ describe("Pinned Links API", () => {
   });
 
   it("Handling of open database errors", () => {
-    return gUserDatabase.init(["pinnedLinks"], gMockObject).then(() => {
-      throw new Error("There should be an error");
-    }, val => {
-      assert.equal(val, "Error: Attempting to open user DB: Cannot open an indexedDB connection");
-    });
+    var initPromise = gUserDatabase.init(["pinnedLinks"], gMockObject);
+    return initPromise.should.be.rejected;
   });
 
   it("Handling of save database errors", () => {
-    return gUserDatabase.init(["pinnedLinks"]).then(() => {
-      return gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject).then(() => {
-        throw new Error("There should be an error");
-      }, val => {
-        assert.equal(val, "Error: Attempting to save user DB: Failed to store object of type pinnedLinks");
-      });
+    gUserDatabase.init(["pinnedLinks"]).then(() => {
+      var savePromise = gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject);
+      return savePromise.should.be.rejected;
     });
   });
 
   it("Test setSimpleRequestHandlers() errors", () => {
-    return gUserDatabase._setSimpleRequestHandlers(gMockObject.generateFaultyRequest("Simple Handler Error"),
-      "This is a request handler error").then(() => {
-        throw new Error("There should be an error");
-      }, val => {
-        assert.equal(val, "Error: Simple Handler Error: This is a request handler error");
-      });
+    var simpleRequestHandlersPromise =
+      gUserDatabase._setSimpleRequestHandlers(gMockObject.generateFaultyRequest("Simple Handler Error"),
+      "This is a request handler error");
+    return simpleRequestHandlersPromise.should.be.rejected;
   });
 });

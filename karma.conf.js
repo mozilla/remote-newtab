@@ -109,7 +109,7 @@ module.exports = function(config) {
         base: "FirefoxNightly",
         prefs: {
           "browser.dom.window.dump.enabled": true,
-          "browser.newtabpage.enhanced": false,
+          "browser.newtabpage.enhanced": true,
           "browser.newtabpage.introShown": true,
           "browser.newtabpage.updateIntroShown": true,
           "devtools.chrome.enabled": true,

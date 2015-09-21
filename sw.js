@@ -83,10 +83,9 @@ self.addEventListener("message", async(function* ({data, source}) {
     yield Promise.all(initTasks);
     result = true;
     break;
-  case "SW:DeleteAllCaches": {
+  case "SW:DeleteAllCaches":
     result = yield CacheTasks.deleteAllCaches();
     break;
-  }
   default:
     console.warn("Unhandled message", data.name);
   }

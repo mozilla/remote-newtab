@@ -10,6 +10,9 @@
     },
     {
       "name": "Olivier Yiptong"
+    },
+    {
+      "name": "Ursula Sarracini"
     }
   ],
   "repository": "https://github.com/mozilla/remote-newtab",
@@ -34,8 +37,11 @@
     "requirejs": "^2.1.20"
   },
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run",
-    "pretest": "jshint *.js js/**.js test/**.js && jscs *.js test/**.js js/**.js",
+    "karma": "./node_modules/.bin/karma start --single-run",
+    "test": "npm run karma",
+    "jshint": "jshint js/**.js test/**.js",
+    "jscs": "jscs test/*/**.js js/*/**.js",
+    "pretest": "npm run jshint && npm run jscs",
     "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
   }
 }

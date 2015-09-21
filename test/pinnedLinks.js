@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 /*globals gPinnedLinks, gUserDatabase */
 
-describe("Pinned Links API", () => {
+describe("Pinned Links API", function() {
   "use strict";
 
   var firstLink = {url: "http://example0.com/", title: "site#0"};
@@ -41,12 +41,12 @@ describe("Pinned Links API", () => {
     });
   });
 
-  it("Links should be empty initially", () => {
+  it("should be empty initially", () => {
     var links = gPinnedLinks.links;
     assert.equal(links.length, 0);
   });
 
-  it("Pinning a link updates the database and links", () => {
+  it("should update the database and links", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
@@ -61,7 +61,7 @@ describe("Pinned Links API", () => {
     });
   });
 
-  it("Unpinning a link updates the database and links", () => {
+  it("should update the database and links", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
@@ -85,7 +85,7 @@ describe("Pinned Links API", () => {
     });
   });
 
-  it("Pinning a directory link turns it to history", () => {
+  it("should turn a directory link into history", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
@@ -101,7 +101,7 @@ describe("Pinned Links API", () => {
     });
   });
 
-  it("Test replacing a pinned link with another (Used for ended campaigns)", () => {
+  it("should replace a pinned link with another (Used for ended campaigns)", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         // Attempting to replace a link that isn't pinned does nothing.
@@ -119,22 +119,24 @@ describe("Pinned Links API", () => {
     });
   });
 
-  it("Handling of open database errors", () => {
-    var initPromise = gUserDatabase.init(["pinnedLinks"], gMockObject);
-    return initPromise.should.be.rejected;
-  });
-
-  it("Handling of save database errors", () => {
-    gUserDatabase.init(["pinnedLinks"]).then(() => {
-      var savePromise = gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject);
-      return savePromise.should.be.rejected;
+  describe("gUserDatabase Errors", function() {
+    it("should reject when there is an error opening the database", () => {
+      var initPromise = gUserDatabase.init(["pinnedLinks"], gMockObject);
+      return initPromise.should.be.rejected;
     });
-  });
 
-  it("Test setSimpleRequestHandlers() errors", () => {
-    var simpleRequestHandlersPromise =
-      gUserDatabase._setSimpleRequestHandlers(gMockObject.generateFaultyRequest("Simple Handler Error"),
-      "This is a request handler error");
-    return simpleRequestHandlersPromise.should.be.rejected;
+    it("should reject when there is an error saving to the database", () => {
+      gUserDatabase.init(["pinnedLinks"]).then(() => {
+        var savePromise = gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject);
+        return savePromise.should.be.rejected;
+      });
+    });
+
+    it("should reject when a simple request fails", () => {
+      var simpleRequestHandlersPromise =
+        gUserDatabase._setSimpleRequestHandlers(gMockObject.generateFaultyRequest("Simple Handler Error"),
+        "This is a request handler error");
+      return simpleRequestHandlersPromise.should.be.rejected;
+    });
   });
 });

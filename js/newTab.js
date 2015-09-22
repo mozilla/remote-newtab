@@ -126,6 +126,6 @@
     });
     gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
     gNewTab.sendToBrowser("NewTab:GetInitialState");
-  }));
+  }, gNewTab));
   exports.gNewTab = gNewTab;
 }(window));

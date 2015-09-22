@@ -10,21 +10,9 @@
 (function(exports) {
   const gBlockedLinks = {
     /**
-     * A list of objects that are observing blocked link changes.
-     */
-    _observers: [],
-
-    /**
      * The cached list of blocked links.
      */
     _links: null,
-
-    /**
-     * Registers an object that will be notified when the blocked links change.
-     */
-    addObserver(aObserver) {
-      this._observers.push(aObserver);
-    },
 
     /**
      * The list of blocked links.
@@ -43,7 +31,6 @@
      * @param {Link} aLink The link to block.
      */
     block(aLink) {
-      this._callObservers("onLinkBlocked", aLink);
       //this.links[toHash(aLink.url)] = 1;
       this.save();
 
@@ -60,7 +47,6 @@
       if (this.isBlocked(aLink)) {
         //delete this.links[toHash(aLink.url)];
         this.save();
-        this._callObservers("onLinkUnblocked", aLink);
       }
     },
 
@@ -97,18 +83,6 @@
     resetCache() {
       this._links = null;
     },
-
-    _callObservers(methodName, ...args) {
-      for (let obs of this._observers) {
-        if (typeof(obs[methodName]) === "function") {
-          try {
-            obs[methodName](...args);
-          } catch (err) {
-            console.error(err);
-          }
-        }
-      }
-    }
   };
   exports.gBlockedLinks = gBlockedLinks;
 }(window));

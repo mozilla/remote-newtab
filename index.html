@@ -87,9 +87,10 @@
         </div>
         <button id="newtab-customize-button" title="Customize your New Tab page"></button>
     </div>
+    <script type="text/javascript;version=1.8" src="js/lib/async.js"></script>
+    <script type="text/javascript;version=1.8" src="js/lib/swMessage.js"></script>
     <script type="text/javascript;version=1.8" src="js/intro.js"></script>
     <script type="text/javascript;version=1.8" src="locale/newTab.js"></script>
-    <script type="text/javascript;version=1.8" src="js/lib/async.js"></script>
     <script type="text/javascript;version=1.8" src="js/customize.js"></script>
     <script type="text/javascript;version=1.8" src="js/rectangle.js"></script>
     <script type="text/javascript;version=1.8" src="js/dropTargetShim.js"></script>
@@ -111,7 +112,6 @@
     document.addEventListener("DOMContentLoaded", async(function* () {
       try {
         yield navigator.serviceWorker.register("sw.js", {scope: "./"});
-        console.log("ServiceWorker registration successful!");
       } catch (err) {
         console.error("ServiceWorker registration failed:", err);
       }

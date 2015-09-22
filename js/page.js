@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim, gUserDatabase */
+/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim, gUserDatabase */
 
 "use strict";
 (function(exports) {
@@ -24,8 +24,8 @@
         this.setPinState.bind(this));
       gNewTab.registerListener("NewTab:BlockState",
         this.setBlockState.bind(this));
-      gNewTab.registerListener("NewTab:ThumbnailURI",
-        this.filterURL.bind(this));
+      gNewTab.registerListener("NewTab:RegularThumbnailURI",
+        this.storeAndShowRegularThumb.bind(this));
 
       // Listen for 'unload' to unregister this page.
       addEventListener("unload", this, false);
@@ -322,17 +322,47 @@
       }
     },
 
-    /**
-     * Filters through all URLs and finds the correct URL associated
-     * with the site to display.
-     *
-     * @param {Object} aURL The current URL sent down from the parent.
-     */
-    filterURL(aURL) {
-      gGrid.sites
-        .filter(site => site && aURL.url === site.url)
-        .forEach(site => site.getURI(aURL));
-    },
+    storeAndShowRegularThumb: async(function* (message) {
+      let {blob, url, thumbPath: thumbURL} = message;
+      let site = gGrid.sites.find(site => site && url === site.url);
+      if (!site) {
+        return;
+      }
+      // show it
+      let imgSrc = URL.createObjectURL(blob);
+      site.showRegularThumbnail(imgSrc);
+
+      // Store it
+      let promisedArrayBuffer = new Promise((resolve, reject) => {
+        let fileReader = new FileReader();
+        fileReader.onload = function() {
+          resolve(this.result);
+        };
+        fileReader.onerror = function() {
+          reject(new Error("Could not create ArrayBuffer."));
+        };
+        fileReader.readAsArrayBuffer(blob);
+      });
+      let arrayBuffer;
+      try {
+        arrayBuffer = yield promisedArrayBuffer;
+      } catch (err) {
+        console.error(err);
+        return;
+      }
+      // Store the page thumb image.
+      let sw = (yield navigator.serviceWorker.ready).active;
+      let putThumb = swMessage(sw, "NewTab:PutSiteThumb");
+      let result = yield putThumb({
+        thumbURL,
+        url,
+        arrayBuffer,
+        type: blob.type
+      }, [arrayBuffer]);
+      if (!result){
+        console.warn("Failed to store thumbnail image:", thumbURL);
+      }
+    }),
   };
   exports.gPage = gPage;
 }(window));

@@ -1,13 +1,13 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gCustomize, gStrings, gUpdater, gUserDatabase, gPinnedLinks, async*/
+/*globals gGrid, gPage, gCustomize, gStrings, gUpdater, gUserDatabase, gPinnedLinks, gBlockedLinks, async*/
 
 "use strict";
 
 (function(exports) {
   const gNewTab = {
-    _prefsObjectStoreKeys: ["pinnedLinks"],
+    _prefsObjectStoreKeys: ["pinnedLinks", "blockedLinks"],
 
     listeners: {},
 
@@ -121,6 +121,7 @@
   document.addEventListener("NewTabCommandReady", async(function* () {
     yield gUserDatabase.init(this._prefsObjectStoreKeys);
     yield gPinnedLinks.initPinnedLinks();
+    yield gBlockedLinks.initBlockedLinks();
     gNewTab.registerListener("NewTab:Observe", message => {
       gNewTab.observe(message.topic, message.data);
     });

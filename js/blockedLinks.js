@@ -14,14 +14,24 @@
      */
     _links: null,
 
+
+    /**
+     * Load the blocked links from gUserDatabase and cache them.
+     */
+    initBlockedLinks() {
+      console.log("INIT BLOCKED CALED");
+      var loadPromise = gUserDatabase.load("prefs", "blockedLinks");
+      loadPromise.then(loadedLinks => {
+        this._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : [];
+        console.log("LINKS " + JSON.stringify(this._links));
+      });
+      return loadPromise;
+    },
+
     /**
      * The list of blocked links.
      */
     get links() {
-      /*if (!this._links) {
-        this._links = Storage.get("blockedLinks", {});
-      }*/
-
       return this._links;
     },
 

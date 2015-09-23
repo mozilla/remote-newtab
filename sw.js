@@ -16,7 +16,6 @@ const mainSiteFiles = [
   "css/images/shared-menu-check.svg",
   "css/images/whimsycorn.png",
   "css/newTab.css",
-  "css/newTab.inc.css",
   "js/cells.js",
   "js/customize.js",
   "js/drag.js",

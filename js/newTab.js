@@ -95,11 +95,12 @@
       return stringifiedSites;
     },
 
-    sendToBrowser(type, data) {
+    sendToBrowser(command, msgData = "") {
+      var data = JSON.stringify(msgData);
       let event = new CustomEvent("NewTabCommand", {
         detail: {
-          command: type,
-          data: data
+          command,
+          data,
         }
       });
       document.dispatchEvent(event);

@@ -24,46 +24,44 @@
      *
      * @param {Object} aMessage The links sent down by the parent process.
      */
-    updateGrid(aMessage) {
-      return async(function* () {
-        // Filter out blocked links.
-        for (let i = aMessage.links.length; i--;) {
-          let blocked = yield gBlockedLinks.isBlocked(aMessage.links[i]);
-          if (blocked) {
-            aMessage.links.splice(i, 1);
-          }
+    updateGrid: async(function* (aMessage) {
+      // Filter out blocked links.
+      for (let i = aMessage.links.length; i--;) {
+        let blocked = yield gBlockedLinks.isBlocked(aMessage.links[i]);
+        if (blocked) {
+          aMessage.links.splice(i, 1);
         }
+      }
 
-        let links = aMessage.links.slice(0, gGrid.cells.length);
+      let links = aMessage.links.slice(0, gGrid.cells.length);
 
-        // Find all sites that remain in the grid.
-        let sites = gUpdater._findRemainingSites(links);
+      // Find all sites that remain in the grid.
+      let sites = gUpdater._findRemainingSites(links);
 
-        // Remove sites that are no longer in the grid.
-        gUpdater._removeLegacySites(sites, () => {
-          // Freeze all site positions so that we can move their DOM nodes around
-          // without any visual impact.
-          gUpdater._freezeSitePositions(sites);
+      // Remove sites that are no longer in the grid.
+      gUpdater._removeLegacySites(sites, () => {
+        // Freeze all site positions so that we can move their DOM nodes around
+        // without any visual impact.
+        gUpdater._freezeSitePositions(sites);
 
-          // Move the sites' DOM nodes to their new position in the DOM. This will
-          // have no visual effect as all the sites have been frozen and will
-          // remain in their current position.
-          gUpdater._moveSiteNodes(sites);
+        // Move the sites' DOM nodes to their new position in the DOM. This will
+        // have no visual effect as all the sites have been frozen and will
+        // remain in their current position.
+        gUpdater._moveSiteNodes(sites);
 
-          // Now it's time to animate the sites actually moving to their new
-          // positions.
-          gUpdater._rearrangeSites(sites, (aCallback) => {
-            // Try to fill empty cells and finish.
-            gUpdater._fillEmptyCells(links, aCallback);
-          });
+        // Now it's time to animate the sites actually moving to their new
+        // positions.
+        gUpdater._rearrangeSites(sites, (aCallback) => {
+          // Try to fill empty cells and finish.
+          gUpdater._fillEmptyCells(links, aCallback);
         });
+      });
 
-        let event = new CustomEvent("AboutNewTabUpdated", {
-          bubbles: true
-        });
-        document.dispatchEvent(event);
-      })();
-    },
+      let event = new CustomEvent("AboutNewTabUpdated", {
+        bubbles: true
+      });
+      document.dispatchEvent(event);
+    }),
 
     /**
      * Sends a message to update the grid.

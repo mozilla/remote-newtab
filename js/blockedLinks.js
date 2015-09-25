@@ -45,32 +45,28 @@
      *
      * @param {Link} aLink The link to block.
      */
-    block(aLink) {
-      return async(function* () {
-        var hashedURL = yield gBlockedLinks._hash(aLink.url);
-        gBlockedLinks.links[hashedURL] = 1;
+    block: async(function* (aLink) {
+      var hashedURL = yield gBlockedLinks._hash(aLink.url);
+      gBlockedLinks.links[hashedURL] = 1;
 
-        // Make sure we unpin blocked links.
-        gPinnedLinks.unpin(aLink);
-        yield gBlockedLinks.save();
-      })();
-    },
+      // Make sure we unpin blocked links.
+      gPinnedLinks.unpin(aLink);
+      yield gBlockedLinks.save();
+    }),
 
     /**
      * Unblocks a given link. Adjusts siteMap accordingly, and notifies listeners.
      *
      * @param {Link} aLink The link to unblock.
      */
-    unblock(aLink) {
-      return async(function* () {
-        var isBlocked = yield gBlockedLinks.isBlocked(aLink);
-        if (isBlocked) {
-          var hashedURL = yield gBlockedLinks._hash(aLink.url);
-          delete gBlockedLinks.links[hashedURL];
-          yield gBlockedLinks.save();
-        }
-      })();
-    },
+    unblock: async(function* (aLink) {
+      var isBlocked = yield gBlockedLinks.isBlocked(aLink);
+      if (isBlocked) {
+        var hashedURL = yield gBlockedLinks._hash(aLink.url);
+        delete gBlockedLinks.links[hashedURL];
+        yield gBlockedLinks.save();
+      }
+    }),
 
     /**
      * Saves the current list of blocked links.
@@ -84,12 +80,10 @@
      *
      * @param {Link} aLink The link to check.
      */
-    isBlocked(aLink) {
-      return async(function* () {
-        var hashedLink = yield gBlockedLinks._hash(aLink.url);
-        return (hashedLink in gBlockedLinks.links);
-      })();
-    },
+    isBlocked: async(function* (aLink) {
+      var hashedLink = yield gBlockedLinks._hash(aLink.url);
+      return (hashedLink in gBlockedLinks.links);
+    }),
 
     /**
      * Checks whether the list of blocked links is empty.

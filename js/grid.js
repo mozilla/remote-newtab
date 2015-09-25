@@ -120,69 +120,67 @@
     /**
      * Renders the grid, including cells and sites.
      */
-    refresh(message) {
-      return async(function* () {
-        let links = message.links;
-        let enhancedLinks = message.enhancedLinks;
+    refresh: async(function* (message) {
+      let links = message.links;
+      let enhancedLinks = message.enhancedLinks;
 
-        // Filter out blocked links.
-        for (let i = links.length; i--;) {
-          let blocked = yield gBlockedLinks.isBlocked(links[i]);
-          if (blocked) {
-            links.splice(i, 1);
-            enhancedLinks.splice(i, 1);
+      // Filter out blocked links.
+      for (let i = links.length; i--;) {
+        let blocked = yield gBlockedLinks.isBlocked(links[i]);
+        if (blocked) {
+          links.splice(i, 1);
+          enhancedLinks.splice(i, 1);
+        }
+      }
+
+      let cell = document.createElement("div");
+      cell.classList.add("newtab-cell");
+
+      // Creates all the cells up to the maximum
+      let fragment = document.createDocumentFragment();
+      let rows = Math.max(1, gNewTab.rows);
+      let columns = Math.max(1, gNewTab.columns);
+      for (let i = 0; i < columns * rows; i++) {
+        fragment.appendChild(cell.cloneNode(true));
+      }
+
+      // Create cells.
+      let cells = [];
+      for (let cell of fragment.childNodes) {
+        cells.push(new Cell(gGrid, cell));
+      }
+
+      // Create sites.
+      let numLinks = Math.min(links.length, cells.length);
+      for (let i = 0; i < numLinks; i++) {
+        if (links[i]) {
+          // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
+          if (enhancedLinks[i] && gNewTab.enhanced) {
+            gGrid.createSite(enhancedLinks[i], cells[i], ENHANCED);
+          } else {
+            gGrid.createSite(links[i], cells[i], REGULAR);
           }
         }
+      }
 
-        let cell = document.createElement("div");
-        cell.classList.add("newtab-cell");
+      gGrid._cells = cells;
+      gGrid._node.innerHTML = "";
+      gGrid._node.appendChild(fragment);
+      gGrid._ready = true;
 
-        // Creates all the cells up to the maximum
-        let fragment = document.createDocumentFragment();
-        let rows = Math.max(1, gNewTab.rows);
-        let columns = Math.max(1, gNewTab.columns);
-        for (let i = 0; i < columns * rows; i++) {
-          fragment.appendChild(cell.cloneNode(true));
-        }
+      gGrid._pinnedLinks = message.pinnedLinks;
 
-        // Create cells.
-        let cells = [];
-        for (let cell of fragment.childNodes) {
-          cells.push(new Cell(gGrid, cell));
-        }
+      // If fetching links took longer than loading the page itself then
+      // we need to resize the grid as that was blocked until now.
+      // We also want to resize now if the page was already loaded when
+      // initializing the grid (the user toggled the page).
+      gGrid._resizeGrid();
 
-        // Create sites.
-        let numLinks = Math.min(links.length, cells.length);
-        for (let i = 0; i < numLinks; i++) {
-          if (links[i]) {
-            // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
-            if (enhancedLinks[i] && gNewTab.enhanced) {
-              gGrid.createSite(enhancedLinks[i], cells[i], ENHANCED);
-            } else {
-              gGrid.createSite(links[i], cells[i], REGULAR);
-            }
-          }
-        }
-
-        gGrid._cells = cells;
-        gGrid._node.innerHTML = "";
-        gGrid._node.appendChild(fragment);
-        gGrid._ready = true;
-
-        gGrid._pinnedLinks = message.pinnedLinks;
-
-        // If fetching links took longer than loading the page itself then
-        // we need to resize the grid as that was blocked until now.
-        // We also want to resize now if the page was already loaded when
-        // initializing the grid (the user toggled the page).
-        gGrid._resizeGrid();
-
-        let event = new CustomEvent("AboutNewTabUpdated", {
-          bubbles: true
-        });
-        document.dispatchEvent(event);
-      })();
-    },
+      let event = new CustomEvent("AboutNewTabUpdated", {
+        bubbles: true
+      });
+      document.dispatchEvent(event);
+    }),
 
     /**
      * Calculate the height for a number of rows up to the maximum rows.

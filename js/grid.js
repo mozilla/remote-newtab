@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, Site, Cell, gBlockedLinks*/
+/*globals gNewTab, Site, Cell, gBlockedLinks, async*/
 
 "use strict";
 (function(exports) {
@@ -132,7 +132,7 @@
             links.splice(i, 1);
             enhancedLinks.splice(i, 1);
           }
-        };
+        }
 
         let cell = document.createElement("div");
         cell.classList.add("newtab-cell");

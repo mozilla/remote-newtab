@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gPinnedLinks, gUserDatabase */
+/*globals gPinnedLinks*/
 
 describe("Pinned Links API", function() {
   "use strict";
@@ -30,8 +30,9 @@ describe("Pinned Links API", function() {
 
   afterEach(function(done) {
     // Clear the database and cached links.
+
     gPinnedLinks.resetCache();
-    gUserDatabase.init(["pinnedLinks"]).then(() => {
+    gUserDatabase.init({"pinnedLinks": []}).then(() => {
       gPinnedLinks.initPinnedLinks().then(() => {
         gUserDatabase.save("prefs", "pinnedLinks", []).then(() => {
           gUserDatabase.close();

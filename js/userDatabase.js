@@ -91,9 +91,9 @@
 
       objStore.transaction.oncomplete = () => {
         var prefObjectStore = db.transaction("prefs", "readwrite").objectStore("prefs");
-        for (var key in this._keys) {
+        Object.keys(this._keys).forEach(key => {
           prefObjectStore.add(gUserDatabase._createPrefsData(key, this._keys[key]));
-        }
+        });
       };
     },
 

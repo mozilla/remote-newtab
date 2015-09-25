@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, gTransformation, gGrid, gBlockedLinks*/
+/*globals gNewTab, gTransformation, gGrid, gBlockedLinks, async*/
 
 "use strict";
 (function(exports) {
@@ -32,7 +32,7 @@
           if (blocked) {
             aMessage.links.splice(i, 1);
           }
-        };
+        }
 
         let links = aMessage.links.slice(0, gGrid.cells.length);
 

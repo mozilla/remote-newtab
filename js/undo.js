@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, gUpdater */
+/*globals gNewTab, gUpdater, gPinnedLinks, gBlockedLinks */
 
 "use strict";
 (function(exports) {
@@ -102,11 +102,13 @@
       let {
         index, wasPinned, blockedLink
       } = this._undoData;
-      gNewTab.sendToBrowser("NewTab:UnblockLink", {
-        link: blockedLink,
-        wasPinned,
-        index
-      });
+
+      gBlockedLinks.unblock(blockedLink);
+      if (wasPinned) {
+        gPinnedLinks.pin(blockedLink, index);
+      } else {
+        gNewTab.sendToBrowser("NewTab:UpdatePages");
+      }
       this._restore();
     },
 

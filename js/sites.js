@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gDrag, gNewTab, gGrid, gUndoDialog, async, swMessage, gPinnedLinks*/
+/*globals gDrag, gNewTab, gGrid, gUndoDialog, async, swMessage, gPinnedLinks, gBlockedLinks*/
 
 "use strict";
 
@@ -102,12 +102,15 @@
      * when done.
      */
     block() {
-      if (!this.isBlocked()) {
-        gUndoDialog.show(this);
-        gNewTab.sendToBrowser("NewTab:BlockLink", {
-          link: this._link
-        });
-      }
+      let self = this;
+      return async(function* () {
+        let blocked = yield self.isBlocked();
+        if (!blocked) {
+          gUndoDialog.show(self);
+          gBlockedLinks.block(self._link);
+          gNewTab.sendToBrowser("NewTab:UpdateGrid");
+        }
+      })();
     },
 
     /**
@@ -116,7 +119,7 @@
      * @return {Boolean} Whether this site is blocked.
      */
     isBlocked() {
-      return this._link.blockState;
+      return gBlockedLinks.isBlocked(this._link);
     },
 
     /**

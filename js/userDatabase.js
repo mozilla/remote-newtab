@@ -9,6 +9,7 @@
     _database: null,
 
     init(keys, db =  window.indexedDB) {
+      window.indexedDB.deleteDatabase("NewTabData");
       this._keys = keys;
       return new Promise((resolve, reject) => {
         var request = db.open("NewTabData", 1);
@@ -91,8 +92,8 @@
 
       objStore.transaction.oncomplete = () => {
         var prefObjectStore = db.transaction("prefs", "readwrite").objectStore("prefs");
-        for (var key of this._keys) {
-          prefObjectStore.add(gUserDatabase._createPrefsData(key, []));
+        for (var key in this._keys) {
+          prefObjectStore.add(gUserDatabase._createPrefsData(key, this._keys[key]));
         }
       };
     },

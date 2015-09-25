@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, gTransformation, gGrid*/
+/*globals gNewTab, gTransformation, gGrid, gBlockedLinks*/
 
 "use strict";
 (function(exports) {
@@ -25,34 +25,44 @@
      * @param {Object} aMessage The links sent down by the parent process.
      */
     updateGrid(aMessage) {
-      let links = aMessage.links.slice(0, gGrid.cells.length);
+      return async(function* () {
+        let links = aMessage.links.slice(0, gGrid.cells.length);
 
-      // Find all sites that remain in the grid.
-      let sites = this._findRemainingSites(links);
+        // Filter out blocked links.
+        for (let i = links.length; i--;) {
+          let blocked = yield gBlockedLinks.isBlocked(links[i]);
+          if (blocked) {
+            links.splice(i, 1);
+          }
+        };
 
-      // Remove sites that are no longer in the grid.
-      this._removeLegacySites(sites, () => {
-        // Freeze all site positions so that we can move their DOM nodes around
-        // without any visual impact.
-        this._freezeSitePositions(sites);
+        // Find all sites that remain in the grid.
+        let sites = gUpdater._findRemainingSites(links);
 
-        // Move the sites' DOM nodes to their new position in the DOM. This will
-        // have no visual effect as all the sites have been frozen and will
-        // remain in their current position.
-        this._moveSiteNodes(sites);
+        // Remove sites that are no longer in the grid.
+        gUpdater._removeLegacySites(sites, () => {
+          // Freeze all site positions so that we can move their DOM nodes around
+          // without any visual impact.
+          gUpdater._freezeSitePositions(sites);
 
-        // Now it's time to animate the sites actually moving to their new
-        // positions.
-        this._rearrangeSites(sites, (aCallback) => {
-          // Try to fill empty cells and finish.
-          this._fillEmptyCells(links, aCallback);
+          // Move the sites' DOM nodes to their new position in the DOM. This will
+          // have no visual effect as all the sites have been frozen and will
+          // remain in their current position.
+          gUpdater._moveSiteNodes(sites);
+
+          // Now it's time to animate the sites actually moving to their new
+          // positions.
+          gUpdater._rearrangeSites(sites, (aCallback) => {
+            // Try to fill empty cells and finish.
+            gUpdater._fillEmptyCells(links, aCallback);
+          });
         });
-      });
 
-      let event = new CustomEvent("AboutNewTabUpdated", {
-        bubbles: true
-      });
-      document.dispatchEvent(event);
+        let event = new CustomEvent("AboutNewTabUpdated", {
+          bubbles: true
+        });
+        document.dispatchEvent(event);
+      })();
     },
 
     /**

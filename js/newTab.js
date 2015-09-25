@@ -7,7 +7,7 @@
 
 (function(exports) {
   const gNewTab = {
-    _prefsObjectStoreKeys: ["pinnedLinks", "blockedLinks"],
+    _prefsObjectStoreKeys: {"pinnedLinks": [], "blockedLinks": {}},
 
     listeners: {},
 

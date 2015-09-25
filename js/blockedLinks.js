@@ -101,10 +101,11 @@
     },
 
     /**
-     * Resets the links cache.
+     * Resets the links cache and IDB object.
      */
-    resetCache() {
+    reset() {
       this._links = {};
+      return this.save();
     },
   };
   exports.gBlockedLinks = gBlockedLinks;

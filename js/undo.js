@@ -116,7 +116,9 @@
      * Undo all blocked sites.
      */
     _undoAll() {
-      gNewTab.sendToBrowser("NewTab:UndoAll");
+      gBlockedLinks.reset().then(() => {
+        gNewTab.sendToBrowser("NewTab:UpdateGrid");
+      });
     },
 
     /**

@@ -9,7 +9,6 @@
     _database: null,
 
     init(keys, db =  window.indexedDB) {
-      window.indexedDB.deleteDatabase("NewTabData");
       this._keys = keys;
       return new Promise((resolve, reject) => {
         var request = db.open("NewTabData", 1);

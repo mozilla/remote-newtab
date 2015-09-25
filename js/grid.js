@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, Site, Cell*/
+/*globals gNewTab, Site, Cell, gBlockedLinks*/
 
 "use strict";
 (function(exports) {
@@ -121,55 +121,67 @@
      * Renders the grid, including cells and sites.
      */
     refresh(message) {
-      let links = message.links;
-      let enhancedLinks = message.enhancedLinks;
-      let cell = document.createElement("div");
-      cell.classList.add("newtab-cell");
+      return async(function* () {
+        let links = message.links;
+        let enhancedLinks = message.enhancedLinks;
 
-      // Creates all the cells up to the maximum
-      let fragment = document.createDocumentFragment();
-      let rows = Math.max(1, gNewTab.rows);
-      let columns = Math.max(1, gNewTab.columns);
-      for (let i = 0; i < columns * rows; i++) {
-        fragment.appendChild(cell.cloneNode(true));
-      }
+        // Filter out blocked links.
+        for (let i = links.length; i--;) {
+          let blocked = yield gBlockedLinks.isBlocked(links[i]);
+          if (blocked) {
+            links.splice(i, 1);
+            enhancedLinks.splice(i, 1);
+          }
+        };
 
-      // Create cells.
-      let cells = [];
-      for (let cell of fragment.childNodes) {
-        cells.push(new Cell(this, cell));
-      }
+        let cell = document.createElement("div");
+        cell.classList.add("newtab-cell");
 
-      // Create sites.
-      let numLinks = Math.min(links.length, cells.length);
-      for (let i = 0; i < numLinks; i++) {
-        if (links[i]) {
-          // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
-          if (enhancedLinks[i] && gNewTab.enhanced) {
-            this.createSite(enhancedLinks[i], cells[i], ENHANCED);
-          } else {
-            this.createSite(links[i], cells[i], REGULAR);
+        // Creates all the cells up to the maximum
+        let fragment = document.createDocumentFragment();
+        let rows = Math.max(1, gNewTab.rows);
+        let columns = Math.max(1, gNewTab.columns);
+        for (let i = 0; i < columns * rows; i++) {
+          fragment.appendChild(cell.cloneNode(true));
+        }
+
+        // Create cells.
+        let cells = [];
+        for (let cell of fragment.childNodes) {
+          cells.push(new Cell(gGrid, cell));
+        }
+
+        // Create sites.
+        let numLinks = Math.min(links.length, cells.length);
+        for (let i = 0; i < numLinks; i++) {
+          if (links[i]) {
+            // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
+            if (enhancedLinks[i] && gNewTab.enhanced) {
+              gGrid.createSite(enhancedLinks[i], cells[i], ENHANCED);
+            } else {
+              gGrid.createSite(links[i], cells[i], REGULAR);
+            }
           }
         }
-      }
 
-      this._cells = cells;
-      this._node.innerHTML = "";
-      this._node.appendChild(fragment);
-      this._ready = true;
+        gGrid._cells = cells;
+        gGrid._node.innerHTML = "";
+        gGrid._node.appendChild(fragment);
+        gGrid._ready = true;
 
-      this._pinnedLinks = message.pinnedLinks;
+        gGrid._pinnedLinks = message.pinnedLinks;
 
-      // If fetching links took longer than loading the page itself then
-      // we need to resize the grid as that was blocked until now.
-      // We also want to resize now if the page was already loaded when
-      // initializing the grid (the user toggled the page).
-      this._resizeGrid();
+        // If fetching links took longer than loading the page itself then
+        // we need to resize the grid as that was blocked until now.
+        // We also want to resize now if the page was already loaded when
+        // initializing the grid (the user toggled the page).
+        gGrid._resizeGrid();
 
-      let event = new CustomEvent("AboutNewTabUpdated", {
-        bubbles: true
-      });
-      document.dispatchEvent(event);
+        let event = new CustomEvent("AboutNewTabUpdated", {
+          bubbles: true
+        });
+        document.dispatchEvent(event);
+      })();
     },
 
     /**

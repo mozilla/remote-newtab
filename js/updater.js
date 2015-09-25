@@ -26,15 +26,15 @@
      */
     updateGrid(aMessage) {
       return async(function* () {
-        let links = aMessage.links.slice(0, gGrid.cells.length);
-
         // Filter out blocked links.
-        for (let i = links.length; i--;) {
-          let blocked = yield gBlockedLinks.isBlocked(links[i]);
+        for (let i = aMessage.links.length; i--;) {
+          let blocked = yield gBlockedLinks.isBlocked(aMessage.links[i]);
           if (blocked) {
-            links.splice(i, 1);
+            aMessage.links.splice(i, 1);
           }
         };
+
+        let links = aMessage.links.slice(0, gGrid.cells.length);
 
         // Find all sites that remain in the grid.
         let sites = gUpdater._findRemainingSites(links);

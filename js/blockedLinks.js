@@ -18,7 +18,7 @@
     /**
      * Load the blocked links from gUserDatabase and cache them.
      */
-    initBlockedLinks() {
+    init() {
       var loadPromise = gUserDatabase.load("prefs", "blockedLinks");
       loadPromise.then(loadedLinks => {
         this._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : {};

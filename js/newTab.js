@@ -120,8 +120,8 @@
   gNewTab.init();
   document.addEventListener("NewTabCommandReady", async(function* () {
     yield gUserDatabase.init(this._prefsObjectStoreKeys);
-    yield gPinnedLinks.initPinnedLinks();
-    yield gBlockedLinks.initBlockedLinks();
+    yield gPinnedLinks.init();
+    yield gBlockedLinks.init();
     gNewTab.registerListener("NewTab:Observe", message => {
       gNewTab.observe(message.topic, message.data);
     });

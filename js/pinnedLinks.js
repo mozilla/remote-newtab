@@ -20,7 +20,7 @@
     /**
      * Load the pinned links from gUserDatabase and cache them.
      */
-    initPinnedLinks() {
+    init() {
       var loadPromise = gUserDatabase.load("prefs", "pinnedLinks");
       loadPromise.then(loadedLinks => {
         this._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : [];

@@ -33,7 +33,7 @@ describe("Pinned Links API", function() {
 
     gPinnedLinks.resetCache();
     gUserDatabase.init({"pinnedLinks": []}).then(() => {
-      gPinnedLinks.initPinnedLinks().then(() => {
+      gPinnedLinks.init().then(() => {
         gUserDatabase.save("prefs", "pinnedLinks", []).then(() => {
           gUserDatabase.close();
           done();
@@ -49,7 +49,7 @@ describe("Pinned Links API", function() {
 
   it("should update the database and links", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
-      gPinnedLinks.initPinnedLinks().then(() => {
+      gPinnedLinks.init().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
         gPinnedLinks.pin(firstLink, 2);
@@ -64,7 +64,7 @@ describe("Pinned Links API", function() {
 
   it("should update the database and links", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
-      gPinnedLinks.initPinnedLinks().then(() => {
+      gPinnedLinks.init().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
         gPinnedLinks.pin(firstLink, 2);
@@ -88,7 +88,7 @@ describe("Pinned Links API", function() {
 
   it("should turn a directory link into history", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
-      gPinnedLinks.initPinnedLinks().then(() => {
+      gPinnedLinks.init().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
         gPinnedLinks.pin(directoryLink, 2);
@@ -104,7 +104,7 @@ describe("Pinned Links API", function() {
 
   it("should replace a pinned link with another (Used for ended campaigns)", () => {
     return gUserDatabase.init(["pinnedLinks"]).then(() => {
-      gPinnedLinks.initPinnedLinks().then(() => {
+      gPinnedLinks.init().then(() => {
         // Attempting to replace a link that isn't pinned does nothing.
         gPinnedLinks.replace("http://example0.com/", secondLink);
         assert.lengthOf(gPinnedLinks.links, 0);

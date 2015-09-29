@@ -34,7 +34,7 @@
      * @param {Link} aLink The link to block.
      */
     block(aLink) {
-      gBlockedLinks._links.add(aLink.url);
+      this._links.add(aLink.url);
 
       // Make sure we unpin blocked links.
       gPinnedLinks.unpin(aLink);

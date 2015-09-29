@@ -35,24 +35,24 @@
       let links = aMessage.links.slice(0, gGrid.cells.length);
 
       // Find all sites that remain in the grid.
-      let sites = gUpdater._findRemainingSites(links);
+      let sites = this._findRemainingSites(links);
 
       // Remove sites that are no longer in the grid.
-      gUpdater._removeLegacySites(sites, () => {
+      this._removeLegacySites(sites, () => {
         // Freeze all site positions so that we can move their DOM nodes around
         // without any visual impact.
-        gUpdater._freezeSitePositions(sites);
+        this._freezeSitePositions(sites);
 
         // Move the sites' DOM nodes to their new position in the DOM. This will
         // have no visual effect as all the sites have been frozen and will
         // remain in their current position.
-        gUpdater._moveSiteNodes(sites);
+        this._moveSiteNodes(sites);
 
         // Now it's time to animate the sites actually moving to their new
         // positions.
-        gUpdater._rearrangeSites(sites, (aCallback) => {
+        this._rearrangeSites(sites, (aCallback) => {
           // Try to fill empty cells and finish.
-          gUpdater._fillEmptyCells(links, aCallback);
+          this._fillEmptyCells(links, aCallback);
         });
       });
 

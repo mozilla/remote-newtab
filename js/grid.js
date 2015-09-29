@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, Site, Cell, gBlockedLinks, async*/
+/*globals gNewTab, Site, Cell, gBlockedLinks*/
 
 "use strict";
 (function(exports) {
@@ -120,14 +120,13 @@
     /**
      * Renders the grid, including cells and sites.
      */
-    refresh: async(function* (message) {
+    refresh(message) {
       let links = message.links;
       let enhancedLinks = message.enhancedLinks;
 
       // Filter out blocked links.
       for (let i = links.length; i--;) {
-        let blocked = yield gBlockedLinks.isBlocked(links[i]);
-        if (blocked) {
+        if (gBlockedLinks.isBlocked(links[i])) {
           links.splice(i, 1);
           enhancedLinks.splice(i, 1);
         }
@@ -180,7 +179,7 @@
         bubbles: true
       });
       document.dispatchEvent(event);
-    }),
+    },
 
     /**
      * Calculate the height for a number of rows up to the maximum rows.

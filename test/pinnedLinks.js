@@ -30,7 +30,6 @@ describe("Pinned Links API", function() {
 
   afterEach(function(done) {
     // Clear the database and cached links.
-
     gPinnedLinks.resetCache();
     gUserDatabase.init({"pinnedLinks": []}).then(() => {
       gPinnedLinks.init().then(() => {
@@ -48,7 +47,7 @@ describe("Pinned Links API", function() {
   });
 
   it("should update the database and links", () => {
-    return gUserDatabase.init(["pinnedLinks"]).then(() => {
+    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
       gPinnedLinks.init().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
@@ -63,7 +62,7 @@ describe("Pinned Links API", function() {
   });
 
   it("should update the database and links", () => {
-    return gUserDatabase.init(["pinnedLinks"]).then(() => {
+    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
       gPinnedLinks.init().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
@@ -87,7 +86,7 @@ describe("Pinned Links API", function() {
   });
 
   it("should turn a directory link into history", () => {
-    return gUserDatabase.init(["pinnedLinks"]).then(() => {
+    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
       gPinnedLinks.init().then(() => {
         assert.lengthOf(gPinnedLinks.links, 0);
 
@@ -103,7 +102,7 @@ describe("Pinned Links API", function() {
   });
 
   it("should replace a pinned link with another (Used for ended campaigns)", () => {
-    return gUserDatabase.init(["pinnedLinks"]).then(() => {
+    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
       gPinnedLinks.init().then(() => {
         // Attempting to replace a link that isn't pinned does nothing.
         gPinnedLinks.replace("http://example0.com/", secondLink);
@@ -122,12 +121,12 @@ describe("Pinned Links API", function() {
 
   describe("gUserDatabase Errors", function() {
     it("should reject when there is an error opening the database", () => {
-      var initPromise = gUserDatabase.init(["pinnedLinks"], gMockObject);
+      var initPromise = gUserDatabase.init({"pinnedLinks": []}, gMockObject);
       return initPromise.should.be.rejected;
     });
 
     it("should reject when there is an error saving to the database", () => {
-      gUserDatabase.init(["pinnedLinks"]).then(() => {
+      gUserDatabase.init({"pinnedLinks": []}).then(() => {
         var savePromise = gUserDatabase.save("prefs", "pinnedLinks", null, gMockObject);
         return savePromise.should.be.rejected;
       });

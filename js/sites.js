@@ -102,15 +102,11 @@
      * when done.
      */
     block() {
-      let self = this;
-      return async(function* () {
-        let blocked = yield self.isBlocked();
-        if (!blocked) {
-          gUndoDialog.show(self);
-          gBlockedLinks.block(self._link);
-          gNewTab.sendToBrowser("NewTab:UpdateGrid");
-        }
-      })();
+      if (!this.isBlocked()) {
+        gUndoDialog.show(this);
+        gBlockedLinks.block(this._link);
+        gNewTab.sendToBrowser("NewTab:UpdateGrid");
+      }
     },
 
     /**

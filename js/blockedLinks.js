@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* globals gPinnedLinks, gUserDatabase, async*/
+/* globals gPinnedLinks, gUserDatabase */
 "use strict";
 
 /**
@@ -12,7 +12,7 @@
     /**
      * The cached list of blocked links.
      */
-    _links: {},
+    _links: new Set(),
 
 
     /**
@@ -21,23 +21,11 @@
     init() {
       var loadPromise = gUserDatabase.load("prefs", "blockedLinks");
       loadPromise.then(loadedLinks => {
-        this._links = (loadedLinks && loadedLinks.length) ? JSON.parse(loadedLinks) : {};
+        if (loadedLinks && loadedLinks.length) {
+          this._links = new Set(JSON.parse(loadedLinks));
+        }
       });
       return loadPromise;
-    },
-
-    /**
-     * The list of blocked links.
-     */
-    get links() {
-      return this._links;
-    },
-
-    _hash(url) {
-      var buffer = new TextEncoder("utf-8").encode(url);
-      return window.crypto.subtle.digest("SHA-256", buffer).then(digest => {
-        return new TextDecoder("utf-8").decode(digest);
-      });
     },
 
     /**
@@ -45,34 +33,32 @@
      *
      * @param {Link} aLink The link to block.
      */
-    block: async(function* (aLink) {
-      var hashedURL = yield gBlockedLinks._hash(aLink.url);
-      gBlockedLinks.links[hashedURL] = 1;
+    block(aLink) {
+      gBlockedLinks._links.add(aLink.url);
 
       // Make sure we unpin blocked links.
       gPinnedLinks.unpin(aLink);
-      yield gBlockedLinks.save();
-    }),
+      return this.save();
+    },
 
     /**
      * Unblocks a given link. Adjusts siteMap accordingly, and notifies listeners.
      *
      * @param {Link} aLink The link to unblock.
      */
-    unblock: async(function* (aLink) {
-      var isBlocked = yield gBlockedLinks.isBlocked(aLink);
+    unblock(aLink) {
+      var isBlocked = this.isBlocked(aLink);
       if (isBlocked) {
-        var hashedURL = yield gBlockedLinks._hash(aLink.url);
-        delete gBlockedLinks.links[hashedURL];
-        yield gBlockedLinks.save();
+        this._links.delete(aLink.url);
+        return this.save();
       }
-    }),
+    },
 
     /**
      * Saves the current list of blocked links.
      */
     save() {
-      return gUserDatabase.save("prefs", "blockedLinks", JSON.stringify(this.links));
+      return gUserDatabase.save("prefs", "blockedLinks", JSON.stringify([...this._links]));
     },
 
     /**
@@ -80,10 +66,9 @@
      *
      * @param {Link} aLink The link to check.
      */
-    isBlocked: async(function* (aLink) {
-      var hashedLink = yield gBlockedLinks._hash(aLink.url);
-      return (hashedLink in gBlockedLinks.links);
-    }),
+    isBlocked(aLink) {
+      return this._links.has(aLink.url);
+    },
 
     /**
      * Checks whether the list of blocked links is empty.
@@ -91,14 +76,14 @@
      * @return {Boolean} Whether the list is empty.
      */
     isEmpty() {
-      return Object.keys(this.links).length === 0;
+      return this._links.size === 0;
     },
 
     /**
      * Resets the links cache and IDB object.
      */
     reset() {
-      this._links = {};
+      this._links = new Set();
       return this.save();
     },
   };

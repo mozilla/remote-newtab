@@ -4,13 +4,14 @@
 /*globals ContentSearchUIController*/
 "use strict";
 (function(exports) {
+  debugger;
   let gSearch = {
     init() {
-      document.getElementById("newtab-search-submit")
-        .addEventListener("click", this._contentSearchController.search.bind(this));
       let textbox = document.getElementById("newtab-search-text");
       this._contentSearchController =
         new ContentSearchUIController(textbox, textbox.parentNode, "newtab", "newtab");
+      document.getElementById("newtab-search-submit")
+        .addEventListener("click", this._contentSearchController.search.bind(this));
     },
   };
   exports.gSearch = gSearch;

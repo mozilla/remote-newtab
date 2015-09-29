@@ -4,7 +4,6 @@
 /*globals ContentSearchUIController*/
 "use strict";
 (function(exports) {
-  debugger;
   let gSearch = {
     init() {
       let textbox = document.getElementById("newtab-search-text");

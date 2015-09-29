@@ -7,7 +7,7 @@
 /**
  * Singleton that keeps track of all blocked links in the grid.
  */
-(function(exports) {
+(function(exports, userDB) {
   const gBlockedLinks = {
     /**
      * The cached list of blocked links.
@@ -16,10 +16,10 @@
 
 
     /**
-     * Load the blocked links from gUserDatabase and cache them.
+     * Load the blocked links from userDB and cache them.
      */
     init() {
-      var loadPromise = gUserDatabase.load("prefs", "blockedLinks");
+      var loadPromise = userDB.load("prefs", "blockedLinks");
       loadPromise.then(loadedLinks => {
         if (loadedLinks && loadedLinks.length) {
           this._links = new Set(JSON.parse(loadedLinks));
@@ -58,7 +58,7 @@
      * Saves the current list of blocked links.
      */
     save() {
-      return gUserDatabase.save("prefs", "blockedLinks", JSON.stringify([...this._links]));
+      return userDB.save("prefs", "blockedLinks", JSON.stringify([...this._links]));
     },
 
     /**
@@ -88,4 +88,4 @@
     },
   };
   exports.gBlockedLinks = gBlockedLinks;
-}(window));
+}(window, gUserDatabase));

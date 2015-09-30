@@ -632,7 +632,7 @@
       if (this.input.value) {
         let html = "<span class='contentSearchSearchWithHeaderSearchText'>" +
           this.input.value + "</span>";
-        html = this._strings.searchForKeywordsWith.replace("%S", html);
+        html = this._strings.searchForSomethingWith.replace("%S", html);
         searchWithHeader.innerHTML = html;
         return;
       }

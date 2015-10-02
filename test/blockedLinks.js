@@ -11,14 +11,13 @@ describe("Blocked Links API", function() {
 
   afterEach(function(done) {
     // Clear the database and cached links.
-    gUserDatabase.init({"blockedLinks": [], "pinnedLinks": []}).then(() => {
-      gBlockedLinks.init().then(() => {
-        gBlockedLinks.reset().then(() => {
-          gUserDatabase.close();
-          done();
-        });
+    return gUserDatabase.init({"blockedLinks": [], "pinnedLinks": []})
+      .then(gBlockedLinks.init)
+      .then(gBlockedLinks.reset)
+      .then(() => {
+        gUserDatabase.close();
+        done();
       });
-    });
   });
 
   it("should be empty initially", () => {
@@ -28,7 +27,7 @@ describe("Blocked Links API", function() {
 
   it("should update the database and links", () => {
     return gUserDatabase.init({"blockedLinks": []}).then(() => {
-      gBlockedLinks.init().then(() => {
+      return gBlockedLinks.init().then(() => {
         assert.isTrue(gBlockedLinks.isEmpty());
 
         gBlockedLinks.block(firstLink);
@@ -39,7 +38,7 @@ describe("Blocked Links API", function() {
         return gUserDatabase.load("prefs", "blockedLinks").then(blockedLinks => {
           var storedBlockedLinks = JSON.stringify([firstLink.url, thirdLink.url]);
           assert.equal(blockedLinks, storedBlockedLinks);
-          assert.equal(JSON.stringify(gBlockedLinks._links), storedBlockedLinks);
+          assert.equal(JSON.stringify([...gBlockedLinks._links]), storedBlockedLinks);
         });
       });
     });

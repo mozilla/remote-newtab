@@ -21,9 +21,9 @@
     init() {
       var loadPromise = userDB.load("prefs", "blockedLinks");
       loadPromise.then(loadedLinks => {
-        if (loadedLinks && loadedLinks.length) {
-          this._links.clear();
-          JSON.parse(loadedLinks).forEach(item => this._links.add(item));
+        if (loadedLinks && JSON.parse(loadedLinks).length) {
+          gBlockedLinks._links.clear();
+          JSON.parse(loadedLinks).forEach(item => gBlockedLinks._links.add(item));
         }
       });
       return loadPromise;
@@ -85,8 +85,8 @@
      * Resets the links cache and IDB object.
      */
     reset() {
-      this._links = new Set();
-      return this.save();
+      gBlockedLinks._links.clear();
+      return gBlockedLinks.save();
     },
   };
   exports.gBlockedLinks = gBlockedLinks;

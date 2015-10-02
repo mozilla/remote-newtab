@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, Site, Cell*/
+/*globals gNewTab, Site, Cell, gBlockedLinks*/
 
 "use strict";
 (function(exports) {
@@ -123,6 +123,15 @@
     refresh(message) {
       let links = message.links;
       let enhancedLinks = message.enhancedLinks;
+
+      // Filter out blocked links.
+      for (let i = links.length; i--;) {
+        if (gBlockedLinks.isBlocked(links[i])) {
+          links.splice(i, 1);
+          enhancedLinks.splice(i, 1);
+        }
+      }
+
       let cell = document.createElement("div");
       cell.classList.add("newtab-cell");
 
@@ -137,7 +146,7 @@
       // Create cells.
       let cells = [];
       for (let cell of fragment.childNodes) {
-        cells.push(new Cell(this, cell));
+        cells.push(new Cell(gGrid, cell));
       }
 
       // Create sites.
@@ -146,25 +155,25 @@
         if (links[i]) {
           // If the link is enhanced, and enhanced is turned on, then use the enhanced link.
           if (enhancedLinks[i] && gNewTab.enhanced) {
-            this.createSite(enhancedLinks[i], cells[i], ENHANCED);
+            gGrid.createSite(enhancedLinks[i], cells[i], ENHANCED);
           } else {
-            this.createSite(links[i], cells[i], REGULAR);
+            gGrid.createSite(links[i], cells[i], REGULAR);
           }
         }
       }
 
-      this._cells = cells;
-      this._node.innerHTML = "";
-      this._node.appendChild(fragment);
-      this._ready = true;
+      gGrid._cells = cells;
+      gGrid._node.innerHTML = "";
+      gGrid._node.appendChild(fragment);
+      gGrid._ready = true;
 
-      this._pinnedLinks = message.pinnedLinks;
+      gGrid._pinnedLinks = message.pinnedLinks;
 
       // If fetching links took longer than loading the page itself then
       // we need to resize the grid as that was blocked until now.
       // We also want to resize now if the page was already loaded when
       // initializing the grid (the user toggled the page).
-      this._resizeGrid();
+      gGrid._resizeGrid();
 
       let event = new CustomEvent("AboutNewTabUpdated", {
         bubbles: true

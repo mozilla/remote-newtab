@@ -24,6 +24,7 @@ module.exports = function(config) {
       "js/pinnedLinks.js",
       "js/userDatabase.js",
       "js/lib/async.js",
+      "js/blockedLinks.js",
       "js/rectangle.js",
       "js/lib/swMessage.js",
       "test/fixtures/**/*.html",

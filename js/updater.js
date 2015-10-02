@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, gTransformation, gGrid*/
+/*globals gNewTab, gTransformation, gGrid, gBlockedLinks*/
 
 "use strict";
 (function(exports) {
@@ -25,6 +25,13 @@
      * @param {Object} aMessage The links sent down by the parent process.
      */
     updateGrid(aMessage) {
+      // Filter out blocked links.
+      for (let i = aMessage.links.length; i--;) {
+        if (gBlockedLinks.isBlocked(aMessage.links[i])) {
+          aMessage.links.splice(i, 1);
+        }
+      }
+
       let links = aMessage.links.slice(0, gGrid.cells.length);
 
       // Find all sites that remain in the grid.

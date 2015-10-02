@@ -8,7 +8,7 @@
   const gUserDatabase = {
     _database: null,
 
-    init(keys, db =  window.indexedDB) {
+    init(keys, db = window.indexedDB) {
       this._keys = keys;
       return new Promise((resolve, reject) => {
         var request = db.open("NewTabData", 1);
@@ -91,9 +91,9 @@
 
       objStore.transaction.oncomplete = () => {
         var prefObjectStore = db.transaction("prefs", "readwrite").objectStore("prefs");
-        for (var key of this._keys) {
-          prefObjectStore.add(gUserDatabase._createPrefsData(key, []));
-        }
+        Object.keys(this._keys).forEach(key => {
+          prefObjectStore.add(gUserDatabase._createPrefsData(key, this._keys[key]));
+        });
       };
     },
 

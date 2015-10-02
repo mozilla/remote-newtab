@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gUpdater, gDropTargetShim, gUserDatabase */
+/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gDropTargetShim, gUserDatabase */
 
 "use strict";
 (function(exports) {
@@ -20,10 +20,6 @@
     init() {
       gNewTab.registerListener("NewTab:UpdatePages",
         this.update.bind(this));
-      gNewTab.registerListener("NewTab:PinState",
-        this.setPinState.bind(this));
-      gNewTab.registerListener("NewTab:BlockState",
-        this.setBlockState.bind(this));
       gNewTab.registerListener("NewTab:RegularThumbnailURI",
         this.storeAndShowRegularThumb.bind(this));
 
@@ -296,30 +292,6 @@
         action: "view",
         index: lastIndex
       });
-    },
-
-    setPinState(message) {
-      // Filter through URLs to find the correct site.
-      gGrid.sites
-        .filter(site => site && site._link.url === message.link.url)
-        .forEach(site => site._link.pinState = message.pinState);
-
-      // If we are unpinning the site, update the grid.
-      if (!message.pinState) {
-        gUpdater.updateGrid(message);
-      }
-    },
-
-    setBlockState(message) {
-      // Filter through URLs to find the correct site.
-      gGrid.sites
-        .filter(site => site && site._link.url === message.link.url)
-        .forEach(site => site._link.blockState = message.blockState);
-
-      // If we are blocking the site, update the grid.
-      if (message.blockState) {
-        gUpdater.updateGrid(message);
-      }
     },
 
     storeAndShowRegularThumb: async(function* (message) {

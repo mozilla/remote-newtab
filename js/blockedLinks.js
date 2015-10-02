@@ -22,7 +22,8 @@
       var loadPromise = userDB.load("prefs", "blockedLinks");
       loadPromise.then(loadedLinks => {
         if (loadedLinks && loadedLinks.length) {
-          this._links = new Set(JSON.parse(loadedLinks));
+          this._links.clear();
+          JSON.parse(loadedLinks).forEach(item => this._links.add(item));
         }
       });
       return loadPromise;
@@ -52,6 +53,7 @@
         this._links.delete(aLink.url);
         return this.save();
       }
+      return Promise.resolve();
     },
 
     /**

@@ -4,40 +4,7 @@
 // imports async(), CacheTasks
 importScripts("js/lib/async.js");
 importScripts("js/lib/cachetasks.js");
-
-// The main files of remote new tab website.
-const mainSiteFiles = [
-  "./",
-  "css/images/close.png",
-  "css/images/controls.svg",
-  "css/images/defaultFavicon.png",
-  "css/images/search-arrow-go.svg",
-  "css/images/search-indicator-magnifying-glass.svg",
-  "css/images/shared-menu-check.svg",
-  "css/images/whimsycorn.png",
-  "css/newTab.css",
-  "js/cells.js",
-  "js/customize.js",
-  "js/drag.js",
-  "js/dragDataHelper.js",
-  "js/drop.js",
-  "js/dropPreview.js",
-  "js/dropTargetShim.js",
-  "js/grid.js",
-  "js/intro.js",
-  "js/lib/async.js",
-  "js/lib/swMessage.js",
-  "js/newTab.js",
-  "js/page.js",
-  "js/pinnedLinks.js",
-  "js/rectangle.js",
-  "js/sites.js",
-  "js/transformations.js",
-  "js/undo.js",
-  "js/updater.js",
-  "js/userDatabase.js",
-  "locale/newTab.js",
-];
+importScripts("js/mainSiteFiles.js");
 
 const initTasks = [
   CacheTasks.deleteAllCaches(),

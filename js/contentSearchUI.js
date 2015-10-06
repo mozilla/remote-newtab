@@ -221,12 +221,6 @@
       return row && row.classList.contains("formHistory");
     },
 
-    addInputValueToFormHistory: function() {
-      gNewTab.sendToBrowser("NewTab:AddFormHistoryEntry", {
-        entry: this.input.value
-      });
-    },
-
     handleEvent: function(event) {
       this["_on" + event.type[0].toUpperCase() + event.type.substr(1)](event);
     },
@@ -282,7 +276,6 @@
       }
 
       gNewTab.sendToBrowser("NewTab:Search", eventData);
-      this.addInputValueToFormHistory();
     },
 
     _onInput: function() {

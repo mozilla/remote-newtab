@@ -24,14 +24,18 @@ const mainSiteFiles = [
   "js/dropPreview.js",
   "js/dropTargetShim.js",
   "js/grid.js",
+  "js/intro.js",
   "js/lib/async.js",
+  "js/lib/swMessage.js",
   "js/newTab.js",
   "js/page.js",
+  "js/pinnedLinks.js",
   "js/rectangle.js",
   "js/sites.js",
   "js/transformations.js",
   "js/undo.js",
   "js/updater.js",
+  "js/userDatabase.js",
   "locale/newTab.js",
 ];
 

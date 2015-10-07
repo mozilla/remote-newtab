@@ -12,6 +12,7 @@
  */
 "use strict";
 const mainSiteFiles = [ // jshint ignore:line
+  "./",
   "css/contentSearchUI.css",
   "css/images/close.png",
   "css/images/controls.svg",

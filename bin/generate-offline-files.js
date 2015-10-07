@@ -52,6 +52,7 @@ function generateTemplate(paths){
  */
 "use strict";
 const mainSiteFiles = [ // jshint ignore:line
+  "./",
 ${paths.join("\n")}
 ];
 `;

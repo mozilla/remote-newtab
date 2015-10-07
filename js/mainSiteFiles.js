@@ -49,4 +49,5 @@ const mainSiteFiles = [ // jshint ignore:line
   "js/undo.js",
   "js/updater.js",
   "js/userDatabase.js",
+  "locale/newTab.js",
 ];

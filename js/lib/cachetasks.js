@@ -85,7 +85,8 @@ const CacheTasks = {
     //Default passes the request to network using fetch()
     default:
       if (!response) {
-        var msg = `Not in cache ${cacheName}, going to network for: ${request}`;
+        var url = request.url || request;
+        var msg = `Not in cache ${cacheName}. Fetching from network: ${url}`;
         console.warn(msg);
         response = yield fetch(request);
       }

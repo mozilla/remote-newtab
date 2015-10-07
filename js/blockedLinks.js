@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* globals gPinnedLinks, gUserDatabase */
+/* globals gPinnedLinks, gUserDatabase, async */
 "use strict";
 
 /**
@@ -18,16 +18,15 @@
     /**
      * Load the blocked links from userDB and cache them.
      */
-    init() {
-      var loadPromise = userDB.load("prefs", "blockedLinks");
-      loadPromise.then(loadedLinks => {
-        if (loadedLinks && JSON.parse(loadedLinks).length) {
-          gBlockedLinks._links.clear();
-          JSON.parse(loadedLinks).forEach(item => gBlockedLinks._links.add(item));
-        }
-      });
-      return loadPromise;
-    },
+    init: async(function* () {
+      var result = yield userDB.load("prefs", "blockedLinks");
+      var blockedLinks = JSON.parse(result);
+      if (blockedLinks && blockedLinks.length) {
+        gBlockedLinks._links.clear();
+        blockedLinks.forEach(item => gBlockedLinks._links.add(item));
+      }
+      return blockedLinks;
+    }),
 
     /**
      * Blocks a given link. Adjusts siteMap accordingly, and notifies listeners.

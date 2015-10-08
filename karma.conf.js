@@ -16,42 +16,42 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
 
     files: [{
-        pattern: "sw.js",
+        pattern: "src/v*/sw.js",
         served: true,
         watched: true,
         included: false,
       },
-      "js/pinnedLinks.js",
-      "js/userDatabase.js",
-      "js/lib/async.js",
-      "js/blockedLinks.js",
-      "js/rectangle.js",
-      "js/lib/swMessage.js",
-      "test/fixtures/**/*.html",
-      "test/**/*.js", {
-        pattern: "css/**/*.*",
+      "src/v*/js/pinnedLinks.js",
+      "src/v*/js/userDatabase.js",
+      "src/v*/js/lib/async.js",
+      "src/v*/js/blockedLinks.js",
+      "src/v*/js/rectangle.js",
+      "src/v*/js/lib/swMessage.js",
+      "src/v*/test/fixtures/**/*.html",
+      "src/v*/test/**/*.js", {
+        pattern: "src/v*/css/**/*.*",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "js/**/*.js",
+        pattern: "src/v*/js/**/*.js",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "locale/newTab.js",
+        pattern: "src/v*/locale/newTab.js",
         watched: true,
         served: true,
         included: false
       },
     ],
 
-    proxies: {
-      "/sw.js": "http://localhost:9876/base/sw.js",
-      "/css/": "http://localhost:9876/base/css/",
-      "/js/": "http://localhost:9876/base/js/",
-      "/locale/": "http://localhost:9876/base/locale/",
-    },
+    customHeaders: [{
+      match: ".*",
+      name: "Service-Worker-Allowed",
+      value: "/"
+      },
+    ],
 
     // list of files to exclude
     exclude: [
@@ -63,8 +63,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "js/**/*.js": ["coverage"],
-      "test/fixtures/**/*.html": ["html2js"],
+      "src/v*/js/**/*.js": ["coverage"],
+      "src/v*/test/fixtures/**/*.html": ["html2js"],
     },
 
     // test results reporter to use
@@ -89,6 +89,11 @@ module.exports = function(config) {
         subdir: ".",
         file: "text-summary.txt"
       },]
+    },
+
+    webpackMiddleware: {
+      headers: {"Service-Worker-Allowed": "/"},
+      stats: {colors: true}
     },
 
     // web server port

@@ -3,14 +3,14 @@
 "use strict";
 describe("use of HTML fixtures and JS", () => {
   it("should load an html fixture", () => {
-    document.body.innerHTML = __html__["test/fixtures/script_test_example.html"];
+    document.body.innerHTML = __html__["src/v1/test/fixtures/script_test_example.html"];
     var elem = document.querySelector("#element-exists");
     expect(elem).to.be.ok;
     expect(elem.textContent).to.equal("");
   });
 
   it("should be able to run scripts", () => {
-    document.body.innerHTML = __html__["test/fixtures/script_test_example.html"];
+    document.body.innerHTML = __html__["src/v1/test/fixtures/script_test_example.html"];
     var elem = document.querySelector("#element-exists");
     expect(elem).to.be.ok;
     expect(elem.textContent).to.equal("");

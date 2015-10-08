@@ -23,7 +23,7 @@
     "html2js": "^0.2.0",
     "jscs": "^2.1.0",
     "jshint": "^2.8.0",
-    "karma": "~0.13.10",
+    "karma": "oyiptong/karma",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "^0.1.2",
     "karma-coverage": "^0.5.0",

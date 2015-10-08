@@ -15,7 +15,6 @@
 
         request.onerror = event => {
           var errorString = event.target.errorCode + ": Cannot open an indexedDB connection";
-          console.error(errorString);
           reject(new Error(errorString));
         };
         request.onsuccess = event => {
@@ -63,7 +62,15 @@
           reject(new Error(errorString));
         };
         request.onsuccess = event => {
-          resolve(event.target.result.data);
+          var data = event.target.result.data;
+          var result;
+          if(data && typeof data !== "string"){
+            result = JSON.stringify(data);
+          } else {
+            // null, undefined, empty string
+            result = data;
+          }
+          resolve(result);
         };
       });
     },

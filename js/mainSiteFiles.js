@@ -12,6 +12,7 @@
  */
 "use strict";
 const mainSiteFiles = [ // jshint ignore:line
+  "./",
   "css/contentSearchUI.css",
   "css/images/close.png",
   "css/images/controls.svg",
@@ -48,4 +49,5 @@ const mainSiteFiles = [ // jshint ignore:line
   "js/undo.js",
   "js/updater.js",
   "js/userDatabase.js",
+  "locale/newTab.js",
 ];

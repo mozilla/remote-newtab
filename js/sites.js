@@ -276,10 +276,10 @@
      */
     showEnhancedThumbnail() {
       let thumbnail = this._querySelector(".newtab-thumbnail");
-      // Wait for Service Worker, so we can cache the tiles
       if (this.link.bgColor) {
         thumbnail.style.backgroundColor = this.link.bgColor;
       }
+
       thumbnail.style.backgroundImage = `url("${this.link.imageURI}")`;
 
       if (this.link.enhancedImageURI) {

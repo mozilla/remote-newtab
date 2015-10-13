@@ -33,7 +33,7 @@
   "use strict";
   function async(func, self) {
     return function asyncFunction() {
-      const functionArgs = Array.from(arguments);
+      const args = Array.from(arguments);
       return new Promise(function(resolve, reject) {
         var gen;
         if (typeof func !== "function") {
@@ -42,19 +42,21 @@
         //not a generator, wrap it.
         if (func.constructor.name !== "GeneratorFunction") {
           gen = (function*() {
-            return func.apply(self, functionArgs);
+            return func.call(self, ...args);
           }());
         } else {
-          gen = func.apply(self, functionArgs);
+          gen = func.call(self, ...args);
         }
         try {
           step(gen.next(undefined));
         } catch (err) {
+          console.warn("The generator threw immediately.", err);
           reject(err);
         }
 
-        function step({value, done}) {
-          if (done) {
+        function step(next) {
+          const value = next.value;
+          if (next.done) {
             return resolve(value);
           }
           if (value instanceof Promise) {
@@ -67,7 +69,10 @@
                   throw err;
                 }
               }
-            ).catch(err => reject(err));
+            ).catch((err) => {
+              console.warn("Unhandled error in async function.", err);
+              reject(err);
+            });
           }
           step(gen.next(value));
         }

@@ -95,7 +95,17 @@
       case "store":
         try {
           response = yield fetch(request);
-          yield cache.put(request, response.clone());
+
+          // Create response with timestamp appended.
+          if (cacheName == "directory_links") {
+            var txt = yield response.text();
+            txt = JSON.parse(txt);
+            txt.timestamp = Date.now();
+            response = new Response(JSON.stringify(txt));
+          }
+
+          var clone = response.clone();
+          yield cache.put(request, clone);
         } catch (err) {
           var msg = `failed to store ${url} in ${cacheName}.`;
           console.warn(msg, err);

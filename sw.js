@@ -10,6 +10,7 @@
 importScripts("js/lib/async.js"); // imports async()
 importScripts("js/lib/cachetasks.js"); // imports CacheTasks
 importScripts("js/mainSiteURLs.js"); // imports mainSiteURLs
+importScripts("js/directoryLinksProvider.js");
 
 const PageThumbTasks = {
   storeSiteThumb: async(function* ({arrayBuffer, type, thumbURL}) {
@@ -67,6 +68,10 @@ self.addEventListener("message", async(function* ({data, source}) {
     break;
   case "NewTab:DeleteSiteThumb":
     result = yield CacheTasks.deleteCacheEntry(data.thumbURL, "thumbs_cache");
+    break;
+  case "NewTab:InitDirectoryLinksProvider":
+    yield gDirectoryLinksProvider.init();
+    result = true;
     break;
   case "SW:InitializeSite":
     yield PageThumbTasks.init();

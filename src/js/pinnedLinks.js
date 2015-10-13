@@ -135,4 +135,4 @@
     },
   };
   exports.gPinnedLinks = gPinnedLinks;
-}(window));
+}(this || self));

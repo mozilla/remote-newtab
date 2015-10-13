@@ -4,10 +4,18 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /*jshint worker:true, browser:true*/
-/*globals async, CacheTasks, Response, Request, fetch */
+/*globals async, CacheTasks, Response, Request, fetch, ProviderManager, PlacesProvider, Links */
+
 "use strict";
 importScripts("js/lib/async.js"); // imports async()
 importScripts("js/lib/cachetasks.js"); // imports CacheTasks
+importScripts("js/ProviderManager.js");
+importScripts("js/placesProvider.js");
+importScripts("js/directoryLinksProvider.js");
+importScripts("js/links.js");
+importScripts("js/userDatabase.js");
+importScripts("js/pinnedLinks.js");
+importScripts("js/blockedLinks.js");
 
 const SWTasks = {
   /**
@@ -19,6 +27,7 @@ const SWTasks = {
         "skeleton_cache", // The html, js, css, of site
         "pagethumbs_cache", // User's history tiles
         "ads_cache", // Advertisement tiles
+        "directory_cache", // directoryLinks file
       ]);
       var request = yield fetch("js/mainSiteURLs.json");
       var requests = (yield request.json()).map(
@@ -58,6 +67,35 @@ const SWTasks = {
     }, this);
   },
 };
+
+self.addEventListener("message", async(function*({data, source}) {
+  var result;
+  var {name, id} = data;
+  switch (name) {
+  case "NewTab:InitProviderManager":
+    yield ProviderManager.init();
+    result = true;
+    break;
+  case "NewTab:GetLinks":
+    result = yield Links.getLinks();
+    break;
+  case "NewTab:PopulateCache":
+    result = yield Links.populateCache();
+    break;
+  case "NewTab:CacheHistoryLinks":
+    PlacesProvider.setLinks(data.placesLinks);
+    result = true;
+    break;
+  default:
+    console.warn("Unhandled message", data.name);
+  }
+  // Only respond to messages that have an id, even if unhandeled.
+  // This is to prevents locking any expecting promises.
+  if (!id) {
+    return;
+  }
+  source.postMessage({result, id});
+}));
 
 self.addEventListener("install", (ev) => {
   ev.waitUntil(SWTasks.init());

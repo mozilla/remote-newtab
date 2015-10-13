@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gNewTab, Site, Cell, gBlockedLinks*/
+/*globals gNewTab, Site, Cell, gPinnedLinks, async, swMessage*/
 
 "use strict";
 (function(exports) {
@@ -62,20 +62,22 @@
     /**
      * Initializes the grid.
      */
-    init() {
-      this._node = document.getElementById("newtab-grid");
-      this._createSiteFragment();
-      addEventListener("resize", this);
+    init: async(function* () {
+      gGrid._node = document.getElementById("newtab-grid");
+      gGrid._createSiteFragment();
 
-      gNewTab.sendToBrowser("NewTab:InitializeGrid");
-      gNewTab.registerListener("NewTab:InitializeLinks",
-        this.refresh.bind(this));
+      gGrid._sw = (yield navigator.serviceWorker.ready).active;
+      let populateCache = swMessage(gGrid._sw, "NewTab:PopulateCache");
+      yield populateCache();
+
+      gGrid.refresh();
+      addEventListener("resize", gGrid);
 
       // Resize the grid as soon as the page loads.
-      if (!this.isDocumentLoaded) {
-        addEventListener("load", this);
+      if (!gGrid.isDocumentLoaded) {
+        addEventListener("load", gGrid);
       }
-    },
+    }),
 
     /**
      * Creates a new site in the grid.
@@ -120,17 +122,9 @@
     /**
      * Renders the grid, including cells and sites.
      */
-    refresh(message) {
-      let links = message.links;
-      let enhancedLinks = message.enhancedLinks;
-
-      // Filter out blocked links.
-      for (let i = links.length; i--;) {
-        if (gBlockedLinks.isBlocked(links[i])) {
-          links.splice(i, 1);
-          enhancedLinks.splice(i, 1);
-        }
-      }
+    refresh: async(function* () {
+      let getLinks = swMessage(gGrid._sw, "NewTab:GetLinks");
+      let {links, enhancedLinks} = yield getLinks();
 
       let cell = document.createElement("div");
       cell.classList.add("newtab-cell");
@@ -167,7 +161,7 @@
       gGrid._node.appendChild(fragment);
       gGrid._ready = true;
 
-      gGrid._pinnedLinks = message.pinnedLinks;
+      gGrid._pinnedLinks = gPinnedLinks.links;
 
       // If fetching links took longer than loading the page itself then
       // we need to resize the grid as that was blocked until now.
@@ -179,7 +173,7 @@
         bubbles: true
       });
       document.dispatchEvent(event);
-    },
+    }),
 
     /**
      * Calculate the height for a number of rows up to the maximum rows.

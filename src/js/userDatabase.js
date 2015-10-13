@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+/*globals indexedDB*/
 
 "use strict";
 
@@ -8,7 +9,7 @@
   const gUserDatabase = {
     _database: null,
 
-    init(keys, db = window.indexedDB) {
+    init(keys, db = indexedDB) {
       this._keys = keys;
       return new Promise((resolve, reject) => {
         var request = db.open("NewTabData", 1);
@@ -109,4 +110,4 @@
     }
   };
   exports.gUserDatabase = gUserDatabase;
-}(window));
+}(this || self));

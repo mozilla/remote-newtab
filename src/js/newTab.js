@@ -1,8 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals Request, CacheTasks, gGrid, gPage, gUpdater, gUserDatabase,
-  gPinnedLinks, gBlockedLinks, async*/
+/*globals gGrid, gPage, gCustomize, gStrings, gUpdater, gUserDatabase,
+  gPinnedLinks, gBlockedLinks, async, swMessage*/
 
 "use strict";
 
@@ -69,17 +69,21 @@
       }
     },
 
-    setInitialState(message) {
-      this.privateBrowsingMode = message.privateBrowsingMode;
-      this.rows = message.rows;
-      this.columns = message.columns;
-      this.introShown = message.introShown;
-      this.windowID = message.windowID;
-      this.observe("browser.newtabpage.enabled", message.enabled);
-      this.observe("browser.newtabpage.enhanced", message.enhanced);
+    setInitialState: async(function* (message) {
+      let sw = (yield navigator.serviceWorker.ready).active;
+      let cacheHistoryLinks = swMessage(sw, "NewTab:CacheHistoryLinks");
+      yield cacheHistoryLinks({placesLinks: message.placesLinks});
+
+      gNewTab.privateBrowsingMode = message.privateBrowsingMode;
+      gNewTab.rows = message.rows;
+      gNewTab.columns = message.columns;
+      gNewTab.introShown = message.introShown;
+      gNewTab.windowID = message.windowID;
+      gNewTab.observe("browser.newtabpage.enabled", message.enabled);
+      gNewTab.observe("browser.newtabpage.enhanced", message.enhanced);
       gUpdater.init();
       gPage.init();
-    },
+    }),
 
     newTabString(name, args) {
       let key = "newtab-" + name;
@@ -133,7 +137,11 @@
 
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
-  document.addEventListener("NewTabCommandReady", async(function*() {
+  document.addEventListener("NewTabCommandReady", async(function* () {
+    let sw = (yield navigator.serviceWorker.ready).active;
+    let initProviderManager = swMessage(sw, "NewTab:InitProviderManager");
+    yield initProviderManager();
+
     yield gUserDatabase.init(this._prefsObjectStoreKeys);
     yield gPinnedLinks.init();
     yield gBlockedLinks.init();

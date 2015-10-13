@@ -88,4 +88,4 @@
     },
   };
   exports.gBlockedLinks = gBlockedLinks;
-}(window, gUserDatabase));
+}(this || self, gUserDatabase));

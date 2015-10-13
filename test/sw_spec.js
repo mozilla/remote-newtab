@@ -69,7 +69,7 @@ describe("Service worker registration", function() {
       it("should delete all caches.", async(function* () {
         var cacheDelete = deleteAllCaches(sw);
         var result = yield cacheDelete();
-        expect(result).to.be.true;
+        expect(Array.from(result.values()).every(value => value)).to.be.true;
       }));
 
       it("should re-initialize site.", async(function* () {

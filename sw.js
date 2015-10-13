@@ -1,39 +1,58 @@
-/*globals async, CacheTasks, importScripts, self */
+/**
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+/*globals async, CacheTasks, importScripts, self, mainSiteURLs, Response */
+
 "use strict";
 
-// imports async(), CacheTasks
-importScripts("js/lib/async.js");
-importScripts("js/lib/cachetasks.js");
-importScripts("js/mainSiteFiles.js");
+importScripts("js/lib/async.js"); // imports async()
+importScripts("js/lib/cachetasks.js"); // imports CacheTasks
+importScripts("js/mainSiteURLs.js"); // imports mainSiteURLs
 
-const initTasks = [
-  CacheTasks.deleteAllCaches(),
-  // Save the site's skeleton.
-  CacheTasks.populateCache("skeleton_cache", mainSiteFiles),
-  //Add other tasks in this array...
-];
-
-const PageThumbTask = {
+const PageThumbTasks = {
   storeSiteThumb: async(function* ({arrayBuffer, type, thumbURL}) {
-    var thumbURL = new URL(thumbURL, self.location).href;
+    var url = new URL(thumbURL, self.location).href;
     var success = true;
-    var isValidURL = thumbURL.startsWith(`${self.location.origin}/pagethumbs/`);
+    var isValidURL = url.startsWith(`${self.location.origin}/pagethumbs/`);
     // prevent thumbs trashing other URLs
-    if(!isValidURL){
+    if (!isValidURL) {
       success = false;
-    }else{
+    }else {
       try {
-        yield CacheTasks.saveBinaryToCache("thumbs_cache", arrayBuffer, type, thumbURL);
+        yield CacheTasks.saveBinaryToCache("thumbs_cache", arrayBuffer, type, url);
       } catch (err) {
         success = false;
       }
     }
     return success;
   }),
+  /**
+   * Ensure we always resolve with a Response, to avoid Content Corrupted errors
+   * being shown to the user.
+   *
+   * @param {Promise<Response>} promise The promise that should resolve to a
+   *                                    Response.
+   */
+  ensureResponse: async(function* (promise) {
+    var response;
+    try {
+      response = yield promise;
+    }catch (err) {
+      console.error(err);
+      response = new Response();
+    }
+    return response;
+  }),
+  init: async(function*() {
+    yield CacheTasks.deleteAllCaches();
+    yield CacheTasks.populateCache("skeleton_cache", mainSiteURLs);
+  }),
 };
 
 self.addEventListener("install", (ev) => {
-  ev.waitUntil(Promise.all([initTasks]));
+  ev.waitUntil(PageThumbTasks.init());
 });
 
 self.addEventListener("message", async(function* ({data, source}) {
@@ -41,7 +60,7 @@ self.addEventListener("message", async(function* ({data, source}) {
   var {name, id} = data;
   switch (name) {
   case "NewTab:PutSiteThumb":
-    result = yield PageThumbTask.storeSiteThumb(data);
+    result = yield PageThumbTasks.storeSiteThumb(data);
     break;
   case "NewTab:HasSiteThumb":
     result = yield CacheTasks.hasCacheEntry(data.thumbURL, "thumbs_cache");
@@ -50,7 +69,7 @@ self.addEventListener("message", async(function* ({data, source}) {
     result = yield CacheTasks.deleteCacheEntry(data.thumbURL, "thumbs_cache");
     break;
   case "SW:InitializeSite":
-    yield Promise.all(initTasks);
+    yield PageThumbTasks.init();
     result = true;
     break;
   case "SW:DeleteAllCaches":
@@ -69,12 +88,19 @@ self.addEventListener("message", async(function* ({data, source}) {
 
 self.addEventListener("fetch", (ev) => {
   var key = getSwitchKeyFromURL(ev.request.url);
+  var promise;
   switch (key) {
   case "pagethumbs":
-    ev.respondWith(CacheTasks.respondFromCache(ev.request, "thumbs_cache", "throw"));
+    promise = CacheTasks.respondFromCache(ev.request, "thumbs_cache", "throw");
+    ev.respondWith(PageThumbTasks.ensureResponse(promise));
+    break;
+  case "images":
+    promise = CacheTasks.respondFromCache(ev.request, "tiles_cache", "store");
+    ev.respondWith(PageThumbTasks.ensureResponse(promise));
     break;
   default:
-    ev.respondWith(CacheTasks.respondFromCache(ev.request, "skeleton_cache"));
+    promise = CacheTasks.respondFromCache(ev.request, "skeleton_cache", "store");
+    ev.respondWith(promise);
   }
 });
 

@@ -4,7 +4,7 @@
 describe("Service worker registration", function() {
   it("should correctly register and activate the Service Worker.", async(function* () {
     // force reload on first load.
-    navigator.serviceWorker.register("/base/src/v1/sw.js", {
+    navigator.serviceWorker.register("/base/src/v2/sw.js", {
       scope: "./"
     });
     var sw = (yield navigator.serviceWorker.ready).active;

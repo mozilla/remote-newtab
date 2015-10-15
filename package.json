@@ -23,7 +23,7 @@
     "html2js": "^0.2.0",
     "jscs": "^2.1.0",
     "jshint": "^2.8.0",
-    "karma": "oyiptong/karma",
+    "karma": "^0.13.11",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "^0.1.2",
     "karma-coverage": "^0.5.0",
@@ -44,7 +44,7 @@
     "test": "npm run karma",
     "jshint": "jshint src/v*/js/**.js src/v*/test/**.js",
     "jscs": "jscs src/v*/test/*/**.js src/v*/js/*/**.js",
-    "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
+    "pretest": "npm run jshint && npm run jscs",
     "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
   }
 }

@@ -23,7 +23,7 @@
     "html2js": "^0.2.0",
     "jscs": "^2.1.0",
     "jshint": "^2.8.0",
-    "karma": "~0.13.10",
+    "karma": "^0.13.11",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "^0.1.2",
     "karma-coverage": "^0.5.0",
@@ -32,17 +32,19 @@
     "karma-html2js-preprocessor": "^0.1.0",
     "karma-mocha": "^0.2.0",
     "karma-requirejs": "^0.2.2",
+    "karma-webpack": "^1.7.0",
     "mocha": "^2.2.5",
     "mozilla-download": "^1.1.1",
-    "requirejs": "^2.1.20"
+    "requirejs": "^2.1.20",
+    "webpack": "^1.12.2"
   },
   "scripts": {
     "generate-offline-files": "bin/generate-offline-files.js",
     "karma": "./node_modules/.bin/karma start --single-run",
     "test": "npm run karma",
-    "jshint": "jshint js/**.js test/**.js",
-    "jscs": "jscs test/*/**.js js/*/**.js",
-    "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
+    "jshint": "jshint src/v*/js/**.js src/v*/test/**.js",
+    "jscs": "jscs src/v*/test/*/**.js src/v*/js/*/**.js",
+    "pretest": "npm run jshint && npm run jscs",
     "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
   }
 }

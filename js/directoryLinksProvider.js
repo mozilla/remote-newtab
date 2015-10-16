@@ -5,8 +5,6 @@
 
 "use strict";
 
-const DIRECTORY_LINKS_TYPE = "application/json";
-
 // The const that tells where to obtain directory links
 const PREF_DIRECTORY_SOURCE = "https://tiles.services.mozilla.com/v3/links/fetch/en-US/nightly";
 

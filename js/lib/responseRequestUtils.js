@@ -22,7 +22,7 @@
      * @return {Boolean} True if is can be, false otherwise.
      */
     isCacheable(request) {
-      if(!(request instanceof Request)){
+      if (!(request instanceof Request)) {
         throw new TypeError("Invalid input.");
       }
       var headers = request.headers;
@@ -49,7 +49,7 @@
      * @return {Boolean} True if is can be, false otherwise.
      */
     isCacheable(response) {
-      if(!(response instanceof Response)){
+      if (!(response instanceof Response)) {
         throw new TypeError("Invalid input.");
       }
       var headers = response.headers;
@@ -58,23 +58,37 @@
         return true;
       }
       var cacheDirectives = parseDirectives(headers.get("Cache-Control"));
-      if(cacheDirectives.has("no-store")){
+      if (cacheDirectives.has("no-store")) {
         return false;
       }
       return cacheDirectives.has("max-age") || headers.has("Expires");
     },
-
+    /**
+     * Determines if a response is stale by checking if it has expired
+     * or its max-age has passed.
+     *
+     * @param  {Response}  response the response to check.
+     * @return {Boolean} True if has, false otherwise.
+     */
     isStale(response) {
+      if (!(response instanceof Response)) {
+        throw new TypeError("Invalid input.");
+      }
       var headers = response.headers;
       if (headers.has("Expires")) {
         return this.isExpired(response);
       }
       if (!headers.has("Cache-Control")) {
-        return false;
+        return this.hasMaxAgeLapsed(response);
       }
-      return this.hasMaxAgeLapsed(response);
+      return false;
     },
-
+    /**
+     * Check if the max-age of the response has lapsed.
+     *
+     * @param  {Response}  response the response to check.
+     * @return {Boolean} True if has, false otherwise.
+     */
     hasMaxAgeLapsed(response) {
       var headers = response.headers;
       var now = new Date(Date.now()).toGMTString();
@@ -91,7 +105,12 @@
       // Low precision comparison, to the second.
       return Date.parse(now) > (parsedDate + parsedMaxAge);
     },
-
+    /**
+     * Check if a response has expired.
+     *
+     * @param  {Response} response The response to check.
+     * @return {Boolean} True if has, false otherwise.
+     */
     isExpired(response) {
       var headers = response.headers;
       var now = new Date(Date.now()).toGMTString();

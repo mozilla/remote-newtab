@@ -119,10 +119,6 @@
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
   document.addEventListener("NewTabCommandReady", async(function* () {
-    let sw = (yield navigator.serviceWorker.ready).active;
-    let initDirectoryLinksProvider = swMessage(sw, "NewTab:InitDirectoryLinksProvider");
-    let result = yield initDirectoryLinksProvider();
-
     yield gUserDatabase.init(this._prefsObjectStoreKeys);
     yield gPinnedLinks.init();
     yield gBlockedLinks.init();

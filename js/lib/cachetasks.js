@@ -145,6 +145,7 @@
     },
     /**
      * Adds a cache request/response pair to a particular cache.
+     *
      * @param  {Request} request The request to store.
      * @param  {Response} response The response to store.
      * @param  {String} cacheName The cache to try to save into.

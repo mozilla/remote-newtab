@@ -1,5 +1,5 @@
 /* jshint esnext: true, expr: true, mocha: true */
-/* globals expect, Request, Response, RequestUtils, it*/
+/* globals expect, Request, RequestUtils, it*/
 "use strict";
 
 function testType(type){

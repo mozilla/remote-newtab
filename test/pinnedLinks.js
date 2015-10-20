@@ -42,7 +42,7 @@ describe("Pinned Links API", function() {
     assert.equal(links.length, 0);
   });
 
-  it("should update the database and links", async(function*(){
+  it("should update the database and links", async(function*() {
     yield gUserDatabase.init({"pinnedLinks": []});
     yield gPinnedLinks.init();
     assert.lengthOf(gPinnedLinks.links, 0);
@@ -53,7 +53,7 @@ describe("Pinned Links API", function() {
     assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
   }));
 
-  it("should update the database and links", async(function*(){
+  it("should update the database and links", async(function*() {
     yield gUserDatabase.init({"pinnedLinks": []});
     yield gPinnedLinks.init();
     assert.lengthOf(gPinnedLinks.links, 0);
@@ -72,7 +72,7 @@ describe("Pinned Links API", function() {
     assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
   }));
 
-  it("should turn a directory link into history", async(function*(){
+  it("should turn a directory link into history", async(function*() {
     yield gUserDatabase.init({"pinnedLinks": []});
     yield gPinnedLinks.init();
     assert.lengthOf(gPinnedLinks.links, 0);
@@ -84,7 +84,7 @@ describe("Pinned Links API", function() {
     assert.equal(directoryLink.type, "history");
   }));
 
-  it("should replace a pinned link with another (Used for ended campaigns)", async(function*(){
+  it("should replace a pinned link with another (Used for ended campaigns)", async(function*() {
     yield gUserDatabase.init({"pinnedLinks": []});
     yield gPinnedLinks.init();
     // Attempting to replace a link that isn't pinned does nothing.

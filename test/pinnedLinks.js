@@ -28,96 +28,77 @@ describe("Pinned Links API", function() {
     }
   };
 
-  afterEach(function(done) {
+  afterEach(async(function*() {
     // Clear the database and cached links.
-    gPinnedLinks.resetCache();
-    gUserDatabase.init({"pinnedLinks": []}).then(() => {
-      gPinnedLinks.init().then(() => {
-        gUserDatabase.save("prefs", "pinnedLinks", []).then(() => {
-          gUserDatabase.close();
-          done();
-        });
-      });
-    });
-  });
+    yield gPinnedLinks.resetCache();
+    yield gUserDatabase.init({"pinnedLinks": []});
+    yield gPinnedLinks.init();
+    yield gUserDatabase.save("prefs", "pinnedLinks", []);
+    yield gUserDatabase.close();
+  }));
 
   it("should be empty initially", () => {
     var links = gPinnedLinks.links;
     assert.equal(links.length, 0);
   });
 
-  it("should update the database and links", () => {
-    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
-      gPinnedLinks.init().then(() => {
-        assert.lengthOf(gPinnedLinks.links, 0);
+  it("should update the database and links", async(function*(){
+    yield gUserDatabase.init({"pinnedLinks": []});
+    yield gPinnedLinks.init();
+    assert.lengthOf(gPinnedLinks.links, 0);
+    gPinnedLinks.pin(firstLink, 2);
+    var pinnedLinks = yield gUserDatabase.load("prefs", "pinnedLinks");
+    var storedPinnedLinks = JSON.stringify([null, null, firstLink]);
+    assert.equal(pinnedLinks, storedPinnedLinks);
+    assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
+  }));
 
-        gPinnedLinks.pin(firstLink, 2);
-        return gUserDatabase.load("prefs", "pinnedLinks").then(pinnedLinks => {
-          var storedPinnedLinks = JSON.stringify([null, null, firstLink]);
-          assert.equal(pinnedLinks, storedPinnedLinks);
-          assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
-        });
-      });
-    });
-  });
+  it("should update the database and links", async(function*(){
+    yield gUserDatabase.init({"pinnedLinks": []});
+    yield gPinnedLinks.init();
+    assert.lengthOf(gPinnedLinks.links, 0);
+    gPinnedLinks.pin(firstLink, 2);
+    gPinnedLinks.pin(secondLink, 1);
+    assert.isTrue(gPinnedLinks.isPinned(firstLink));
+    assert.isTrue(gPinnedLinks.isPinned(secondLink));
 
-  it("should update the database and links", () => {
-    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
-      gPinnedLinks.init().then(() => {
-        assert.lengthOf(gPinnedLinks.links, 0);
+    gPinnedLinks.unpin(firstLink);
+    assert.isFalse(gPinnedLinks.isPinned(firstLink));
+    gPinnedLinks.pin(firstLink, 5);
 
-        gPinnedLinks.pin(firstLink, 2);
-        gPinnedLinks.pin(secondLink, 1);
-        assert.isTrue(gPinnedLinks.isPinned(firstLink));
-        assert.isTrue(gPinnedLinks.isPinned(secondLink));
+    var pinnedLinks = yield gUserDatabase.load("prefs", "pinnedLinks");
+    var storedPinnedLinks = JSON.stringify([null, secondLink, null, null, null, firstLink]);
+    assert.equal(pinnedLinks, storedPinnedLinks);
+    assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
+  }));
 
-        gPinnedLinks.unpin(firstLink);
-        assert.isFalse(gPinnedLinks.isPinned(firstLink));
+  it("should turn a directory link into history", async(function*(){
+    yield gUserDatabase.init({"pinnedLinks": []});
+    yield gPinnedLinks.init();
+    assert.lengthOf(gPinnedLinks.links, 0);
+    gPinnedLinks.pin(directoryLink, 2);
+    var pinnedLinks = yield gUserDatabase.load("prefs", "pinnedLinks");
+    var storedPinnedLinks = JSON.stringify([null, null, directoryLink]);
+    assert.equal(pinnedLinks, storedPinnedLinks);
+    assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
+    assert.equal(directoryLink.type, "history");
+  }));
 
-        gPinnedLinks.pin(firstLink, 5);
+  it("should replace a pinned link with another (Used for ended campaigns)", async(function*(){
+    yield gUserDatabase.init({"pinnedLinks": []});
+    yield gPinnedLinks.init();
+    // Attempting to replace a link that isn't pinned does nothing.
+    gPinnedLinks.replace("http://example0.com/", secondLink);
+    assert.lengthOf(gPinnedLinks.links, 0);
 
-        return gUserDatabase.load("prefs", "pinnedLinks").then(pinnedLinks => {
-          var storedPinnedLinks = JSON.stringify([null, secondLink, null, null, null, firstLink]);
-          assert.equal(pinnedLinks, storedPinnedLinks);
-          assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
-        });
-      });
-    });
-  });
+    // Pin firstLink
+    gPinnedLinks.pin(firstLink, 2);
+    assert.equal(gPinnedLinks.links[2], firstLink);
 
-  it("should turn a directory link into history", () => {
-    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
-      gPinnedLinks.init().then(() => {
-        assert.lengthOf(gPinnedLinks.links, 0);
-
-        gPinnedLinks.pin(directoryLink, 2);
-        return gUserDatabase.load("prefs", "pinnedLinks").then(pinnedLinks => {
-          var storedPinnedLinks = JSON.stringify([null, null, directoryLink]);
-          assert.equal(pinnedLinks, storedPinnedLinks);
-          assert.equal(JSON.stringify(gPinnedLinks.links), storedPinnedLinks);
-          assert.equal(directoryLink.type, "history");
-        });
-      });
-    });
-  });
-
-  it("should replace a pinned link with another (Used for ended campaigns)", () => {
-    return gUserDatabase.init({"pinnedLinks": []}).then(() => {
-      gPinnedLinks.init().then(() => {
-        // Attempting to replace a link that isn't pinned does nothing.
-        gPinnedLinks.replace("http://example0.com/", secondLink);
-        assert.lengthOf(gPinnedLinks.links, 0);
-
-        // Pin firstLink
-        gPinnedLinks.pin(firstLink, 2);
-        assert.equal(gPinnedLinks.links[2], firstLink);
-
-        // Replace the pinned firstLink with secondLink
-        gPinnedLinks.replace(firstLink.url, secondLink);
-        assert.equal(gPinnedLinks.links[2], secondLink);
-      });
-    });
-  });
+    // Replace the pinned firstLink with secondLink
+    gPinnedLinks.replace(firstLink.url, secondLink);
+    assert.equal(gPinnedLinks.links[2], secondLink);
+  }));
 
   describe("gUserDatabase Errors", function() {
     it("should reject when there is an error opening the database", () => {
@@ -134,8 +115,10 @@ describe("Pinned Links API", function() {
 
     it("should reject when a simple request fails", () => {
       var simpleRequestHandlersPromise =
-        gUserDatabase._setSimpleRequestHandlers(gMockObject.generateFaultyRequest("Simple Handler Error"),
-        "This is a request handler error");
+        gUserDatabase._setSimpleRequestHandlers(
+          gMockObject.generateFaultyRequest("Simple Handler Error"),
+          "This is a request handler error"
+        );
       return simpleRequestHandlersPromise.should.be.rejected;
     });
   });

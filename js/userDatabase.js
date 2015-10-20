@@ -64,7 +64,7 @@
         request.onsuccess = event => {
           var data = event.target.result.data;
           var result;
-          if(data && typeof data !== "string"){
+          if (data && typeof data !== "string") {
             result = JSON.stringify(data);
           } else {
             // null, undefined, empty string

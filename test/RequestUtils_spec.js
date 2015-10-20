@@ -2,7 +2,7 @@
 /* globals expect, Request, RequestUtils, it*/
 "use strict";
 
-function testType(type){
+function testType(type) {
   return (method) => {
     return method(type);
   };
@@ -15,8 +15,8 @@ var tNull = testType(null);
 var tFakeObj = testType({headers: new Map()});
 
 describe("Request utils", function() {
-  describe("isCacheable() method", ()=>{
-    it("should throw given invalid input", ()=>{
+  describe("isCacheable() method", ()=> {
+    it("should throw given invalid input", ()=> {
       var f = RequestUtils.isCacheable;
       expect(() => tUndefined(f)).to.throw(TypeError);
       expect(() => tString(f)).to.throw(TypeError);
@@ -26,7 +26,7 @@ describe("Request utils", function() {
       expect(() => tFakeObj(f)).to.throw(TypeError);
     });
 
-    it("should return false when 'no-store' is present", ()=>{
+    it("should return false when 'no-store' is present", ()=> {
       var request = new Request(".", {
         headers: {
           "Cache-Control": "no-store"
@@ -35,12 +35,12 @@ describe("Request utils", function() {
       expect(RequestUtils.isCacheable(request)).to.be.false;
     });
 
-    it("should return true when 'no-store' is not present", ()=>{
+    it("should return true when 'no-store' is not present", ()=> {
       var request = new Request(".");
       expect(RequestUtils.isCacheable(request)).to.be.true;
     });
 
-    it("should return true when 'no-store' is not present", ()=>{
+    it("should return true when 'no-store' is not present", ()=> {
       var request = new Request(".");
       expect(RequestUtils.isCacheable(request)).to.be.true;
     });

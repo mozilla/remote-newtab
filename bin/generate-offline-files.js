@@ -52,7 +52,7 @@ function generateTemplate(paths) {
  * See: ${path.relative(__dirname + "/..", __filename)}
  */
 "use strict";
-const mainSiteURLs = [ // jshint ignore:line
+const mainSiteURLs = [// jshint ignore:line
   "./",
   "sw.js",
 ${paths.join("\n")}

@@ -14,7 +14,6 @@
      */
     _links: new Set(),
 
-
     /**
      * Load the blocked links from userDB and cache them.
      */

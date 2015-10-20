@@ -16,30 +16,30 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
 
     files: [{
-        pattern: "src/v*/sw.js",
+        pattern: "src/sw.js",
         served: true,
         watched: true,
         included: false,
       },
-      "src/v*/js/pinnedLinks.js",
-      "src/v*/js/userDatabase.js",
-      "src/v*/js/lib/async.js",
-      "src/v*/js/blockedLinks.js",
-      "src/v*/js/rectangle.js",
-      "src/v*/js/lib/swMessage.js",
-      "src/v*/test/fixtures/**/*.html",
-      "src/v*/test/**/*.js", {
-        pattern: "src/v*/css/**/*.*",
+      "src/js/pinnedLinks.js",
+      "src/js/userDatabase.js",
+      "src/js/lib/async.js",
+      "src/js/blockedLinks.js",
+      "src/js/rectangle.js",
+      "src/js/lib/swMessage.js",
+      "src/test/fixtures/**/*.html",
+      "src/test/**/*.js", {
+        pattern: "src/css/**/*.*",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "src/v*/js/**/*.js",
+        pattern: "src/js/**/*.js",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "src/v*/locale/newTab.js",
+        pattern: "src/locale/newTab.js",
         watched: true,
         served: true,
         included: false
@@ -63,8 +63,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "src/v*/js/**/*.js": ["coverage"],
-      "src/v*/test/fixtures/**/*.html": ["html2js"],
+      "src/js/**/*.js": ["coverage"],
+      "src/test/fixtures/**/*.html": ["html2js"],
     },
 
     // test results reporter to use

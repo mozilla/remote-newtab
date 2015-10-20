@@ -1,7 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUndoDialog, gDropTargetShim, gUserDatabase, gSearch */
+/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize,
+  gUndoDialog, gDropTargetShim, gUserDatabase, gSearch */
 
 "use strict";
 (function(exports) {
@@ -331,7 +332,7 @@
         arrayBuffer,
         type: blob.type
       }, [arrayBuffer]);
-      if (!result){
+      if (!result) {
         console.warn("Failed to store thumbnail image:", thumbURL);
       }
     }),

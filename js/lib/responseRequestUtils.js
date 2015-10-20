@@ -78,7 +78,7 @@
       if (headers.has("Expires")) {
         return this.isExpired(response);
       }
-      if (!headers.has("Cache-Control")) {
+      if (headers.has("Cache-Control")) {
         return this.hasMaxAgeLapsed(response);
       }
       return false;

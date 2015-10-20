@@ -41,7 +41,7 @@ const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
 
       // Set the button
       document.getElementById("newtab-intro-button")
-        .dataset.value = gNewTab.newTabString("intro.gotit");
+        .value = gNewTab.newTabString("intro.gotit");
     },
 
     _bold: function(str) {

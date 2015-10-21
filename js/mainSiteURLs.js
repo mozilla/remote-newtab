@@ -12,7 +12,7 @@
  * See: bin/generate-offline-files.js
  */
 "use strict";
-const mainSiteURLs = [ // jshint ignore:line
+const mainSiteURLs = [// jshint ignore:line
   "./",
   "sw.js",
   "css/contentSearchUI.css",
@@ -39,6 +39,7 @@ const mainSiteURLs = [ // jshint ignore:line
   "js/intro.js",
   "js/lib/async.js",
   "js/lib/cachetasks.js",
+  "js/lib/responseRequestUtils.js",
   "js/lib/swMessage.js",
   "js/mainSiteURLs.js",
   "js/newTab.js",

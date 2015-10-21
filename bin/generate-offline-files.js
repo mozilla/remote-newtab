@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 "use strict";
-const path = require('path');
+const path = require("path");
 const fs = require("fs");
 const exec = require("child_process").exec;
 const fileName = "js/mainSiteURLs.js";
@@ -52,7 +52,7 @@ function generateTemplate(paths) {
  * See: ${path.relative(__dirname + "/..", __filename)}
  */
 "use strict";
-const mainSiteURLs = [ // jshint ignore:line
+const mainSiteURLs = [// jshint ignore:line
   "./",
   "sw.js",
 ${paths.join("\n")}

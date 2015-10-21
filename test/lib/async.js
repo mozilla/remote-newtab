@@ -17,7 +17,7 @@ describe("async API", () => {
   });
 
   it("should asynchronously resolve to the string pass.", () => {
-    var test = async(function* () {
+    var test = async(function*() {
       var x = yield Promise.resolve("pass");
       return x;
     });
@@ -26,7 +26,7 @@ describe("async API", () => {
 
   it("should reject when rejected.", () => {
     var error = new Error("testing111");
-    var test = async(function* () {
+    var test = async(function*() {
       throw error;
     });
     return test().should.eventually.be.rejectedWith(error);
@@ -34,7 +34,7 @@ describe("async API", () => {
 
   it("should recover and return in a catch.", () => {
     var error = new Error("");
-    var test = async(function* () {
+    var test = async(function*() {
       try {
         yield Promise.reject(error);
       } catch (err) {
@@ -46,7 +46,7 @@ describe("async API", () => {
 
   it("Should reject after throwing.", () => {
     var error = new Error("Error");
-    var test = async(function* () {
+    var test = async(function*() {
       try {
         yield Promise.reject(error);
       } catch (err) {
@@ -57,7 +57,7 @@ describe("async API", () => {
   });
 
   it("should recover from rejection.", () => {
-    var test = async(function* () {
+    var test = async(function*() {
       var result = "";
       try {
         yield Promise.reject(new Error("pass"));
@@ -70,7 +70,7 @@ describe("async API", () => {
   });
 
   it("should recover from rejection and continue asynchronously.", () => {
-    var test = async(function* () {
+    var test = async(function*() {
       var err = "";
       try {
         yield Promise.reject(new Error("exception_"));
@@ -85,7 +85,7 @@ describe("async API", () => {
   });
 
   it("should recover from rejection, then resolve with a string", () => {
-    var test = async(function* () {
+    var test = async(function*() {
       try {
         yield Promise.reject(new Error());
       } catch (err) {
@@ -99,7 +99,7 @@ describe("async API", () => {
   });
 
   it("should fetch 10 pages and resolve.", () => {
-    var test = async(function* () {
+    var test = async(function*() {
       for (var i = 0; i < 10; i++) {
         var r = yield fetch("/?test=" + i);
         yield r.text();
@@ -110,21 +110,21 @@ describe("async API", () => {
   });
 
   it("should accept an argument being undefined.", () => {
-    var test = async(function* (arg1) {
+    var test = async(function*(arg1) {
       return String(arg1);
     });
     return test().should.become("undefined");
   });
 
   it("should accept an argument.", () => {
-    var test = async(function* (arg1) {
+    var test = async(function*(arg1) {
       return arg1;
     });
     return test("pass").should.become("pass");
   });
 
   it("should accept multiple arguments.", () => {
-    var test = async(function* (arg1, arg2, arg3) {
+    var test = async(function*(arg1, arg2, arg3) {
       var result = {
         arg1: arg1 === 1,
         arg2: arg2 === 2,
@@ -150,7 +150,7 @@ describe("async API", () => {
     var obj = {value: "123", value2: 321};
 
     it("should bind correctly when passed an object to bind to.", () => {
-      var test = async(function* (arg1) {
+      var test = async(function*(arg1) {
         var result = {
           value: this.value === "123",
           value2: this.value2 === 321,
@@ -164,7 +164,7 @@ describe("async API", () => {
     });
 
     it("should bind and accept arguments.", () => {
-      var test = async(function* (arg1, arg2, arg3) {
+      var test = async(function*(arg1, arg2, arg3) {
         var t1 = yield (this.value === "123");
         var t2 = yield (this.value2 === 321);
         var t3 = yield (arg1 === 1);

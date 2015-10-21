@@ -118,7 +118,7 @@
 
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
-  document.addEventListener("NewTabCommandReady", async(function* () {
+  document.addEventListener("NewTabCommandReady", async(function*() {
     yield gUserDatabase.init(this._prefsObjectStoreKeys);
     yield gPinnedLinks.init();
     yield gBlockedLinks.init();

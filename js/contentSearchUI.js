@@ -111,10 +111,9 @@
     // the list obtained by concatenating the suggestion rows, one-off buttons, and
     // search settings button.
     get selectedIndex() {
-      let allElts = [...this._suggestionsList.children,
-        ...this._oneOffButtons,
-        document.getElementById("contentSearchSettingsButton")
-      ];
+      let allElts = this._suggestionsList.children
+        .concat(this._oneOffButtons)
+        .concat(document.getElementById("contentSearchSettingsButton"));
       for (let i = 0; i < allElts.length; ++i) {
         let elt = allElts[i];
         if (elt.classList.contains("selected")) {
@@ -129,10 +128,10 @@
       this._table.removeAttribute("aria-activedescendant");
       this.input.removeAttribute("aria-activedescendant");
 
-      let allElts = [...this._suggestionsList.children,
-        ...this._oneOffButtons,
-        document.getElementById("contentSearchSettingsButton")
-      ];
+      let allElts = this._suggestionsList.children
+        .concat(this._oneOffButtons)
+        .concat(document.getElementById("contentSearchSettingsButton"));
+
       // If we are selecting a suggestion and a one-off is selected, don't deselect it.
       let excludeIndex = idx < this.numSuggestions && this.selectedButtonIndex > -1 ?
         this.numSuggestions + this.selectedButtonIndex : -1;
@@ -151,9 +150,8 @@
     },
 
     get selectedButtonIndex() {
-      let elts = [...this._oneOffButtons,
-        document.getElementById("contentSearchSettingsButton")
-      ];
+      let elts = this._oneOffButtons
+        .concat(document.getElementById("contentSearchSettingsButton"));
       for (let i = 0; i < elts.length; ++i) {
         if (elts[i].classList.contains("selected")) {
           return i;
@@ -163,9 +161,8 @@
     },
 
     set selectedButtonIndex(idx) {
-      let elts = [...this._oneOffButtons,
-        document.getElementById("contentSearchSettingsButton")
-      ];
+      let elts = this._oneOffButtons
+        .concat(document.getElementById("contentSearchSettingsButton"));
       for (let i = 0; i < elts.length; ++i) {
         let elt = elts[i];
         if (i === idx) {
@@ -638,7 +635,7 @@
     },
 
     _speculativeConnect: function() {
-      if (this.defaultEngine)  {
+      if (this.defaultEngine) {
         let preConnector = document.createElementNS(HTML_NS, "link");
         preConnector.rel = "preconnect";
         preConnector.id = "preconnector";

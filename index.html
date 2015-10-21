@@ -112,7 +112,7 @@
     <script type="text/javascript;version=1.8" src="js/updater.js"></script>
     <script type="text/javascript;version=1.8" src="js/undo.js"></script>
     <script type="text/javascript;version=1.8">
-    document.addEventListener("DOMContentLoaded", async(function* () {
+    document.addEventListener("DOMContentLoaded", async(function*() {
       try {
         yield navigator.serviceWorker.register("sw.js", {scope: "./"});
       } catch (err) {

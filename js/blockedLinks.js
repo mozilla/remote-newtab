@@ -14,11 +14,10 @@
      */
     _links: new Set(),
 
-
     /**
      * Load the blocked links from userDB and cache them.
      */
-    init: async(function* () {
+    init: async(function*() {
       var result = yield userDB.load("prefs", "blockedLinks");
       var blockedLinks = JSON.parse(result);
       if (blockedLinks && blockedLinks.length) {

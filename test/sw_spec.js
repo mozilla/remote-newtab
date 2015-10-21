@@ -2,7 +2,7 @@
 /* globals expect, async, xit, swMessage*/
 "use strict";
 describe("Service worker registration", function() {
-  it("should correctly register and activate the Service Worker.", async(function* () {
+  it("should correctly register and activate the Service Worker.", async(function*() {
     // force reload on first load.
     navigator.serviceWorker.register("sw.js", {
       scope: "./"
@@ -14,19 +14,19 @@ describe("Service worker registration", function() {
       // Helper functions
       var isTrue = value => value === true;
       var isFalse = value => value === false;
-      it("should not have entries in pagethumb cache.", async(function* () {
+      it("should not have entries in pagethumb cache.", async(function*() {
         var promises = thumbs.map(thumb => thumb.exists());
         var results = yield Promise.all(promises);
         expect(results.every(isFalse)).to.be.true;
       }));
 
-      it("should store thumbs in the cache.", async(function* () {
+      it("should store thumbs in the cache.", async(function*() {
         var promises = thumbs.map(thumb => thumb.save());
         var results = yield Promise.all(promises);
         expect(results.every(isTrue)).to.be.true;
       }));
 
-      it("should now have entries in pagethumb cache.", async(function* () {
+      it("should now have entries in pagethumb cache.", async(function*() {
         var promises = thumbs.map(thumb => thumb.exists());
         var results = yield Promise.all(promises);
         expect(results.every(isTrue)).to.be.true;
@@ -34,19 +34,19 @@ describe("Service worker registration", function() {
 
       // Attempting to load images fails after install and active fails.
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1206538
-      xit("should respond with the correct image.", async(function* () {
+      xit("should respond with the correct image.", async(function*() {
         var promises = thumbs.map(thumb => thumb.load());
         var results = yield Promise.all(promises);
         expect(results.every(isTrue)).to.be.true;
       }));
 
-      it("should allow deleting entries.", async(function* () {
+      it("should allow deleting entries.", async(function*() {
         var promises = thumbs.map(thumb => thumb.delete());
         var results = yield Promise.all(promises);
         expect(results.every(isTrue)).to.be.true;
       }));
 
-      it("should not contain thumbs previously deleted from the cache.", async(function* () {
+      it("should not contain thumbs previously deleted from the cache.", async(function*() {
         var promises = thumbs.map(thumb => thumb.exists());
         var results = yield Promise.all(promises);
         expect(results.every(isFalse)).to.be.true;
@@ -54,25 +54,25 @@ describe("Service worker registration", function() {
 
       // Images still show up even after expired from cache.
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1206298
-      xit("should not serve thumbs that were removed from cache.", async(function* () {
+      xit("should not serve thumbs that were removed from cache.", async(function*() {
         var promises = thumbs.map(thumb => thumb.load());
         var results = yield Promise.all(promises);
         expect(results.every(isFalse)).to.be.true;
       }));
 
-      it("should not serve thumbs that it never had.", async(function* () {
+      it("should not serve thumbs that it never had.", async(function*() {
         var noExistThumb = new PageThumb(sw, "/pagethumbs/never-saved.com", "no-such-data");
         var result = yield noExistThumb.load();
         expect(result).to.be.false;
       }));
 
-      it("should delete all caches.", async(function* () {
+      it("should delete all caches.", async(function*() {
         var cacheDelete = deleteAllCaches(sw);
         var result = yield cacheDelete();
         expect(Array.from(result.values()).every(value => value)).to.be.true;
       }));
 
-      it("should re-initialize site.", async(function* () {
+      it("should re-initialize site.", async(function*() {
         var siteInitializer = initializeSite(sw);
         var result = yield siteInitializer();
         expect(result).to.be.true;
@@ -97,21 +97,21 @@ describe("Service worker registration", function() {
     var pngBufferMaker = toArrayBuffer();
     var promisedBuffer = pngBufferMaker(rawImgData);
     // Store private vars
-    this.exists = async(function* () {
+    this.exists = async(function*() {
       var sendMessage = swMessage(sw, "NewTab:HasSiteThumb");
       var result = yield sendMessage({
         thumbURL
       });
       return result;
     }, this);
-    this.delete = async(function* () {
+    this.delete = async(function*() {
       var sendMessage = swMessage(sw, "NewTab:DeleteSiteThumb");
       var result = yield sendMessage({
         thumbURL
       });
       return result;
     }, this);
-    this.save = async(function* () {
+    this.save = async(function*() {
       var arrayBuffer = yield promisedBuffer;
       var sendMessage = swMessage(sw, "NewTab:PutSiteThumb");
       var msgData = {
@@ -122,7 +122,7 @@ describe("Service worker registration", function() {
       var result = yield sendMessage(msgData, [arrayBuffer]);
       return result;
     }, this);
-    this.load = async(function* () {
+    this.load = async(function*() {
       var result = yield new Promise((res) => {
         var img = new Image();
         img.src = thumbURL;
@@ -145,7 +145,7 @@ describe("Service worker registration", function() {
 
   function initializeSite(sw) {
     const sendMessage = swMessage(sw, "SW:InitializeSite");
-    return async(function* () {
+    return async(function*() {
       const result = yield sendMessage();
       return result;
     });
@@ -153,14 +153,14 @@ describe("Service worker registration", function() {
 
   function deleteAllCaches(sw) {
     const sendMessage = swMessage(sw, "SW:DeleteAllCaches");
-    return async(function* () {
+    return async(function*() {
       const result = yield sendMessage();
       return result;
     });
   }
 
   function toArrayBuffer(type = "image/png") {
-    return async(function* (encodedString) {
+    return async(function*(encodedString) {
       var rawData = atob(encodedString);
       var intData = Array
         .from(rawData)

@@ -24,6 +24,7 @@ module.exports = function(config) {
       "js/pinnedLinks.js",
       "js/userDatabase.js",
       "js/lib/async.js",
+      "js/lib/cachetasks.js",
       "js/blockedLinks.js",
       "js/rectangle.js",
       "js/lib/swMessage.js",
@@ -88,7 +89,7 @@ module.exports = function(config) {
         type: "text-summary",
         subdir: ".",
         file: "text-summary.txt"
-      },]
+      }]
     },
 
     // web server port

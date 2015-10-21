@@ -38,10 +38,10 @@
   },
   "scripts": {
     "generate-offline-files": "bin/generate-offline-files.js",
-    "karma": "./node_modules/.bin/karma start --single-run",
-    "test": "npm run karma",
-    "jshint": "jshint js/**.js test/**.js",
-    "jscs": "jscs test/*/**.js js/*/**.js",
+    "test": "karma start --single-run",
+    "jshint": "jshint js/**/*.js test/*.js test/**/*.js",
+    "jscs": "jscs --esnext bin/ locale/ js/ js/lib/ test/ test/lib",
+    "jscs:fix": "jscs --esnext --fix bin/ locale/ js/ js/lib/ test/ test/lib",
     "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
     "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
   }

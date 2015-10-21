@@ -12,7 +12,7 @@ importScripts("js/lib/cachetasks.js"); // imports CacheTasks
 importScripts("js/mainSiteURLs.js"); // imports mainSiteURLs
 
 const PageThumbTasks = {
-  storeSiteThumb: async(function* ({arrayBuffer, type, thumbURL}) {
+  storeSiteThumb: async(function*({arrayBuffer, type, thumbURL}) {
     var url = new URL(thumbURL, self.location).href;
     var success = true;
     var isValidURL = url.startsWith(`${self.location.origin}/pagethumbs/`);
@@ -35,7 +35,7 @@ const PageThumbTasks = {
    * @param {Promise<Response>} promise The promise that should resolve to a
    *                                    Response.
    */
-  ensureResponse: async(function* (promise) {
+  ensureResponse: async(function*(promise) {
     var response;
     try {
       response = yield promise;
@@ -55,7 +55,7 @@ self.addEventListener("install", (ev) => {
   ev.waitUntil(PageThumbTasks.init());
 });
 
-self.addEventListener("message", async(function* ({data, source}) {
+self.addEventListener("message", async(function*({data, source}) {
   var result;
   var {name, id} = data;
   switch (name) {

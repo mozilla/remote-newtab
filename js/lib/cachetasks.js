@@ -28,7 +28,7 @@
      * @param {String} cacheName The name of the cache.
      * @param {Array} requests The requests (URLs or Requests) to cache.
      */
-    populateCache: async(function* (cacheName, requests) {
+    populateCache: async(function*(cacheName, requests) {
       var cache = yield memoizedCaches.open(cacheName);
       var success = true;
       try {
@@ -48,7 +48,7 @@
      * @param {String} type MimeType of the data being stored.
      * @param {String|URL} requestURL The URL this request maps to.
      */
-    saveBinaryToCache: async(function* (cacheName, arrayBuffer, type, requestURL) {
+    saveBinaryToCache: async(function*(cacheName, arrayBuffer, type, requestURL) {
       var cache = yield memoizedCaches.open(cacheName);
       var blob = new Blob([arrayBuffer], {
         type
@@ -78,7 +78,7 @@
      *                              otherwise, it passes the request to the
      *                              network via fetch.
      */
-    respondFromCache: async(function* (request, cacheName, strategy = "") {
+    respondFromCache: async(function*(request, cacheName, strategy = "") {
       var cache = yield memoizedCaches.open(cacheName);
       var url = request.url || request;
       var response = yield cache.match(request);
@@ -118,7 +118,7 @@
      * @param {String} [cacheName] The cache's name to look in.
      * @return {Boolean} True if it has the request, false otherwise.
      */
-    hasCacheEntry: async(function* (request, cacheName) {
+    hasCacheEntry: async(function*(request, cacheName) {
       var cache = yield memoizedCaches.open(cacheName);
       var response = yield cache.match(request);
       return (response) ? true : false;
@@ -130,7 +130,7 @@
      * @param {String} cacheName The cache name from where to delete.
      * @returns {Boolean}
      */
-    deleteCacheEntry: async(function* (request, cacheName, options={}) {
+    deleteCacheEntry: async(function*(request, cacheName, options={}) {
       var cache = yield memoizedCaches.open(cacheName);
       var result = yield cache.delete(request, options);
       return result;
@@ -141,7 +141,7 @@
      * @returns {Map<String,Boolean>} A map representing the keys and the result
      *                                of deleting the cache.
      */
-    deleteAllCaches: async(function* () {
+    deleteAllCaches: async(function*() {
       var keys = yield caches.keys();
       var promises = keys.map(key => caches.delete(key));
       var results = yield Promise.all(promises);

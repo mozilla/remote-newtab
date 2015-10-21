@@ -38,7 +38,7 @@
      * @param {ArrayBuffer[]=} transferables ArrayBuffer to transfer ownership of to
      *                                  the the Service Worker in postMessage().
      */
-    return async(function* (data = {}, transferables = []) {
+    return async(function*(data = {}, transferables = []) {
       const msgId = idGen.next().value;
       const msgData = Object.assign({
         id: msgId,

@@ -12,7 +12,7 @@
  * See: bin/generate-offline-files.js
  */
 "use strict";
-const mainSiteURLs = [ // jshint ignore:line
+const mainSiteURLs = [// jshint ignore:line
   "./",
   "sw.js",
   "css/contentSearchUI.css",

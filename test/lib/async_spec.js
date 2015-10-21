@@ -1,4 +1,5 @@
-/*globals fetch, async */
+/*globals fetch, async, expect */
+/*jshint mocha: true*/
 "use strict";
 describe("async API", () => {
   it("should reject when invoked with no arguments.", () => {
@@ -175,6 +176,37 @@ describe("async API", () => {
         return r;
       }, obj);
       return test(1, 2, 3).should.become(true);
+    });
+  });
+
+  describe("async's task() method", ()=> {
+    it("should be a function", ()=> {
+      expect(async).to.have.property("task");
+      expect(async.task instanceof Function).to.equal(true);
+    });
+    it("should work with a generator", ()=> {
+      var test = function*() {
+        yield "test";
+        return "pass";
+      };
+      async.task(test).should.become("pass");
+    });
+    it("should work with a function", ()=> {
+      var test = function() {
+        return "pass";
+      };
+      async.task(test).should.eventually.become("pass");
+    });
+    it("Should reject after throwing.", () => {
+      var error = new Error("Error");
+      var test = function*() {
+        try {
+          yield Promise.reject(error);
+        } catch (err) {
+          throw err;
+        }
+      };
+      return async.task(test).should.eventually.be.rejectedWith(error);
     });
   });
 });

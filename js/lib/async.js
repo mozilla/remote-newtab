@@ -79,5 +79,8 @@
       });
     };
   }
+  async.task = function(func, self) {
+    return async(func, self)();
+  };
   exports.async = async;
 }(this || self));

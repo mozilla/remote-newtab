@@ -15,7 +15,7 @@ Promise.all([findJs, findCss, findLocale])
   .then(processResults)
   .then(generateTemplate)
   .then(writeFile)
-  .then(done => console.log("Ok!"))
+  .then(() => console.log("Ok!"))
   .catch(err => console.error(err));
 
 function fileFinder(dir, pattern) {

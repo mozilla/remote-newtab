@@ -111,7 +111,7 @@
     // the list obtained by concatenating the suggestion rows, one-off buttons, and
     // search settings button.
     get selectedIndex() {
-      let allElts = this._suggestionsList.children
+      let allElts = Array.from(this._suggestionsList.children)
         .concat(this._oneOffButtons)
         .concat(document.getElementById("contentSearchSettingsButton"));
       for (let i = 0; i < allElts.length; ++i) {
@@ -128,7 +128,7 @@
       this._table.removeAttribute("aria-activedescendant");
       this.input.removeAttribute("aria-activedescendant");
 
-      let allElts = this._suggestionsList.children
+      let allElts = Array.from(this._suggestionsList.children)
         .concat(this._oneOffButtons)
         .concat(document.getElementById("contentSearchSettingsButton"));
 

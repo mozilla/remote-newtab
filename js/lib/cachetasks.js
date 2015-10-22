@@ -100,7 +100,7 @@
             response = yield fetch(request);
             yield this.putCacheEntry(request, response, cacheName);
           } catch (err) {
-            var msg = `failed to store ${url} in ${cacheName}.`;
+            msg = `failed to store ${url} in ${cacheName}.`;
             console.warn(msg, err);
             throw err;
           }

@@ -4,12 +4,12 @@
 const path = require("path");
 const fs = require("fs");
 const exec = require("child_process").exec;
-const fileName = "js/mainSiteURLs.js";
+const fileName = "src/js/mainSiteURLs.js";
 
 // Find css and JS files
-const findJs = fileFinder(`js`, `-iname "*.js"`);
-const findCss = fileFinder(`css`, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
-const findLocale = fileFinder(`locale`, `-iname "*.js"`);
+const findJs = fileFinder(`src/js`, `-iname "*.js"`);
+const findCss = fileFinder(`src/css`, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
+const findLocale = fileFinder(`src/locale`, `-iname "*.js"`);
 // Process and generate file
 Promise.all([findJs, findCss, findLocale])
   .then(processResults)
@@ -32,7 +32,7 @@ function processResults(results) {
     .reduce((current, next) => next.concat(current), [])
     .split("\n")
     .filter(item => item)
-    .map(item => `  "${item}",`)
+    .map(item => `  "${item}",`.replace(/src\//, ''))
     .sort();
   return Promise.resolve(paths);
 }

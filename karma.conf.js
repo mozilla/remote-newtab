@@ -16,44 +16,44 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
 
     files: [{
-        pattern: "sw.js",
+        pattern: "src/sw.js",
         served: true,
         watched: true,
         included: false,
       },
-      "js/pinnedLinks.js",
-      "js/userDatabase.js",
-      "js/lib/async.js",
-      "js/lib/responseRequestUtils.js",
-      "js/lib/cachetasks.js",
-      "js/blockedLinks.js",
-      "js/rectangle.js",
-      "js/lib/swMessage.js",
-      "test/fixtures/**/*.html",
-      "test/**/*.js", {
-        pattern: "css/**/*.*",
+      "src/js/pinnedLinks.js",
+      "src/js/userDatabase.js",
+      "src/js/lib/async.js",
+      "src/js/lib/responseRequestUtils.js",
+      "src/js/lib/cachetasks.js",
+      "src/js/blockedLinks.js",
+      "src/js/rectangle.js",
+      "src/js/lib/swMessage.js",
+      "src/test/fixtures/**/*.html",
+      "src/test/**/*.js", {
+        pattern: "src/css/**/*.*",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "js/**/*.js",
+        pattern: "src/js/**/*.js",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "locale/newTab.js",
+        pattern: "src/locale/newTab.js",
         watched: true,
         served: true,
         included: false
       },
     ],
 
-    proxies: {
-      "/sw.js": "http://localhost:9876/base/sw.js",
-      "/css/": "http://localhost:9876/base/css/",
-      "/js/": "http://localhost:9876/base/js/",
-      "/locale/": "http://localhost:9876/base/locale/",
-    },
+    customHeaders: [{
+      match: ".*",
+      name: "Service-Worker-Allowed",
+      value: "/"
+      },
+    ],
 
     // list of files to exclude
     exclude: [
@@ -65,8 +65,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "js/**/*.js": ["coverage"],
-      "test/fixtures/**/*.html": ["html2js"],
+      "src/js/**/*.js": ["coverage"],
+      "src/test/fixtures/**/*.html": ["html2js"],
     },
 
     // test results reporter to use

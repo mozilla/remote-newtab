@@ -90,6 +90,9 @@
      * @return {Boolean} True if has, false otherwise.
      */
     hasMaxAgeLapsed(response) {
+      if (!(response instanceof Response)) {
+        throw new TypeError("Invalid input.");
+      }
       var headers = response.headers;
       var now = new Date(Date.now()).toGMTString();
       if (!headers.has("Cache-Control")) {
@@ -112,6 +115,9 @@
      * @return {Boolean} True if has, false otherwise.
      */
     isExpired(response) {
+      if (!(response instanceof Response)) {
+        throw new TypeError("Invalid input.");
+      }
       var headers = response.headers;
       var now = new Date(Date.now()).toGMTString();
       if (!headers.has("Expires")) {

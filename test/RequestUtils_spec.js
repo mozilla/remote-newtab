@@ -1,5 +1,5 @@
 /* jshint esnext: true, expr: true, mocha: true */
-/* globals expect, Request, RequestUtils, it*/
+/* globals expect, Request, Response, RequestUtils, it*/
 "use strict";
 
 function testType(type) {
@@ -13,6 +13,7 @@ var tNumber = testType(123);
 var tArray = testType([]);
 var tNull = testType(null);
 var tFakeObj = testType({headers: new Map()});
+var tResponse = testType(new Response());
 
 describe("Request utils", function() {
   describe("isCacheable() method", ()=> {
@@ -24,6 +25,7 @@ describe("Request utils", function() {
       expect(() => tArray(f)).to.throw(TypeError);
       expect(() => tNull(f)).to.throw(TypeError);
       expect(() => tFakeObj(f)).to.throw(TypeError);
+      expect(() => tResponse(f)).to.throw(TypeError);
     });
 
     it("should return false when 'no-store' is present", ()=> {

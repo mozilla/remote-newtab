@@ -1,8 +1,31 @@
 /* jshint esnext: true, expr: true, mocha: true */
-/* globals expect, Response, ResponseUtils, it*/
+/* globals expect, Response, Request, ResponseUtils, it*/
 "use strict";
+function testType(type) {
+  return (method) => {
+    return method(type);
+  };
+}
+var tUndefined = testType(undefined);
+var tString = testType("string");
+var tNumber = testType(123);
+var tArray = testType([]);
+var tNull = testType(null);
+var tFakeObj = testType({headers: new Map()});
+var tRequest = testType(new Request(""));
+
 describe("Response utils", function() {
   describe("isCacheable() method", ()=> {
+    it("should throw given invalid input", ()=> {
+      var f = ResponseUtils.isCacheable;
+      expect(() => tUndefined(f)).to.throw(TypeError);
+      expect(() => tString(f)).to.throw(TypeError);
+      expect(() => tNumber(f)).to.throw(TypeError);
+      expect(() => tArray(f)).to.throw(TypeError);
+      expect(() => tNull(f)).to.throw(TypeError);
+      expect(() => tFakeObj(f)).to.throw(TypeError);
+      expect(() => tRequest(f)).to.throw(TypeError);
+    });
     it("should return true with no Cache-Control header is present.", ()=> {
       var response = new Response("");
       expect(ResponseUtils.isCacheable(response)).to.be.true;
@@ -41,6 +64,16 @@ describe("Response utils", function() {
     });
   });
   describe("isExpired() method", ()=> {
+    it("should throw given invalid input", ()=> {
+      var f = ResponseUtils.isExpired;
+      expect(() => tUndefined(f)).to.throw(TypeError);
+      expect(() => tString(f)).to.throw(TypeError);
+      expect(() => tNumber(f)).to.throw(TypeError);
+      expect(() => tArray(f)).to.throw(TypeError);
+      expect(() => tNull(f)).to.throw(TypeError);
+      expect(() => tFakeObj(f)).to.throw(TypeError);
+      expect(() => tRequest(f)).to.throw(TypeError);
+    });
     it("Should throw when the Expires header is missing.", ()=> {
       var response = new Response(".");
       expect(
@@ -76,6 +109,16 @@ describe("Response utils", function() {
   });
 
   describe("hasMaxAgeLapsed() method", ()=> {
+    it("should throw given invalid input", ()=> {
+      var f = ResponseUtils.hasMaxAgeLapsed;
+      expect(() => tUndefined(f)).to.throw(TypeError);
+      expect(() => tString(f)).to.throw(TypeError);
+      expect(() => tNumber(f)).to.throw(TypeError);
+      expect(() => tArray(f)).to.throw(TypeError);
+      expect(() => tNull(f)).to.throw(TypeError);
+      expect(() => tFakeObj(f)).to.throw(TypeError);
+      expect(() => tRequest(f)).to.throw(TypeError);
+    });
     it("should throw if there is no Cache-Control header.", ()=> {
       var response = new Response(".");
       expect(
@@ -140,6 +183,16 @@ describe("Response utils", function() {
     });
   });
   describe("isStale() method", ()=> {
+    it("should throw given invalid input", ()=> {
+      var f = ResponseUtils.isStale;
+      expect(() => tUndefined(f)).to.throw(TypeError);
+      expect(() => tString(f)).to.throw(TypeError);
+      expect(() => tNumber(f)).to.throw(TypeError);
+      expect(() => tArray(f)).to.throw(TypeError);
+      expect(() => tNull(f)).to.throw(TypeError);
+      expect(() => tFakeObj(f)).to.throw(TypeError);
+      expect(() => tRequest(f)).to.throw(TypeError);
+    });
     it("Should return true when the Expires date is in the past.", ()=> {
       var response = new Response(".");
       var thePast = new Date(Date.now() - 10000).toGMTString();

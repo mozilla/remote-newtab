@@ -32,7 +32,7 @@ function processResults(results) {
     .reduce((current, next) => next.concat(current), [])
     .split("\n")
     .filter(item => item)
-    .map(item => `  "${item}",`.replace(/src\//, ''))
+    .map(item => `  "${item}",`.replace(/src\//, ""))
     .sort();
   return Promise.resolve(paths);
 }

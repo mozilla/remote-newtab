@@ -1,24 +1,26 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals async, caches, fetch, Response, Request, self*/
+/*jshint browser:true, worker:true*/
+/*globals async, caches, fetch, Response, Request, RequestUtils, ResponseUtils, self*/
 /*exported CacheTasks */
-
 "use strict";
-(function(exports) {
+(function(exports, ResponseUtils, RequestUtils) {
   /**
    * Collection of common task performed by a Service Worker cache.
    */
-  const openedCaches = new Map();
-  const memoizedCaches = {
-    open: async(function*(cacheName) {
-      if (openedCaches.has(cacheName)) {
-        return openedCaches.get(cacheName);
-      }
-      var cache = yield caches.open(cacheName);
-      openedCaches.set(cacheName, cache);
-      return cache;
-    })
+  const MemoizedCaches = {
+    openedCaches: new Map(),
+    open(cacheName) {
+      return async.task(function*() {
+        if (this.openedCaches.has(cacheName)) {
+          return this.openedCaches.get(cacheName);
+        }
+        var cache = yield caches.open(cacheName);
+        this.openedCaches.set(cacheName, cache);
+        return cache;
+      }, this);
+    }
   };
 
   const CacheTasks = {
@@ -29,7 +31,7 @@
      * @param {Array} requests The requests (URLs or Requests) to cache.
      */
     populateCache: async(function*(cacheName, requests) {
-      var cache = yield memoizedCaches.open(cacheName);
+      var cache = yield MemoizedCaches.open(cacheName);
       var success = true;
       try {
         yield cache.addAll(requests);
@@ -49,7 +51,7 @@
      * @param {String|URL} requestURL The URL this request maps to.
      */
     saveBinaryToCache: async(function*(cacheName, arrayBuffer, type, requestURL) {
-      var cache = yield memoizedCaches.open(cacheName);
+      var cache = yield MemoizedCaches.open(cacheName);
       var blob = new Blob([arrayBuffer], {
         type
       });
@@ -78,39 +80,41 @@
      *                              otherwise, it passes the request to the
      *                              network via fetch.
      */
-    respondFromCache: async(function*(request, cacheName, strategy = "") {
-      var cache = yield memoizedCaches.open(cacheName);
-      var url = request.url || request;
-      var response = yield cache.match(request);
-      var msg = "";
-      if (response) {
-        return response;
-      }
-      switch (strategy) {
-      case "throw":
-        msg = `Not found in ${cacheName} cache: ${url}`;
-        var error = new Error(msg);
-        console.warn(error);
-        throw error;
-      case "store":
-        try {
-          response = yield fetch(request);
-          yield cache.put(request, response.clone());
-        } catch (err) {
-          var msg = `failed to store ${url} in ${cacheName}.`;
-          console.warn(msg, err);
-          throw err;
+    respondFromCache(request, cacheName, strategy = "") {
+      return async.task(function*() {
+        var cache = yield MemoizedCaches.open(cacheName);
+        var url = request.url || request;
+        var response = yield cache.match(request);
+        var msg = "";
+        if (response) {
+          return response;
         }
-        break;
-      //Default passes the request to network using fetch()
-      default:
-        msg = `Not in cache ${cacheName}. Fetching but not storing: ${url}`;
-        console.warn(msg);
-        response = yield fetch(request);
-        break;
-      }
-      return response;
-    }),
+        switch (strategy) {
+        case "throw":
+          msg = `Not found in ${cacheName} cache: ${url}`;
+          var error = new Error(msg);
+          console.warn(error);
+          throw error;
+        case "store":
+          try {
+            response = yield fetch(request);
+            yield this.putCacheEntry(request, response, cacheName);
+          } catch (err) {
+            msg = `failed to store ${url} in ${cacheName}.`;
+            console.warn(msg, err);
+            throw err;
+          }
+          break;
+          //Default passes the request to network using fetch()
+        default:
+          msg = `Not in cache ${cacheName}. Fetching but not storing: ${url}`;
+          console.warn(msg);
+          response = yield fetch(request);
+          break;
+        }
+        return response;
+      }, this);
+    },
     /**
      * Checks if there is a cache entry for a particular request.
      *
@@ -119,19 +123,55 @@
      * @return {Boolean} True if it has the request, false otherwise.
      */
     hasCacheEntry: async(function*(request, cacheName) {
-      var cache = yield memoizedCaches.open(cacheName);
+      var cache = yield MemoizedCaches.open(cacheName);
       var response = yield cache.match(request);
       return (response) ? true : false;
     }),
+
+    refreshCacheEntry(request, cacheName, force = "") {
+      return async.task(function*() {
+        var cache = yield MemoizedCaches.open(cacheName);
+        var response = yield cache.get(request);
+        // If it's not stale and we are not forced to refresh
+        if (response && !force && !ResponseUtils.isStale(response)) {
+          return response;
+        }
+        if (force === "force" || !response) {
+          response = yield fetch(request);
+          yield this.putCacheEntry(request, response, cacheName);
+        }
+        return response;
+      }, this);
+    },
+    /**
+     * Adds a cache request/response pair to a particular cache.
+     *
+     * @param  {Request} request The request to store.
+     * @param  {Response} response The response to store.
+     * @param  {String} cacheName The cache to try to save into.
+     * @throws {Error} If it's not possible to cache an operation.
+     * @return {Promise<Boolean>} True if success.
+     */
+    putCacheEntry(request, response, cacheName) {
+      return async.task(function*() {
+        var isReqCacheable = RequestUtils.isCacheable(request);
+        var isRespCachable = ResponseUtils.isCacheable(response);
+        if (!isRespCachable || !isReqCacheable) {
+          throw new Error("Caching is forbidden.");
+        }
+        var cache = yield MemoizedCaches.open(cacheName);
+        cache.put(request, response.clone());
+      }, this);
+    },
     /**
      * Deletes a cache entry.
      *
-     * @param {Request[]|String[]} request The request.
+     * @param {Request|String} request The request to delete.
      * @param {String} cacheName The cache name from where to delete.
      * @returns {Boolean}
      */
-    deleteCacheEntry: async(function*(request, cacheName, options={}) {
-      var cache = yield memoizedCaches.open(cacheName);
+    deleteCacheEntry: async(function*(request, cacheName, options = {}) {
+      var cache = yield MemoizedCaches.open(cacheName);
       var result = yield cache.delete(request, options);
       return result;
     }),
@@ -151,4 +191,4 @@
     }),
   };
   exports.CacheTasks = CacheTasks;
-}(self));
+}(self || window, ResponseUtils, RequestUtils));

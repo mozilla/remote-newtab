@@ -3,11 +3,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*globals async, CacheTasks, importScripts, self, mainSiteURLs, Response */
+/*jshint worker:true*/
+/*globals async, CacheTasks, self, mainSiteURLs, Response */
 
 "use strict";
 
 importScripts("js/lib/async.js"); // imports async()
+importScripts("js/lib/responseRequestUtils.js"); // imports RequestUtils, ResponseUtils
 importScripts("js/lib/cachetasks.js"); // imports CacheTasks
 importScripts("js/mainSiteURLs.js"); // imports mainSiteURLs
 

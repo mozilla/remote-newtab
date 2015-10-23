@@ -24,6 +24,7 @@ module.exports = function(config) {
       "js/pinnedLinks.js",
       "js/userDatabase.js",
       "js/lib/async.js",
+      "js/lib/responseRequestUtils.js",
       "js/lib/cachetasks.js",
       "js/blockedLinks.js",
       "js/rectangle.js",

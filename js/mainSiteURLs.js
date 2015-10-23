@@ -39,6 +39,7 @@ const mainSiteURLs = [// jshint ignore:line
   "js/intro.js",
   "js/lib/async.js",
   "js/lib/cachetasks.js",
+  "js/lib/responseRequestUtils.js",
   "js/lib/swMessage.js",
   "js/mainSiteURLs.js",
   "js/newTab.js",

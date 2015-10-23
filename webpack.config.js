@@ -5,7 +5,7 @@ module.exports = {
   entry: path.join(__dirname, './src/js/index.js'),
   devtool: 'eval',
   output: {
-    path: path.join(__dirname, './www/js'),
+    path: path.join(__dirname, './dist/js'),
     filename: 'index.bundle.js'
   },
   plugins: [

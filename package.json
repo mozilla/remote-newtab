@@ -51,7 +51,7 @@
     "build:js": "webpack -p",
     "watch:static": "npm run build:static -- -w",
     "watch:js": "webpack -w",
-    "server": "live-server www --port=1979 --no-browser",
+    "server": "live-server dist --port=1979 --no-browser",
     "start": "npm-run-all --parallel watch:* server"
   }
 }

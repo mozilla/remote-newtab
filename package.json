@@ -20,6 +20,7 @@
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
     "codeclimate-test-reporter": "^0.1.0",
+    "cpx": "^1.2.1",
     "html2js": "^0.2.0",
     "jscs": "^2.1.0",
     "jshint": "^2.8.0",
@@ -32,8 +33,10 @@
     "karma-html2js-preprocessor": "^0.1.0",
     "karma-mocha": "^0.2.0",
     "karma-requirejs": "^0.2.2",
+    "live-server": "^0.8.2",
     "mocha": "^2.2.5",
     "mozilla-download": "^1.1.1",
+    "npm-run-all": "^1.2.12",
     "requirejs": "^2.1.20"
   },
   "scripts": {
@@ -43,6 +46,12 @@
     "jscs": "jscs --esnext bin/ locale/ js/ js/lib/ test/ test/lib",
     "jscs:fix": "jscs --esnext --fix bin/ locale/ js/ js/lib/ test/ test/lib",
     "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
-    "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
+    "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt",
+    "build:static": "cpx \"src/static/**/*\" dist",
+    "build:js": "webpack -p",
+    "watch:static": "npm run build:static -- -w",
+    "watch:js": "webpack -w",
+    "server": "live-server dist --port=1979 --no-browser",
+    "start": "npm-run-all --parallel watch:* server"
   }
 }

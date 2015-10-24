@@ -4,12 +4,19 @@
 const path = require("path");
 const fs = require("fs");
 const exec = require("child_process").exec;
-const fileName = "js/mainSiteURLs.js";
+
+const DIST_PATH = "./dist";
+const JS_PATH = path.join(DIST_PATH, "js");
+const CSS_PATH = path.join(DIST_PATH, "css");
+const LOCALE = path.join(DIST_PATH, "locale");
+
+const fileName = path.join(JS_PATH, "mainSiteURLs.js");
+
 
 // Find css and JS files
-const findJs = fileFinder(`js`, `-iname "*.js"`);
-const findCss = fileFinder(`css`, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
-const findLocale = fileFinder(`locale`, `-iname "*.js"`);
+const findJs = fileFinder(JS_PATH, `-iname "*.js"`);
+const findCss = fileFinder(CSS_PATH, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
+const findLocale = fileFinder(LOCALE, `-iname "*.js"`);
 // Process and generate file
 Promise.all([findJs, findCss, findLocale])
   .then(processResults)
@@ -32,6 +39,7 @@ function processResults(results) {
     .reduce((current, next) => next.concat(current), [])
     .split("\n")
     .filter(item => item)
+    .map(item => path.relative(DIST_PATH, item))
     .map(item => `  "${item}",`)
     .sort();
   return Promise.resolve(paths);

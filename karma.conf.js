@@ -16,43 +16,89 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
 
     files: [{
-        pattern: "sw.js",
+        pattern: "src/sw.js",
         served: true,
         watched: true,
         included: false,
       },
-      "js/pinnedLinks.js",
-      "js/userDatabase.js",
-      "js/lib/async.js",
-      "js/lib/responseRequestUtils.js",
-      "js/lib/cachetasks.js",
-      "js/blockedLinks.js",
-      "js/rectangle.js",
-      "js/lib/swMessage.js",
-      "test/fixtures/**/*.html",
-      "test/**/*.js", {
-        pattern: "css/**/*.*",
+      "src/js/pinnedLinks.js",
+      "src/js/userDatabase.js",
+      "src/js/lib/async.js",
+      "src/js/lib/responseRequestUtils.js",
+      "src/js/lib/cachetasks.js",
+      "src/js/blockedLinks.js",
+      "src/js/rectangle.js",
+      "src/js/lib/swMessage.js",
+      "src/test/fixtures/**/*.html",
+      "src/test/**/*.js", {
+        pattern: "src/css/**/*.*",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "js/**/*.js",
+        pattern: "src/js/**/*.js",
         watched: true,
         served: true,
         included: false
       }, {
-        pattern: "locale/newTab.js",
+        pattern: "src/locale/newTab.js",
         watched: true,
         served: true,
         included: false
       },
     ],
 
+    customHeaders: [{
+      match: ".*",
+      name: "Service-Worker-Allowed",
+      value: "/"
+      },
+    ],
+
     proxies: {
-      "/sw.js": "http://localhost:9876/base/sw.js",
-      "/css/": "http://localhost:9876/base/css/",
-      "/js/": "http://localhost:9876/base/js/",
-      "/locale/": "http://localhost:9876/base/locale/",
+      '/sw.js': 'http://localhost:9876/base/src/sw.js',
+      "/css/contentSearchUI.css": "http://localhost:9876/base/src/css/contentSearchUI.css",
+      "/css/images/close.png": "http://localhost:9876/base/src/css/images/close.png",
+      "/css/images/controls.svg": "http://localhost:9876/base/src/css/images/controls.svg",
+      "/css/images/defaultFavicon.png": "http://localhost:9876/base/src/css/images/defaultFavicon.png",
+      "/css/images/images/history-icon.svg": "http://localhost:9876/base/src/css/images/images/history-icon.svg",
+      "/css/images/images/search-engine-placeholder.png": "http://localhost:9876/base/src/css/images/images/search-engine-placeholder.png",
+      "/css/images/search-arrow-go.svg": "http://localhost:9876/base/src/css/images/search-arrow-go.svg",
+      "/css/images/search-indicator-magnifying-glass.svg": "http://localhost:9876/base/src/css/images/search-indicator-magnifying-glass.svg",
+      "/css/images/shared-menu-check.svg": "http://localhost:9876/base/src/css/images/shared-menu-check.svg",
+      "/css/images/whimsycorn.png": "http://localhost:9876/base/src/css/images/whimsycorn.png",
+      "/css/newTab.css": "http://localhost:9876/base/src/css/newTab.css",
+      "/index.html": "http://localhost:9876/base/src/index.html",
+      "/js/blockedLinks.js": "http://localhost:9876/base/src/js/blockedLinks.js",
+      "/js/cells.js": "http://localhost:9876/base/src/js/cells.js",
+      "/js/contentSearchUI.js": "http://localhost:9876/base/src/js/contentSearchUI.js",
+      "/js/customize.js": "http://localhost:9876/base/src/js/customize.js",
+      "/js/drag.js": "http://localhost:9876/base/src/js/drag.js",
+      "/js/dragDataHelper.js": "http://localhost:9876/base/src/js/dragDataHelper.js",
+      "/js/drop.js": "http://localhost:9876/base/src/js/drop.js",
+      "/js/dropPreview.js": "http://localhost:9876/base/src/js/dropPreview.js",
+      "/js/dropTargetShim.js": "http://localhost:9876/base/src/js/dropTargetShim.js",
+      "/js/grid.js": "http://localhost:9876/base/src/js/grid.js",
+      "/js/intro.js": "http://localhost:9876/base/src/js/intro.js",
+      "/js/lib/async.js": "http://localhost:9876/base/src/js/lib/async.js",
+      "/js/lib/cachetasks.js": "http://localhost:9876/base/src/js/lib/cachetasks.js",
+      "/js/lib/swMessage.js": "http://localhost:9876/base/src/js/lib/swMessage.js",
+      "/js/mainSiteURLs.js": "http://localhost:9876/base/src/js/mainSiteURLs.js",
+      "/js/newTab.js": "http://localhost:9876/base/src/js/newTab.js",
+      "/js/page.js": "http://localhost:9876/base/src/js/page.js",
+      "/js/pinnedLinks.js": "http://localhost:9876/base/src/js/pinnedLinks.js",
+      "/js/rectangle.js": "http://localhost:9876/base/src/js/rectangle.js",
+      "/js/search.js": "http://localhost:9876/base/src/js/search.js",
+      "/js/sites.js": "http://localhost:9876/base/src/js/sites.js",
+      "/js/transformations.js": "http://localhost:9876/base/src/js/transformations.js",
+      "/js/undo.js": "http://localhost:9876/base/src/js/undo.js",
+      "/js/updater.js": "http://localhost:9876/base/src/js/updater.js",
+      "/js/userDatabase.js": "http://localhost:9876/base/src/js/userDatabase.js",
+      "/locale/newTab.js": "http://localhost:9876/base/src/locale/newTab.js",
+      "/test/rectangle.js": "http://localhost:9876/base/src/test/rectangle.js",
+      "/test/script_test_example.js": "http://localhost:9876/base/src/test/script_test_example.js",
+      "/test/sw_spec.js": "http://localhost:9876/base/src/test/sw_spec.js",
+      "/test/test.js": "http://localhost:9876/base/src/test/test.js",
     },
 
     // list of files to exclude
@@ -65,8 +111,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "js/**/*.js": ["coverage"],
-      "test/fixtures/**/*.html": ["html2js"],
+      "src/js/**/*.js": ["coverage"],
+      "src/test/fixtures/**/*.html": ["html2js"],
     },
 
     // test results reporter to use

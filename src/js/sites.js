@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gDrag, gNewTab, gGrid, gUndoDialog, async, swMessage, gPinnedLinks, gBlockedLinks*/
+/*globals gDrag, gNewTab, gGrid, gUndoDialog, async, gPinnedLinks, gBlockedLinks*/
 
 "use strict";
 
@@ -201,8 +201,7 @@
         var sw = (yield navigator.serviceWorker.ready).active;
         var host = new URL(url).host;
         var thumbURL = new URL(`/pagethumbs/${host}`, window.location).href;
-        var hasSiteThumb = swMessage(sw, "NewTab:HasSiteThumb");
-        var thumbInCache = yield hasSiteThumb({thumbURL});
+        var thumbInCache = yield CacheTasks.hasCacheEntry(thumbURL, "thumbs_cache");
         if (thumbInCache) {
           this.showRegularThumbnail(thumbURL);
           return;

@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global swMessage, gNewTab, async, gGrid, gIntro, gDrag, gCustomize,
+/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize,
   gUndoDialog, gDropTargetShim, gUserDatabase, gSearch */
 
 "use strict";
@@ -304,34 +304,16 @@
       // show it
       let imgSrc = URL.createObjectURL(blob);
       site.showRegularThumbnail(imgSrc);
-
-      // Store it
-      let promisedArrayBuffer = new Promise((resolve, reject) => {
-        let fileReader = new FileReader();
-        fileReader.onload = function() {
-          resolve(this.result);
-        };
-        fileReader.onerror = function() {
-          reject(new Error("Could not create ArrayBuffer."));
-        };
-        fileReader.readAsArrayBuffer(blob);
-      });
-      let arrayBuffer;
-      try {
-        arrayBuffer = yield promisedArrayBuffer;
-      } catch (err) {
-        console.error(err);
-        return;
-      }
       // Store the page thumb image.
-      let sw = (yield navigator.serviceWorker.ready).active;
-      let putThumb = swMessage(sw, "NewTab:PutSiteThumb");
-      let result = yield putThumb({
-        thumbURL,
-        url,
-        arrayBuffer,
-        type: blob.type
-      }, [arrayBuffer]);
+      var responseInit = {
+        headers: {
+          "Content-Type": blob.type,
+          "Date": new Date(Date.now()).toGMTString(),
+        }
+      };
+      var request = new Request(thumbURL);
+      var response = new Response(blob, responseInit);
+      var result = yield CacheTasks.putCacheEntry(request, response, "thumbs_cache");
       if (!result) {
         console.warn("Failed to store thumbnail image:", thumbURL);
       }

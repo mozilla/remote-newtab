@@ -54,7 +54,7 @@ self.addEventListener("fetch", (ev) => {
     ev.respondWith(PageThumbTasks.ensureResponse(promise));
     break;
   case "karma":
-    ev.respondWith(fetch(request));
+    ev.respondWith(fetch(ev.request));
     break;
   default:
     promise = CacheTasks.refreshCacheEntry(ev.request, "skeleton_cache");

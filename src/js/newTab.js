@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gCustomize, gStrings, gUpdater, gUserDatabase, gPinnedLinks, gBlockedLinks, async*/
+/*globals gGrid, gPage, gStrings, gUpdater, gUserDatabase, gPinnedLinks, gBlockedLinks, async*/
 
 "use strict";
 
@@ -39,6 +39,7 @@
         break;
       case "browser.newtabpage.enhanced":
         this.enhanced = data;
+        gPage.handleEnhanced(data);
         break;
       case "browser.newtabpage.rows":
         this.rows = data;
@@ -46,11 +47,6 @@
       case "browser.newtabpage.columns":
         this.columns = data;
         break;
-      }
-      let isEnhanced =  "browser.newtabpage.enhanced" === topic;
-      let isEnabled = "browser.newtabpage.enabled" === topic;
-      if (isEnabled || isEnhanced) {
-        gCustomize.updateSelected();
       }
     },
 

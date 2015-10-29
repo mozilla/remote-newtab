@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize,
+/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUpdater,
   gUndoDialog, gDropTargetShim, gUserDatabase, gSearch, Request, Response,
   CacheTasks */
 
@@ -24,6 +24,8 @@
         this.update.bind(this));
       gNewTab.registerListener("NewTab:RegularThumbnailURI",
         this.storeAndShowRegularThumb.bind(this));
+      gNewTab.registerListener("NewTab:setEnabled", this.handleEnabled.bind(this));
+      gNewTab.registerListener("NewTab:setEnhanced", this.handleEnhanced.bind(this));
 
       // Listen for 'unload' to unregister this page.
       addEventListener("unload", this, false);
@@ -145,9 +147,9 @@
       let nodeSelector = "#newtab-grid, #newtab-search-container";
       for (let node of document.querySelectorAll(nodeSelector)) {
         if (aValue) {
-          node.pageDisabled = false;
+          node.dataset.pageDisabled = false;
         } else {
-          node.pageDisabled = true;
+          node.dataset.pageDisabled = true;
         }
       }
 
@@ -194,6 +196,14 @@
       } else {
         gUndoDialog.hide();
       }
+      gNewTab.enabled = enabled;
+      gCustomize.updateSelected();
+    },
+
+    handleEnhanced(enhanced) {
+      gNewTab.enhanced = enhanced;
+      gCustomize.updateSelected();
+      gUpdater.sendUpdate();
     },
 
     /**

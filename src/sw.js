@@ -4,7 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /*jshint worker:true*/
-/*globals async, CacheTasks, self, mainSiteURLs, Response */
+/*globals async, CacheTasks, self, mainSiteURLs, Response, fetch */
 
 "use strict";
 

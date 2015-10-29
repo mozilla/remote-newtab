@@ -193,25 +193,25 @@ describe("Response utils", function() {
       expect(() => tFakeObj(f)).to.throw(TypeError);
       expect(() => tRequest(f)).to.throw(TypeError);
     });
-    it("Should return true when the Expires date is in the past.", ()=> {
+    it("should return true when the Expires date is in the past.", ()=> {
       var response = new Response(".");
       var thePast = new Date(Date.now() - 10000).toGMTString();
       response.headers.set("Expires", thePast);
       expect(ResponseUtils.isStale(response)).to.be.true;
     });
-    it("Should return false when the Expires date is in the future.", ()=> {
+    it("should return false when the Expires date is in the future.", ()=> {
       var response = new Response(".");
       var theFuture = new Date(Date.now() + 100000).toGMTString();
       response.headers.set("Expires", theFuture);
       expect(ResponseUtils.isStale(response)).to.be.false;
     });
-    it("Should return false when the Expires date is now.", ()=> {
+    it("should return false when the Expires date is now.", ()=> {
       var response = new Response(".");
       var now = new Date(Date.now()).toGMTString();
       response.headers.set("Expires", now);
       expect(ResponseUtils.isStale(response)).to.be.false;
     });
-    it("Should throw when the Expires date not a number.", ()=> {
+    it("should throw when the Expires date not a number.", ()=> {
       var response = new Response(".");
       var date = "invalid date!";
       response.headers.set("Expires", date);
@@ -273,6 +273,10 @@ describe("Response utils", function() {
       var now = new Date(Date.now());
       response.headers.set("Date", now.toGMTString());
       response.headers.set("Cache-Control", "max-age=0");
+      expect(ResponseUtils.isStale(response)).to.be.false;
+    });
+    it("should return false if there is no cache information.", ()=> {
+      var response = new Response(".");
       expect(ResponseUtils.isStale(response)).to.be.false;
     });
   });

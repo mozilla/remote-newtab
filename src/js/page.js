@@ -314,7 +314,7 @@
       };
       var request = new Request(thumbURL);
       var response = new Response(blob, responseInit);
-      var result = yield CacheTasks.putCacheEntry(request, response, "thumbs_cache");
+      var result = yield CacheTasks.put(request, response, "pagethumbs_cache");
       if (!result) {
         console.warn("Failed to store thumbnail image:", thumbURL);
       }

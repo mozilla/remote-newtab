@@ -201,7 +201,7 @@
       var getRegularThumbnail = async(function*() {
         var host = new URL(url).host;
         var thumbURL = new URL(`/pagethumbs/${host}`, window.location).href;
-        var thumbInCache = yield CacheTasks.hasCacheEntry(thumbURL, "thumbs_cache");
+        var thumbInCache = yield CacheTasks.has(thumbURL, "pagethumbs_cache");
         if (thumbInCache) {
           this.showRegularThumbnail(thumbURL);
           return;

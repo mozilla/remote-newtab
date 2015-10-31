@@ -14,7 +14,6 @@ module.exports = function(config) {
     frameworks: ["mocha", "chai-as-promised", "chai"],
 
     // list of files / patterns to load in the browser
-
     files: [{
         pattern: "src/sw.js",
         served: true,
@@ -24,7 +23,6 @@ module.exports = function(config) {
       "src/js/pinnedLinks.js",
       "src/js/userDatabase.js",
       "src/js/lib/async.js",
-      "src/js/lib/responseRequestUtils.js",
       "src/js/lib/cachetasks.js",
       "src/js/blockedLinks.js",
       "src/js/rectangle.js",
@@ -36,6 +34,11 @@ module.exports = function(config) {
         included: false
       }, {
         pattern: "src/js/**/*.js",
+        watched: true,
+        served: true,
+        included: false
+      }, {
+        pattern: "src/js/**/*.json",
         watched: true,
         served: true,
         included: false
@@ -81,8 +84,7 @@ module.exports = function(config) {
       "/js/intro.js": "http://localhost:9876/base/src/js/intro.js",
       "/js/lib/async.js": "http://localhost:9876/base/src/js/lib/async.js",
       "/js/lib/cachetasks.js": "http://localhost:9876/base/src/js/lib/cachetasks.js",
-      "/js/lib/responseRequestUtils.js": "http://localhost:9876/base/src/js/lib/responseRequestUtils.js",
-      "/js/mainSiteURLs.js": "http://localhost:9876/base/src/js/mainSiteURLs.js",
+      "/js/mainSiteURLs.json": "http://localhost:9876/base/src/js/mainSiteURLs.json",
       "/js/newTab.js": "http://localhost:9876/base/src/js/newTab.js",
       "/js/page.js": "http://localhost:9876/base/src/js/page.js",
       "/js/pinnedLinks.js": "http://localhost:9876/base/src/js/pinnedLinks.js",

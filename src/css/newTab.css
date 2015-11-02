@@ -975,11 +975,6 @@ input[type=button] {
   opacity: 0;
 }
 
-.newtab-site[data-type] .newtab-thumbnail {
-  background-position: center center;
-  background-size: auto;
-}
-
 /* TITLES */
 .newtab-sponsored,
 .newtab-title,

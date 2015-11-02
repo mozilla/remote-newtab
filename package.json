@@ -36,9 +36,11 @@
     "mocha": "^2.2.5",
     "mozilla-download": "^1.1.1",
     "requirejs": "^2.1.20",
-    "webpack": "^1.12.2"
+    "webpack": "^1.12.2",
+    "express": "^4.13.3"
   },
   "scripts": {
+    "server": "bin/server.js",
     "generate-offline-files": "bin/generate-offline-files.js",
     "karma": "karma start --single-run",
     "test": "npm run karma",

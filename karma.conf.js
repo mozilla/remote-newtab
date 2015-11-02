@@ -14,7 +14,6 @@ module.exports = function(config) {
     frameworks: ["mocha", "chai-as-promised", "chai"],
 
     // list of files / patterns to load in the browser
-
     files: [{
         pattern: "src/sw.js",
         served: true,
@@ -24,11 +23,9 @@ module.exports = function(config) {
       "src/js/pinnedLinks.js",
       "src/js/userDatabase.js",
       "src/js/lib/async.js",
-      "src/js/lib/responseRequestUtils.js",
       "src/js/lib/cachetasks.js",
       "src/js/blockedLinks.js",
       "src/js/rectangle.js",
-      "src/js/lib/swMessage.js",
       "src/test/fixtures/**/*.html",
       "src/test/**/*.js", {
         pattern: "src/css/**/*.*",
@@ -37,6 +34,11 @@ module.exports = function(config) {
         included: false
       }, {
         pattern: "src/js/**/*.js",
+        watched: true,
+        served: true,
+        included: false
+      }, {
+        pattern: "src/js/**/*.json",
         watched: true,
         served: true,
         included: false
@@ -61,13 +63,14 @@ module.exports = function(config) {
       "/css/images/close.png": "http://localhost:9876/base/src/css/images/close.png",
       "/css/images/controls.svg": "http://localhost:9876/base/src/css/images/controls.svg",
       "/css/images/defaultFavicon.png": "http://localhost:9876/base/src/css/images/defaultFavicon.png",
-      "/css/images/images/history-icon.svg": "http://localhost:9876/base/src/css/images/images/history-icon.svg",
-      "/css/images/images/search-engine-placeholder.png": "http://localhost:9876/base/src/css/images/images/search-engine-placeholder.png",
+      "/css/images/history-icon.svg": "http://localhost:9876/base/src/css/images/history-icon.svg",
+      "/css/images/search-engine-placeholder.png": "http://localhost:9876/base/src/css/images/search-engine-placeholder.png",
       "/css/images/search-arrow-go.svg": "http://localhost:9876/base/src/css/images/search-arrow-go.svg",
       "/css/images/search-indicator-magnifying-glass.svg": "http://localhost:9876/base/src/css/images/search-indicator-magnifying-glass.svg",
       "/css/images/shared-menu-check.svg": "http://localhost:9876/base/src/css/images/shared-menu-check.svg",
       "/css/images/whimsycorn.png": "http://localhost:9876/base/src/css/images/whimsycorn.png",
       "/css/newTab.css": "http://localhost:9876/base/src/css/newTab.css",
+
       "/index.html": "http://localhost:9876/base/src/index.html",
       "/js/blockedLinks.js": "http://localhost:9876/base/src/js/blockedLinks.js",
       "/js/cells.js": "http://localhost:9876/base/src/js/cells.js",
@@ -82,8 +85,7 @@ module.exports = function(config) {
       "/js/intro.js": "http://localhost:9876/base/src/js/intro.js",
       "/js/lib/async.js": "http://localhost:9876/base/src/js/lib/async.js",
       "/js/lib/cachetasks.js": "http://localhost:9876/base/src/js/lib/cachetasks.js",
-      "/js/lib/swMessage.js": "http://localhost:9876/base/src/js/lib/swMessage.js",
-      "/js/mainSiteURLs.js": "http://localhost:9876/base/src/js/mainSiteURLs.js",
+      "/js/mainSiteURLs.json": "http://localhost:9876/base/src/js/mainSiteURLs.json",
       "/js/newTab.js": "http://localhost:9876/base/src/js/newTab.js",
       "/js/page.js": "http://localhost:9876/base/src/js/page.js",
       "/js/pinnedLinks.js": "http://localhost:9876/base/src/js/pinnedLinks.js",

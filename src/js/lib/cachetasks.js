@@ -2,12 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 /*jshint browser:true, worker:true*/
-/*globals async, caches, fetch, Response, Request, RequestUtils, ResponseUtils, self*/
+/*globals async, Request, Response, caches*/
 /*exported CacheTasks */
 "use strict";
-(function(exports, ResponseUtils, RequestUtils) {
+(function(exports) {
   /**
-   * Collection of common task performed by a Service Worker cache.
+   * Memoized opened caches for efficiency.
+   *
+   * @private
    */
   const MemoizedCaches = {
     openedCaches: new Map(),
@@ -20,147 +22,223 @@
         this.openedCaches.set(cacheName, cache);
         return cache;
       }, this);
+    },
+    delete(cacheName) {
+      this.openedCaches.delete(cacheName);
     }
   };
-
+  /**
+   * Helper object for working with Requests.
+   *
+   * @private
+   */
+  const RequestUtils = {
+    /**
+     * Simple implementation of RFC7234 (HTTP1.1 Bis), "Storing Responses in
+     * Caches": rules that determine if a request can be cached.
+     *
+     * This method does not validate the header values.
+     *
+     * @see http://tools.ietf.org/html/rfc7234#section-3
+     * @param  {Request} request The request to check.
+     * @return {Boolean} True if is can be cached, false otherwise.
+     */
+    isCacheable(request) {
+      var headers = request.headers;
+      // Explicitly told not to store it
+      var cacheDirectives = parseDirectives(headers.get("Cache-Control"));
+      if (cacheDirectives.has("no-store")) {
+        return false;
+      }
+      return true;
+    },
+  };
+  /**
+   * Helper object for working with Responses
+   *
+   * @private
+   */
+  const ResponseUtils = {
+    /**
+     * Non-validating implementation of RFC7234 (HTTP1.1 Bis), "Storing
+     * Responses in Caches": rules that determine if a response can be cached.
+     *
+     * This method does not validate the header values.
+     *
+     * @see http://tools.ietf.org/html/rfc7234#section-3
+     * @param {Response} response The operation to check.
+     * @return {Boolean} True if is can be cached, false otherwise.
+     */
+    isCacheable(response) {
+      var headers = response.headers;
+      // No cache control, so can be cached.
+      if (!headers.has("Cache-Control")) {
+        return true;
+      }
+      var cacheDirectives = parseDirectives(headers.get("Cache-Control"));
+      if (cacheDirectives.has("no-store")) {
+        return false;
+      }
+      return headers.has("Expires") || cacheDirectives.has("max-age");
+    },
+    /**
+     * Determines if a response is stale by checking if it has expired
+     * or its max-age has passed.
+     *
+     * @param  {Response}  response the response to check.
+     * @return {Boolean} True if it is stale, false otherwise.
+     * @throws {TypeError} If invalid input type.
+     */
+    isStale(response) {
+      if (!(response instanceof Response)) {
+        throw new TypeError("Invalid input.");
+      }
+      var headers = response.headers;
+      if (headers.has("Expires")) {
+        return this.isExpired(response);
+      }
+      if (headers.has("Cache-Control")) {
+        return this.hasMaxAgeLapsed(response);
+      }
+      return false;
+    },
+    /**
+     * Check if the max-age of the response has lapsed.
+     *
+     * @param  {Response}  response the response to check.
+     * @return {Boolean} True if has, false otherwise.
+     */
+    hasMaxAgeLapsed(response) {
+      var headers = response.headers;
+      var now = new Date(Date.now()).toGMTString();
+      var cacheDirectives = parseDirectives(headers.get("Cache-Control"));
+      // max-age is in seconds, so convert to millis to compare to date
+      var parsedMaxAge = parseInt(cacheDirectives.get("max-age")) * 1000;
+      var parsedDate = Date.parse(headers.get("Date"));
+      if (Number.isNaN(parsedMaxAge) || Number.isNaN(parsedDate)) {
+        throw new Error("Invalid header value.");
+      }
+      // Low precision comparison, to the second.
+      return Date.parse(now) > (parsedDate + parsedMaxAge);
+    },
+    /**
+     * Check if a response has expired.
+     *
+     * @param  {Response} response The response to check.
+     * @return {Boolean} True if has expired, false otherwise.
+     */
+    isExpired(response) {
+      var headers = response.headers;
+      var now = new Date(Date.now()).toGMTString();
+      var expires = Date.parse(headers.get("Expires"));
+      if (Number.isNaN(expires)) {
+        throw new TypeError("Invalid date in Expires header.");
+      }
+      // Low precision comparison, to the second.
+      return Date.parse(now) > expires;
+    },
+  };
+  /**
+   * Helper function converts simple HTTP cache directives to a map.
+   *
+   * @param  {Header} header The header object.
+   * @return {Map} The map of directives.
+   */
+  function parseDirectives(header) {
+    var directives = new Map();
+    if (!header) {
+      return directives;
+    }
+    header.split(",")
+      .map(directive => directive.trim())
+      .map(directive => directive.split("="))
+      .forEach(([key, value]) => directives.set(key, value));
+    return directives;
+  }
+  /**
+   * A collection of common task performed by a Caches API.
+   */
   const CacheTasks = {
+    /**
+     * Check if a response is stale, based on its cache directives.
+     *
+     * @param  {Response}  response The response to check.
+     * @return {Boolean} True is stale, false otherwise.
+     * @throws {TypeError} If argument is not a Response object.
+     */
+    isStale(response) {
+      return ResponseUtils.isStale(response);
+    },
     /**
      * Populates the a cache with a list of requests.
      *
+     * @param {Array<Request|String>} requests The requests to cache.
      * @param {String} cacheName The name of the cache.
-     * @param {Array} requests The requests (URLs or Requests) to cache.
+     * @return {Boolean} returns true if the operation finished successfully,
+     *                           false otherwise.
      */
-    populateCache: async(function*(cacheName, requests) {
-      var cache = yield MemoizedCaches.open(cacheName);
-      var success = true;
-      try {
-        yield cache.addAll(requests);
-      } catch (err) {
-        var msg = `Error adding resources to cache ${cacheName}.`;
-        console.warn(msg, err);
-        success = false;
-      }
-      return success;
-    }),
-    /**
-     * Saves a binary file into a cache.
-     *
-     * @param {String} cacheName The name of the cache to save into.
-     * @param {ArrayBuffer} arrayBuffer The arrayBuffer holding the file's data.
-     * @param {String} type MimeType of the data being stored.
-     * @param {String|URL} requestURL The URL this request maps to.
-     */
-    saveBinaryToCache: async(function*(cacheName, arrayBuffer, type, requestURL) {
-      var cache = yield MemoizedCaches.open(cacheName);
-      var blob = new Blob([arrayBuffer], {
-        type
-      });
-      var responseInit = {
-        headers: {
-          "Content-Type": type,
+    addAll(requests, cacheName) {
+      return async.task(function*() {
+        var cache = yield MemoizedCaches.open(cacheName);
+        try {
+          yield cache.addAll(requests);
+        } catch (err) {
+          var msg = `Error adding resources to cache ${cacheName}.`;
+          console.warn(msg, err);
+          return false;
         }
-      };
-      var request = new Request(requestURL);
-      var response = new Response(blob, responseInit);
-      try {
-        yield cache.put(request, response);
-      } catch (err) {
-        var msg = `putting blob in cache ${cacheName} for ${requestURL}.`;
-        console.warn(msg, err);
-        throw err;
-      }
-    }),
+        return true;
+      }, this);
+    },
     /**
      * Respond to a request from the SW's caches.
      *
      * @param {Request|String} request The request
-     * @param {String} [cacheName] The name of the cache to look in.
-     * @param {String} [strategy] The strategy to use when the response
-     *                              is not found. "throw" causes this to throw
-     *                              otherwise, it passes the request to the
-     *                              network via fetch.
+     * @param {String} cacheName The name of the cache to look in.
+     * @return {Promse<Response|undefined>} The matching response, or undefined.
      */
-    respondFromCache(request, cacheName, strategy = "") {
+    match(request, cacheName) {
       return async.task(function*() {
         var cache = yield MemoizedCaches.open(cacheName);
-        var url = request.url || request;
-        var response = yield cache.match(request);
-        var msg = "";
-        if (response) {
-          return response;
-        }
-        switch (strategy) {
-        case "throw":
-          msg = `Not found in ${cacheName} cache: ${url}`;
-          var error = new Error(msg);
-          console.warn(error);
-          throw error;
-        case "store":
-          try {
-            response = yield fetch(request);
-            yield this.putCacheEntry(request, response, cacheName);
-          } catch (err) {
-            msg = `failed to store ${url} in ${cacheName}.`;
-            console.warn(msg, err);
-            throw err;
-          }
-          break;
-          //Default passes the request to network using fetch()
-        default:
-          msg = `Not in cache ${cacheName}. Fetching but not storing: ${url}`;
-          console.warn(msg);
-          response = yield fetch(request);
-          break;
-        }
-        return response;
+        return yield cache.match(request);
       }, this);
     },
     /**
-     * Checks if there is a cache entry for a particular request.
+     * Check if a request has a corresponding entry in the cache.
      *
      * @param {Request|String} request The request to check for.
      * @param {String} [cacheName] The cache's name to look in.
-     * @return {Boolean} True if it has the request, false otherwise.
+     * @return {Promse<Boolean>} True if it has the request, false otherwise.
      */
-    hasCacheEntry: async(function*(request, cacheName) {
-      var cache = yield MemoizedCaches.open(cacheName);
-      var response = yield cache.match(request);
-      return (response) ? true : false;
-    }),
-
-    refreshCacheEntry(request, cacheName, force = "") {
+    has(request, cacheName) {
       return async.task(function*() {
         var cache = yield MemoizedCaches.open(cacheName);
-        var response = yield cache.get(request);
-        // If it's not stale and we are not forced to refresh
-        if (response && !force && !ResponseUtils.isStale(response)) {
-          return response;
-        }
-        if (force === "force" || !response) {
-          response = yield fetch(request);
-          yield this.putCacheEntry(request, response, cacheName);
-        }
-        return response;
+        var response = yield cache.match(request);
+        return (response) ? true : false;
       }, this);
     },
     /**
      * Adds a cache request/response pair to a particular cache.
      *
-     * @param  {Request} request The request to store.
+     * @param  {Request|String} request The request to store.
      * @param  {Response} response The response to store.
      * @param  {String} cacheName The cache to try to save into.
-     * @throws {Error} If it's not possible to cache an operation.
-     * @return {Promise<Boolean>} True if success.
+     * @return {Promise<Boolean>} True if success, false otherwise.
      */
-    putCacheEntry(request, response, cacheName) {
+    put(request, response, cacheName) {
       return async.task(function*() {
-        var isReqCacheable = RequestUtils.isCacheable(request);
+        var isReqCacheable = true;
+        if (request instanceof Request) {
+          isReqCacheable = RequestUtils.isCacheable(request);
+        }
         var isRespCachable = ResponseUtils.isCacheable(response);
         if (!isRespCachable || !isReqCacheable) {
-          throw new Error("Caching is forbidden.");
+          console.warn(`Caching ${request.url || request} was forbidden.`);
+          return false;
         }
         var cache = yield MemoizedCaches.open(cacheName);
-        cache.put(request, response.clone());
+        yield cache.put(request, response.clone());
+        return true;
       }, this);
     },
     /**
@@ -168,27 +246,40 @@
      *
      * @param {Request|String} request The request to delete.
      * @param {String} cacheName The cache name from where to delete.
+     * @param {Object} options Options are per the ServiceWorker spec.
      * @returns {Boolean}
      */
-    deleteCacheEntry: async(function*(request, cacheName, options = {}) {
-      var cache = yield MemoizedCaches.open(cacheName);
-      var result = yield cache.delete(request, options);
-      return result;
-    }),
+    delete(request, cacheName, options = {}) {
+      return async.task(function*() {
+        var cache = yield MemoizedCaches.open(cacheName);
+        return yield cache.delete(request, options);
+      }, this);
+    },
     /**
-     * Delete all the SW's caches.
+     * Deletes either all the caches, or a specified list of them.
      *
+     * @param {Strings[]} cacheNames The caches to delete, if omitted all
+     *                               caches will be deleted.
      * @returns {Map<String,Boolean>} A map representing the keys and the result
      *                                of deleting the cache.
      */
-    deleteAllCaches: async(function*() {
-      var keys = yield caches.keys();
-      var promises = keys.map(key => caches.delete(key));
-      var results = yield Promise.all(promises);
-      var keyResult = new Map();
-      keys.forEach((key, index) => keyResult.set(key, results[index]));
-      return keyResult;
-    }),
+    deleteCaches(cacheNames = []) {
+      return async.task(function*() {
+        var keys = (cacheNames.length) ? cacheNames : yield caches.keys();
+        var promisesToDelete = keys.map(
+          key => caches.delete(key)
+        );
+        var results = yield Promise.all(promisesToDelete);
+        var keyResult = new Map();
+        keys.forEach((key, index) => {
+          if (results[index]) {
+            MemoizedCaches.delete(key);
+          }
+          keyResult.set(key, results[index]);
+        });
+        return keyResult;
+      }, this);
+    },
   };
   exports.CacheTasks = CacheTasks;
-}(self || window, ResponseUtils, RequestUtils));
+}(self));

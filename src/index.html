@@ -90,31 +90,31 @@
         </div>
         <button id="newtab-customize-button" title="Customize your New Tab page"></button>
     </div>
-    <script type="text/javascript;version=1.8" src="js/lib/async.js"></script>
-    <script type="text/javascript;version=1.8" src="js/lib/cachetasks.js"></script>
-    <script type="text/javascript;version=1.8" src="js/intro.js"></script>
-    <script type="text/javascript;version=1.8" src="locale/newTab.js"></script>
-    <script type="text/javascript;version=1.8" src="js/customize.js"></script>
-    <script type="text/javascript;version=1.8" src="js/rectangle.js"></script>
-    <script type="text/javascript;version=1.8" src="js/dropTargetShim.js"></script>
-    <script type="text/javascript;version=1.8" src="js/dropPreview.js"></script>
-    <script type="text/javascript;version=1.8" src="js/drop.js"></script>
-    <script type="text/javascript;version=1.8" src="js/dragDataHelper.js"></script>
-    <script type="text/javascript;version=1.8" src="js/transformations.js"></script>
-    <script type="text/javascript;version=1.8" src="js/drag.js"></script>
-    <script type="text/javascript;version=1.8" src="js/userDatabase.js"></script>
-    <script type="text/javascript;version=1.8" src="js/pinnedLinks.js"></script>
-    <script type="text/javascript;version=1.8" src="js/blockedLinks.js"></script>
-    <script type="text/javascript;version=1.8" src="js/sites.js"></script>
-    <script type="text/javascript;version=1.8" src="js/cells.js"></script>
-    <script type="text/javascript;version=1.8" src="js/search.js"></script>
-    <script type="text/javascript;version=1.8" src="js/contentSearchUI.js"></script>
-    <script type="text/javascript;version=1.8" src="js/grid.js"></script>
-    <script type="text/javascript;version=1.8" src="js/page.js"></script>
-    <script type="text/javascript;version=1.8" src="js/newTab.js"></script>
-    <script type="text/javascript;version=1.8" src="js/updater.js"></script>
-    <script type="text/javascript;version=1.8" src="js/undo.js"></script>
-    <script type="text/javascript;version=1.8">
+    <script src="js/lib/async.js"></script>
+    <script src="js/lib/swMessage.js"></script>
+    <script src="js/intro.js"></script>
+    <script src="locale/newTab.js"></script>
+    <script src="js/customize.js"></script>
+    <script src="js/rectangle.js"></script>
+    <script src="js/dropTargetShim.js"></script>
+    <script src="js/dropPreview.js"></script>
+    <script src="js/drop.js"></script>
+    <script src="js/dragDataHelper.js"></script>
+    <script src="js/transformations.js"></script>
+    <script src="js/drag.js"></script>
+    <script src="js/userDatabase.js"></script>
+    <script src="js/pinnedLinks.js"></script>
+    <script src="js/blockedLinks.js"></script>
+    <script src="js/sites.js"></script>
+    <script src="js/cells.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/contentSearchUI.js"></script>
+    <script src="js/grid.js"></script>
+    <script src="js/page.js"></script>
+    <script src="js/newTab.js"></script>
+    <script src="js/updater.js"></script>
+    <script src="js/undo.js"></script>
+    <script>
     document.addEventListener("DOMContentLoaded", async(function*() {
       try {
         yield navigator.serviceWorker.register("sw.js", {scope: "./"});

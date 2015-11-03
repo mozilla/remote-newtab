@@ -16,7 +16,6 @@ describe("use of HTML fixtures and JS", () => {
     expect(elem.textContent).to.equal("");
 
     var script = document.createElement("script");
-    script.setAttribute("type", "text/javascript;version=1.8");
     script.textContent = `
       let elem = document.querySelector("#element-exists");
       elem.textContent = "Hello World";

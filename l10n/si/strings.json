@@ -1,0 +1,17 @@
+{
+  "newtab.pageTitle": "නව ටැබය",
+  "newtab.customize.title": "ඔබේ නව ටැබ පිටුව රුචිකරණය කරමින්",
+  "newtab.undo.removedLabel": "කුඩාරුව ඉවත් විය.",
+  "newtab.undo.undoButton": "අහොසි.",
+  "newtab.undo.restoreButton": "සියල්ල යළි පිහිටුවන්න.",
+  "newtab.undo.closeTooltip": "සඟවන්න",
+  "newtab.pin": "Pin this site at its current position",
+  "newtab.unpin": "Unpin this site",
+  "newtab.block": "මෙම අඩවිය ඉවත් කරන්න",
+  "newtab.sponsored.button": "SPONSORED",
+  "newtab.sponsored.explain": "මෙම ටයිලය ඔබට දක්වන්නේ Mozilla සහකරුවෙක් ලෙසිනි. ඔබට ඕනෑම මොහොතක %1$S බොත්තම ක්ලික් කිරීමෙන් එය ඉවත් කළ හැක. %2$S",
+  "newtab.enhanced.explain": "තිර රූපය යළි පිහිටුවීම මගින් Mozilla සහකරුවෙකු මෙම ටයිලය දෘශ්‍යව දියුණු කර ඇත. ඔබට අභිප්‍රේතයන්හි %1$S බොත්තම ක්ලික් කිරීම මගින් දියුණු කළ ටයිල අක්‍රීය කළ හැක. %2$S",
+  "newtab.learn.link": "තවත් දැනගන්න...",
+  "newtab.privacy.link": "පෞද්ගලිකත්ව ප්‍රතිපත්තිය",
+  "newtab.intro.gotit": "එය ලැඹුණි!"
+}

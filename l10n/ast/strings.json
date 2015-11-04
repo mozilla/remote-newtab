@@ -1,0 +1,12 @@
+{
+  "newtab.pageTitle": "Llingüeta nueva",
+  "newtab.undo.undoButton": "Desfacer.",
+  "newtab.undo.restoreButton": "Restaurar toes.",
+  "newtab.undo.removedLabel": "Miniatura desaniciada.",
+  "newtab.undo.closeTooltip": "Anubrir",
+  "newtab.pin ": " Fixar esti sitiu na so posición actual",
+  "newtab.unpin ": " Soltar esti sitiu",
+  "newtab.block ": " Desaniciar esti sitiu",
+  "newtab.show ": " Amosar la páxina de llingüeta nueva",
+  "newtab.hide ": " Anubrir la páxina de llingüeta nueva"
+}

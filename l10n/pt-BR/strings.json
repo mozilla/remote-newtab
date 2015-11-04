@@ -1,0 +1,18 @@
+{
+  "newtab.pageTitle": "Nova aba",
+  "newtab.customize.title": "Personalize sua página de nova aba",
+  "newtab.customize.enhanced": "Avançada",
+  "newtab.customize.classic": "Clássica",
+  "newtab.customize.blank": "Em branco",
+  "newtab.customize.what": "O que é esta página?",
+  "newtab.intro.header": "O que é esta página?",
+  "newtab.undo.removedLabel": "Miniatura excluída.",
+  "newtab.undo.undoButton": "Desfazer.",
+  "newtab.undo.restoreButton": "Restaurar tudo.",
+  "newtab.undo.closeTooltip": "Ocultar",
+  "newtab.pin": "Fixar site nesta posição",
+  "newtab.unpin": "Desafixar site",
+  "newtab.block": "Excluir site",
+  "newtab.show": "Exibir página de nova aba",
+  "newtab.hide": "Ocultar página de nova aba"
+}

@@ -1,0 +1,10 @@
+{
+  "newtab.pageTitle": "નવી ટૅબ",
+  "newtab.undo.removedLabel": "થમ્ભનેઇલ દૂર કરેલ છે.",
+  "newtab.undo.undoButton": "રદ કરો.",
+  "newtab.undo.restoreButton": "બધુ પુન:સંગ્રહો.",
+  "newtab.undo.closeTooltip": "છુપાડો",
+  "newtab.pin": "આ સાઇટને તેના વર્તમાન સ્થાને લગાવો",
+  "newtab.unpin": "આ સાઇટને તેના સ્થાનેથી દૂર કરો",
+  "newtab.block": "આ સાઇટ દૂર કરો"
+}

@@ -1,0 +1,17 @@
+{
+  "newtab.pageTitle": "New Tab",
+  "newtab.customize.title": "Customise your New Tab page",
+  "newtab.undo.removedLabel": "Thumbnail removed.",
+  "newtab.undo.undoButton": "Undo.",
+  "newtab.undo.restoreButton": "Restore All.",
+  "newtab.undo.closeTooltip": "Hide",
+  "newtab.pin": "Pin this site at its current position",
+  "newtab.unpin": "Unpin this site",
+  "newtab.block": "Remove this site",
+  "newtab.sponsored.button": "SPONSORED",
+  "newtab.sponsored.explain": "This tile is being shown to you on behalf of a Mozilla partner. You can remove it at any time by clicking the %1$S button. %2$S",
+  "newtab.enhanced.explain": "A Mozilla partner has visually enhanced this tile, replacing the screenshot. You can turn off enhanced tiles by clicking the %1$S button for your preferences. %2$S",
+  "newtab.learn.link": "Learn more…",
+  "newtab.privacy.link": "Privacy Notice",
+  "newtab.intro.gotit": "Got it!"
+}

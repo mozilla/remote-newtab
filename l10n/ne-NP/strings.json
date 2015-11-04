@@ -1,0 +1,11 @@
+{
+  "newtab.pageTitle": "नयाँ ट्याब",
+  "newtab.undo.removedLabel": "थंबनेल हटाइयो।",
+  "newtab.undo.undoButton": "पूर्वस्थितिमा फर्काउनुहोस् ।",
+  "newtab.undo.restoreButton": "सबैलाई पूर्वावस्थामा ल्याउनुहोस्।",
+  "newtab.undo.closeTooltip": "लुकाउनुहोस्",
+  "newtab.pin": "यो साइटलाई तत्कालिन स्थानमा अड्काउनुहोस्",
+  "newtab.unpin": "यो साइटलाई छुटाउनुहोस्",
+  "newtab.block": "यो साईट हटाउनुहोस्",
+  "newtab.intro.gotit": "पाएँ!"
+}

@@ -1,0 +1,10 @@
+{
+  "newtab.pageTitle": "புதிய தத்தல்",
+  "newtab.undo.removedLabel": "சிறுபடம் நீக்கப்பட்டது.",
+  "newtab.undo.undoButton": "செயல்நீக்கு",
+  "newtab.undo.restoreButton": "அனைத்தையும் மீட்டமை.",
+  "newtab.undo.closeTooltip": "மறை",
+  "newtab.pin": "இந்த தளத்தை அதன் தற்போதைய இடநிலையில் பொருத்து",
+  "newtab.unpin": "இந்த தளத்தை விடுவி",
+  "newtab.block": "இந்த தளத்தை நீக்கு"
+}

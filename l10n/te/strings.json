@@ -1,0 +1,17 @@
+{
+  "newtab.pageTitle": "కొత్త టాబ్",
+  "newtab.customize.title": "మీ కొత్త టాబ్ పేజీను మలచుకోండి",
+  "newtab.undo.removedLabel": "థంబ్‌నెయిల్ తీసివేయబడింది.",
+  "newtab.undo.undoButton": "చేయవద్దు.",
+  "newtab.undo.restoreButton": "అన్నిటినీ పునరుద్ధరించు.",
+  "newtab.undo.closeTooltip": "దాచు",
+  "newtab.pin": "ఈ సైటును దాని ప్రస్తుత స్థానము వద్ద పిన్ చేయి",
+  "newtab.unpin": "ఈ సైటును అన్‌పిన్ చేయి",
+  "newtab.block": "ఈ సైటును తీసివేయి",
+  "newtab.sponsored.button": "స్పాన్సర్డ్",
+  "newtab.sponsored.explain": "మొజిల్లా భాగస్వామి తరుపున మీకు ఈ టైల్ చూపబడుతోంది. మీరు %1$S బటన్ వత్తి ఎప్పుడు కావాలంటే అప్పుడు తీసివేయవచ్చు. %2$S",
+  "newtab.enhanced.explain": "స్క్రీన్‌షాట్‌ను పునఃస్థాపిస్తూ, మొజిల్లా భాగస్వామి ఈ టైల్‌ను దృశ్యరూపేణా విస్తరించారు. మీ రిఫరెన్సుల కొరకు గల విస్తరిత టైల్స్‌ను మీరు %1$S బటన్ నొక్కి ఆఫ్ చేయవచ్చు. %2$S",
+  "newtab.learn.link": "మరింత తెలుసుకోండి…",
+  "newtab.privacy.link": "గోప్యతా నోటీసు",
+  "newtab.intro.gotit": "అది పొందాను!"
+}

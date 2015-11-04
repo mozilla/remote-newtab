@@ -1,0 +1,17 @@
+{
+  "newtab.pageTitle": "নতুন টেব",
+  "newtab.customize.title": "আপোনাৰ নতুন টেব পৃষ্ঠাক স্বনিৰ্বাচিত কৰক",
+  "newtab.undo.removedLabel": "থাম্বনেইল আতৰোৱা হৈছে।",
+  "newtab.undo.undoButton": "বাতিল কৰক।",
+  "newtab.undo.restoreButton": "সকলো পুনৰুদ্ধাৰ কৰক।",
+  "newtab.undo.closeTooltip": "লুকুৱাওক",
+  "newtab.pin": "এই ছাইটক তাৰ বৰ্তমান অৱস্থানত পিন কৰক",
+  "newtab.unpin": "এই ছাইট আনপিন কৰক",
+  "newtab.block": "এই ছাইট আতৰাওক",
+  "newtab.sponsored.button": "SPONSORED",
+  "newtab.sponsored.explain": "এই শীৰ্ষকক আপোনাক এটা Mozilla সহযোগীৰ তৰফে দেখুৱা হৈছে। আপুনি ইয়াক যিকোনো সময়ত %1$S বুটাম ক্লিক কৰি আতৰাব পাৰিব। %2$S",
+  "newtab.enhanced.explain": "এজন Mozilla সহযোগীয়ে এই টাইলক চক্ষভাৱে সম্প্ৰসাৰন কৰিছে, স্ক্ৰিনশ্বটক প্ৰতিস্থাপন কৰি। আপুনি আপোনাৰ পছন্দসমূহৰ বাবে %1$S বুটাম ক্লিক কৰি সম্প্ৰসাৰিত টাইলসমূহক বন্ধ কৰিব পাৰিব। %2$S",
+  "newtab.learn.link": "অধিক জানক…",
+  "newtab.privacy.link": "গোপনীয়তা ঘোষণা",
+  "newtab.intro.gotit": "বুজি পালো!"
+}

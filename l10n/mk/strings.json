@@ -1,0 +1,12 @@
+{
+  "newtab.pageTitle": "Ново јазиче",
+  "newtab.undo.closeTooltip": "Скриј",
+  "newtab.undo.removedLabel": "Иконата е отстранета.",
+  "newtab.undo.restoreButton": "Реконструирај ги сите.",
+  "newtab.undo.undoButton": "Врати.",
+  "newtab.pin": "Закачи го ова место на оваа позициција",
+  "newtab.unpin": "Откачи го ова место",
+  "newtab.block": "Отстрани го ова место",
+  "newtab.show": "Покажи ја страницата за ново јазиче",
+  "newtab.hide": "Скриј ја страницата за ново јазиче"
+}

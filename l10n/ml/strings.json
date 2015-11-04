@@ -1,0 +1,13 @@
+{
+  "newtab.pageTitle": "പുതിയ റ്റാബ്",
+  "newtab.undo.removedLabel": "പ്രതിരൂപം നീക്കം ചെയ്തിരിയ്ക്കുന്നു.",
+  "newtab.undo.undoButton": "വേണ്ട.",
+  "newtab.undo.restoreButton": "എല്ലാം വീണ്ടെടുക്കുക.",
+  "newtab.undo.closeTooltip": "അദൃശ്യമാക്കുക",
+  "newtab.pin": "നിലവിലുള്ള സ്ഥാനത്തു് ഈ സൈറ്റ് പിന്‍ ചെയ്യുക",
+  "newtab.unpin": "ഈ സൈറ്റ് അണ്‍പിന്‍ ചെയ്യുക",
+  "newtab.block": "ഈ സൈറ്റ് നീക്കം ചെയ്യുക",
+  "newtab.learn.link": "കൂടുതല്‍ അറിയുക...",
+  "newtab.privacy.link": "സ്വകാര്യ പോളിസി",
+  "newtab.intro.gotit": "കിട്ടിപ്പോയി!"
+}

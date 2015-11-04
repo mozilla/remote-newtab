@@ -1,0 +1,16 @@
+{
+  "newtab.pageTitle": "Новая ўстаўка",
+  "newtab.undo.removedLabel": "Накід выдалены.",
+  "newtab.undo.undoButton": "Адмяніць.",
+  "newtab.undo.restoreButton": "Вярнуць усё.",
+  "newtab.undo.closeTooltip": "Схаваць",
+  "newtab.sponsored.release.message": "Прапаноўваецца гэтая праплачаная пляцоўка, бо мы спадзяваемся, што яна цікавая вам, і таму, што праплатчык падтрымлівае місію Mozilla.",
+  "newtab.sponsored.trial.message": "Прапаноўваецца гэтая спробная праплачаная пляцоўка, бо мы спадзяваемся, што яна цікавая вам, і таму, што праплатчык падтрымлівае місію Mozilla.",
+  "newtab.panel.link.text": "Падрабязней…",
+  "newtab.pin ": " Прышпіліць пляцоўку на цяперашняе месца",
+  "newtab.unpin ": " Адшпіліць пляцоўку",
+  "newtab.block ": " Прыняць гэтую пляцоўку",
+  "newtab.show ": " Паказаць старонку новай устаўкі",
+  "newtab.hide ": " Схаваць старонку новай устаўкі",
+  "newtab.sponsored ": " Паказваць звесткі ў праплачаных чарапічынах"
+}

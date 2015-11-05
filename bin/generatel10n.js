@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -40,12 +41,15 @@ StringBundle.prototype = {
    */
   save() {
     var globalDirPromise = fetch(this.dir)
+      .then(assureResponse)
       .then(r => r.text())
       .then(processDTD);
     var dtdPromise = fetch(this.dtd)
+      .then(assureResponse)
       .then(r => r.text())
       .then(processDTD);
     var propsPromise = fetch(this.properties)
+      .then(assureResponse)
       .then(r => r.text())
       .then(processProps);
 
@@ -69,14 +73,58 @@ StringBundle.prototype = {
       );
   }
 };
-
+/**
+ * Attempts to recovers from HTTP errors (404 and 503)
+ * @param  {Response} response The response to check.
+ * @return {Promise} Fulfills once an "ok" response is fetched.
+ */
+function assureResponse(response) {
+  if (response.ok) {
+    return Promise.resolve(response);
+  }
+  //otherwise, let's try to recover
+  return new Promise(function(resolve, reject) {
+    switch (response.status) {
+    case 503:
+      //let's try again
+      console.warn(`We got a 503 for: ${response.url} - trying again.`);
+      setTimeout(() => {
+        fetch(response.url)
+          .then(assureResponse)
+          .then(resolve);
+      }, 2000);
+      break;
+    case 404:
+      console.warn("l10n File is 404 :" + response.url);
+      // Node Response doesn't expose constructor, so fake it till you make it!
+      const fakeResponse = {
+        text() {
+          return Promise.resolve("");
+        }
+      };
+      resolve(fakeResponse);
+      break;
+    default:
+      var error = new Error(`Could not handle ${response.status} for: ${response.url}`);
+      console.error(error);
+      reject(error);
+    }
+  });
+}
+/**
+ * Validate the data against the canonical default object.
+ * Invalid properties are console.log()'ed.
+ * @param  {[type]} results [description]
+ * @param  {[type]} locale  [description]
+ * @return {[type]}         [description]
+ */
 function validateResults(results, locale) {
   var tempObj = results.reduce(
-      (prev, next) => Object.assign(prev, next), {}
+    (prev, next) => Object.assign(prev, next), {}
   );
   var missingKeys = Object.keys(defaultLocale)
     .filter(key => !tempObj.hasOwnProperty(key));
-  if(missingKeys.length){
+  if (missingKeys.length) {
     console.warn(`
 WARNING: Locale "${locale}" is missing keys. The en-US locale will fill the gaps:
  * ${missingKeys.join("\n * ")}
@@ -128,6 +176,7 @@ function processDTD(text) {
       .split(/\s(.+)?/)
       .filter(item => item)
     )
+    .sort(compareName)
     .forEach(
       nameValue => result[nameValue.shift().trim()] = nameValue.shift().trim()
     );
@@ -148,17 +197,22 @@ function processProps(text) {
   text.split("\n")
     .filter(line => !line.startsWith("#") && line.trim(line))
     .map(line => line.split(/=(.+)?/))
+    .sort(compareName)
     .forEach(
-      nameValue => result[nameValue.shift().trim()] = nameValue.shift()
+      nameValue => result[nameValue.shift().trim()] = nameValue.shift().trim()
     );
   return result;
+}
+
+function compareName(a, b) {
+  return a[0].trim() > b[0].trim();
 }
 /**
  * Reads file from path.
  * @param  {String} file Path to file.
  * @return {Promise<String>} The data that was read from disk.
  */
-function readFile(file){
+function readFile(file) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, "utf8", (err, data) => {
       if (err) {
@@ -173,7 +227,7 @@ function readFile(file){
  *
  * @param  {String[]} allLocales The list of locales to download.
  */
-function generateL10NStrings(allLocales){
+function generateL10NStrings(allLocales) {
   allLocales
     .map(locale => new StringBundle(locale))
     .forEach(bundle => bundle.save());
@@ -181,23 +235,21 @@ function generateL10NStrings(allLocales){
 
 //Read the default locale data (en-US)
 Promise.all([
-  readFile(l10nPath + "/global.dtd").then(processDTD),
-  readFile(l10nPath + "/newTab.properties").then(processProps),
-  readFile(l10nPath + "/newTab.dtd").then(processDTD),
-])
-.then(
-  defaultStrings => Object.assign(defaultStrings.shift(), defaultStrings.shift())
-)
-.then(
-  resultingObject => Object.assign(defaultLocale, resultingObject)
-)
-.then(
-  () => readFile(l10nPath + "/all-locales")
-)
-.then(
-  locales => locales.split("\n").filter(locale => locale)
-)
-.then(
-  allLocales => generateL10NStrings(allLocales)
-);
-
+    readFile(l10nPath + "/global.dtd").then(processDTD),
+    readFile(l10nPath + "/newTab.properties").then(processProps),
+    readFile(l10nPath + "/newTab.dtd").then(processDTD),
+  ])
+  .then(
+    defaultStrings => defaultStrings.reduce(
+      (prev, next) => Object.assign(prev, next), defaultLocale
+    )
+  )
+  .then(
+    () => readFile(l10nPath + "/all-locales")
+  )
+  .then(
+    locales => locales.split("\n").filter(locale => locale)
+  )
+  .then(
+    allLocales => generateL10NStrings(allLocales)
+  );

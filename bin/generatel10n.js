@@ -10,22 +10,11 @@
 const fs = require("fs");
 const path = require("path");
 const fetch = require("node-fetch"); // jshint ignore:line
-
-const locales = [
-  "ach", "af", "ak", "ar", "as", "ast", "be", "bg", "bn-BD", "bn-IN", "br",
-  "bs", "ca", "cs", "cy", "da", "de", "el", "en-GB", "en-ZA", "eo", "es-AR",
-  "es-CL", "es-ES", "es-MX", "et", "eu", "fa", "ff", "fi", "fr", "fy-NL",
-  "ga-IE", "gd", "gl", "gu-IN", "he", "hi-IN", "hr", "hu", "hy-AM", "id",
-  "is", "it", "ja", "ja-JP-mac", "ka", "kk", "km", "kn", "ko", "ku", "lg",
-  "lij", "lt", "lv", "mai", "mk", "ml", "mn", "mr", "ms", "my", "nb-NO",
-  "ne-NP", "nl", "nn-NO", "nr", "nso", "oc", "or", "pa-IN", "pl", "pt-BR",
-  "pt-PT", "rm", "ro", "ru", "rw", "si", "sk", "sl", "son", "sq", "sr", "ss",
-  "st", "sv-SE", "ta", "ta-LK", "te", "th", "tn", "tr", "ts", "uk", "ve", "vi",
-  "wo", "x-testing", "xh", "zh-CN", "zh-TW", "zu",
-];
-
 const repo = "http://mxr.mozilla.org/l10n-central/source/";
-const serverPath = "/browser/chrome/browser/newTab";
+const newTabPath = "/browser/chrome/browser/newTab";
+const globalDirPath = "/dom/chrome/global.dtd";
+const l10nPath = path.resolve(`${__dirname}/../l10n/`);
+const defaultLocale = {};
 /**
  * Helper object for managing state
  * @constructor
@@ -37,24 +26,38 @@ function StringBundle(locale) {
 
 StringBundle.prototype = {
   get properties() {
-    return `${repo}${this.locale}${serverPath}.properties?raw=1`;
+    return `${repo}${this.locale}${newTabPath}.properties?raw=1`;
   },
   get dtd() {
-    return `${repo}${this.locale}${serverPath}.dtd?raw=1`;
+    return `${repo}${this.locale}${newTabPath}.dtd?raw=1`;
+  },
+  get dir() {
+    return `${repo}${this.locale}${globalDirPath}?raw=1`;
   },
   /**
    * Saves the bundle to disk.
    * @return {Promise} Resolves once writing to disk is done is done.
    */
   save() {
-    var dtdPromise = fetch(this.dtd).then(r => r.text())
+    var dtdPromise = fetch(this.dtd)
+      .then(r => r.text())
       .then(processDTD);
-    var textPromise = fetch(this.properties).then(r => r.text())
+    var propsPromise = fetch(this.properties)
+      .then(r => r.text())
       .then(processProps);
-    return Promise.all([dtdPromise, textPromise])
-      // Reduce resulting objects into a single object.
-      .then(results => results.reduce(
-        (prev, next) => Object.assign(prev, next), {}))
+    var globalDirPromise = fetch(this.dir)
+      .then(r => r.text())
+      .then(processDTD);
+
+    return Promise.all([dtdPromise, propsPromise, globalDirPromise])
+      .then((results) => validateResults(results, this.locale))
+      // Reduce resulting objects into a single object, using the defaultLocale
+      // as the base.
+      .then(
+        results => results.reduce(
+          (prev, next) => Object.assign(prev, next), Object.assign({}, defaultLocale)
+        )
+      )
       .then(
         combinedObj => JSON.stringify(combinedObj, null, 2)
       )
@@ -66,6 +69,21 @@ StringBundle.prototype = {
       );
   }
 };
+
+function validateResults(results, locale) {
+  var tempObj = results.reduce(
+      (prev, next) => Object.assign(prev, next), {}
+  );
+  var missingKeys = Object.keys(defaultLocale)
+    .filter(key => !tempObj.hasOwnProperty(key));
+  if(missingKeys.length){
+    console.warn(`
+WARNING: Locale "${locale}" is missing keys. The en-US locale will fill the gaps:
+ * ${missingKeys.join("\n * ")}
+    `);
+  }
+  return results;
+}
 /**
  * Writes the resulting JSON to the file system.
  *
@@ -75,7 +93,7 @@ StringBundle.prototype = {
  */
 function writeToDisk(data, locale) {
   return new Promise((resolve, reject) => {
-    let dir = path.resolve(`__dirname/../l10n/${locale}/`);
+    const dir = path.resolve(`${l10nPath}/${locale}/`);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir);
     }
@@ -98,7 +116,7 @@ function writeToDisk(data, locale) {
  * @return {Object} The resulting object with the key value pairs.
  */
 function processDTD(text) {
-  var result = {};
+  const result = {};
   text.split("\n")
     .filter(line => line.trim().startsWith("<!ENTITY"))
     .map(
@@ -124,14 +142,59 @@ function processDTD(text) {
  * @return {Object} The resulting object.
  */
 function processProps(text) {
-  var result = {};
-  text
-    .split("\n")
+  const result = {};
+  text.split("\n")
     .filter(line => !line.startsWith("#") && line.trim(line))
     .map(line => line.split(/=(.+)?/))
     .forEach(nameValue => result[nameValue.shift()] = nameValue.shift());
   return result;
 }
 
-locales.map(locale => new StringBundle(locale))
-  .forEach(bundle => bundle.save());
+/**
+ * Reads file from path.
+ * @param  {String} file Path to file.
+ * @return {Promise<String>} The data that was read from disk.
+ */
+function readFile(file){
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, "utf8", (err, data) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(data);
+    });
+  });
+}
+/**
+ * Runs through the locales, downloads the data, and saves it.
+ *
+ * @param  {String[]} allLocales The list of locales to download.
+ */
+function generateL10NStrings(allLocales){
+  allLocales
+    .map(locale => new StringBundle(locale))
+    .forEach(bundle => bundle.save());
+}
+
+//Read the default locale data (en-US)
+Promise.all([
+  readFile(l10nPath + "/newTab.properties").then(processProps),
+  readFile(l10nPath + "/newTab.dtd").then(processDTD),
+  readFile(l10nPath + "/global.dtd").then(processDTD),
+])
+.then(
+  defaultStrings => Object.assign(defaultStrings.shift(), defaultStrings.shift())
+)
+.then(
+  resultingObject => Object.assign(defaultLocale, resultingObject)
+)
+.then(
+  () => readFile(l10nPath + "/all-locales")
+)
+.then(
+  locales => locales.split("\n").filter(locale => locale)
+)
+.then(
+  allLocales => generateL10NStrings(allLocales)
+);
+

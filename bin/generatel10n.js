@@ -24,7 +24,8 @@ const warn = clc.yellow;
 const notice = clc.blue;
 
 /**
- * Helper object for managing state
+ * Helper object for representing string bundles.
+ *
  * @constructor
  * @param {String} locale The locale for the string bundle.
  */
@@ -44,6 +45,7 @@ StringBundle.prototype = {
   },
   /**
    * Saves the bundle to disk.
+   *
    * @return {Promise} Resolves once writing to disk is done is done.
    */
   save() {
@@ -84,7 +86,8 @@ StringBundle.prototype = {
   }
 };
 /**
- * Attempts to recovers from HTTP errors (404 and 503)
+ * Attempts to recovers from HTTP errors (404 and 503).
+ *
  * @param  {Response} response The response to check.
  * @return {Promise} Fulfills once an "ok" response is fetched.
  */
@@ -93,7 +96,7 @@ function assureResponse(response) {
     return Promise.resolve(response);
   }
   //otherwise, let's try to recover
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     let msg = "";
     switch (response.status) {
     case 503:
@@ -126,9 +129,10 @@ function assureResponse(response) {
 /**
  * Validate the data against the canonical default object.
  * Invalid properties are console.log()'ed.
- * @param  {[type]} results [description]
- * @param  {[type]} locale  [description]
- * @return {[type]}         [description]
+ *
+ * @param  {Objects[]} results results to be validated.
+ * @param  {String} locale The corresponding locale.
+ * @return {Object[]} the validated (unmodified) results.
  */
 function validateResults(results, locale) {
   var tempObj = results.reduce(
@@ -172,7 +176,7 @@ function writeToDisk(data, locale) {
  *   - then removes "<" and ">" and additional quotation marks.
  *   - then combines the remaining key/value pair into the result object.
  *
- * @param  {[type]} text Text to be processed.
+ * @param  {String} text Text to be processed.
  * @return {Object} The resulting object with the key value pairs.
  */
 function processDTD(text) {
@@ -227,6 +231,7 @@ function compareName(a, b) {
 }
 /**
  * Reads file from path.
+ *
  * @param  {String} file Path to file.
  * @return {Promise<String>} The data that was read from disk.
  */
@@ -242,30 +247,30 @@ function readFile(file) {
 }
 /**
  * Run only a few network requests at a time.
+ *
  * @param {StringBundle[]} stringBundles the string bundles to save.
  * @param {Number} throughPut  How many network requests to perform simultaneously.
- * @yield {Promise} The requests beings performed.
  */
 function* fetchRunner(stringBundles, throughPut) { // jshint ignore:line
-    // Gather N=throughPut requests, and wait until they are done before continuing.
-    for (var i = 0; i < stringBundles.length;) {
-      let bundles = [];
-      for (var j = 0; j < throughPut; j++) {
-        bundles.push(stringBundles[i++]);
-        if (i >= stringBundles.length) {
-          break;
-        }
+  // Gather N=throughPut requests, and wait until they are done before continuing.
+  for (var i = 0; i < stringBundles.length;) {
+    let bundles = [];
+    for (var j = 0; j < throughPut; j++) {
+      bundles.push(stringBundles[i++]);
+      if (i >= stringBundles.length) {
+        break;
       }
-      yield Promise.all(
-        bundles.map(buldle => buldle.save())
-      );
     }
+    yield Promise.all(
+      bundles.map(buldle => buldle.save())
+    );
   }
-  /**
-   * Runs through the locales, downloads the data, and saves it.
-   *
-   * @param {String[]} allLocales The list of locales to download.
-   */
+}
+/**
+ * Runs through the locales, downloads the data, and saves it.
+ *
+ * @param {String[]} allLocales The list of locales to download.
+ */
 function generateL10NStrings(allLocales) {
   var stringBundles = allLocales
     .map(locale => new StringBundle(locale));
@@ -281,6 +286,7 @@ function generateL10NStrings(allLocales) {
 }
 /**
  * Trims properties that are not used in the about:newtab page.
+ *
  * @param  {Object} obj the object from which props will be trimmed.
  * @return {Object} The object that got trimmed.
  */
@@ -295,7 +301,8 @@ function trimRedundantProps(obj) {
   }
   if (redudantProps.length) {
     let msg = `${warn("WARNING:")} Redundant props in ${this.locale}:`; // jshint ignore:line
-    msg += notice(`\n * ${redudantProps.join("\n * ")}`);
+    msg += notice(`
+ * ${redudantProps.join("\n * ")}`);
     console.warn(msg);
   }
   return obj;

@@ -6,16 +6,23 @@
 /**
  * Create the string bundles and then save them to disk.
  */
-/*jshint node:true, browser:false*/
+/*jshint node:true, esnext: true*/
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const clc = require("cli-color");
 const fetch = require("node-fetch"); // jshint ignore:line
 const repo = "http://mxr.mozilla.org/l10n-central/source/";
 const newTabPath = "/browser/chrome/browser/newTab";
 const globalDirPath = "/dom/chrome/global.dtd";
 const l10nPath = path.resolve(`${__dirname}/../l10n/`);
 const defaultLocale = {};
+
+// CLI-Colors
+const error = clc.red.bold;
+const warn = clc.yellow;
+const notice = clc.blue;
+
 /**
  * Helper object for managing state
  * @constructor
@@ -63,13 +70,16 @@ StringBundle.prototype = {
         )
       )
       .then(
+        trimRedundantProps.bind(this)
+      )
+      .then(
         combinedObj => JSON.stringify(combinedObj, null, 2)
       )
       .then(
         (text) => writeToDisk(text, this.locale)
       )
       .catch(
-        err => console.error(err)
+        err => console.error(error(err))
       );
   }
 };
@@ -83,11 +93,12 @@ function assureResponse(response) {
     return Promise.resolve(response);
   }
   //otherwise, let's try to recover
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
+    let msg = "";
     switch (response.status) {
     case 503:
-      //let's try again
-      console.warn(`We got a 503 for: ${response.url} - trying again.`);
+      msg = `We got a 503 for: ${response.url} - trying again.`;
+      console.warn(warn(msg));
       setTimeout(() => {
         fetch(response.url)
           .then(assureResponse)
@@ -95,7 +106,8 @@ function assureResponse(response) {
       }, 2000);
       break;
     case 404:
-      console.warn("l10n File is 404 :" + response.url);
+      msg = `l10n File is 404 : ${response.url}`;
+      console.warn(warn(msg));
       // Node Response doesn't expose constructor, so fake it till you make it!
       const fakeResponse = {
         text() {
@@ -105,9 +117,9 @@ function assureResponse(response) {
       resolve(fakeResponse);
       break;
     default:
-      var error = new Error(`Could not handle ${response.status} for: ${response.url}`);
-      console.error(error);
-      reject(error);
+      msg = `Could not handle ${response.status} for: ${response.url}`;
+      console.error(error(msg));
+      reject(new Error(error));
     }
   });
 }
@@ -126,8 +138,8 @@ function validateResults(results, locale) {
     .filter(key => !tempObj.hasOwnProperty(key));
   if (missingKeys.length) {
     console.warn(`
-WARNING: Locale "${locale}" is missing keys. The en-US locale will fill the gaps:
- * ${missingKeys.join("\n * ")}
+${warn("WARNING:")} Locale "${locale}" is missing keys. The en-US locale will fill the gaps:
+ ${notice("* " + missingKeys.join("\n * "))}
     `);
   }
   return results;
@@ -176,9 +188,12 @@ function processDTD(text) {
       .split(/\s(.+)?/)
       .filter(item => item)
     )
+    .map(
+      item => [item[0].trim(), item[1].trim()]
+    )
     .sort(compareName)
     .forEach(
-      nameValue => result[nameValue.shift().trim()] = nameValue.shift().trim()
+      nameValue => result[nameValue.shift()] = nameValue.shift()
     );
   return result;
 }
@@ -197,15 +212,18 @@ function processProps(text) {
   text.split("\n")
     .filter(line => !line.startsWith("#") && line.trim(line))
     .map(line => line.split(/=(.+)?/))
+    .map(
+      item => [item[0].trim(), item[1].trim()]
+    )
     .sort(compareName)
     .forEach(
-      nameValue => result[nameValue.shift().trim()] = nameValue.shift().trim()
+      nameValue => result[nameValue.shift().trim()] = nameValue.shift()
     );
   return result;
 }
 
 function compareName(a, b) {
-  return a[0].trim() > b[0].trim();
+  return a[0].localeCompare(b[0]);
 }
 /**
  * Reads file from path.
@@ -223,14 +241,64 @@ function readFile(file) {
   });
 }
 /**
- * Runs through the locales, downloads the data, and saves it.
- *
- * @param  {String[]} allLocales The list of locales to download.
+ * Run only a few network requests at a time.
+ * @param {StringBundle[]} stringBundles the string bundles to save.
+ * @param {Number} throughPut  How many network requests to perform simultaneously.
+ * @yield {Promise} The requests beings performed.
  */
+function* fetchRunner(stringBundles, throughPut) { // jshint ignore:line
+    // Gather N=throughPut requests, and wait until they are done before continuing.
+    for (var i = 0; i < stringBundles.length;) {
+      let bundles = [];
+      for (var j = 0; j < throughPut; j++) {
+        bundles.push(stringBundles[i++]);
+        if (i >= stringBundles.length) {
+          break;
+        }
+      }
+      yield Promise.all(
+        bundles.map(buldle => buldle.save())
+      );
+    }
+  }
+  /**
+   * Runs through the locales, downloads the data, and saves it.
+   *
+   * @param {String[]} allLocales The list of locales to download.
+   */
 function generateL10NStrings(allLocales) {
-  allLocales
-    .map(locale => new StringBundle(locale))
-    .forEach(bundle => bundle.save());
+  var stringBundles = allLocales
+    .map(locale => new StringBundle(locale));
+  var runner = fetchRunner(stringBundles, 3);
+  var fetchSequentially = () => {
+    var next = runner.next();
+    if (!next.done) {
+      return next.value.then(fetchSequentially);
+    }
+  };
+  // Fetch a few at a time, otherwise mxr gets upset
+  fetchSequentially();
+}
+/**
+ * Trims properties that are not used in the about:newtab page.
+ * @param  {Object} obj the object from which props will be trimmed.
+ * @return {Object} The object that got trimmed.
+ */
+function trimRedundantProps(obj) {
+  var defaultProps = Object.getOwnPropertyNames(defaultLocale);
+  var redudantProps = [];
+  for (var name of Object.getOwnPropertyNames(obj)) {
+    if (defaultProps.indexOf(name) === -1) {
+      redudantProps.push(name);
+      delete obj[name];
+    }
+  }
+  if (redudantProps.length) {
+    let msg = `${warn("WARNING:")} Redundant props in ${this.locale}:`; // jshint ignore:line
+    msg += notice(`\n * ${redudantProps.join("\n * ")}`);
+    console.warn(msg);
+  }
+  return obj;
 }
 
 //Read the default locale data (en-US)

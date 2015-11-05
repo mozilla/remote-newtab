@@ -39,17 +39,17 @@ StringBundle.prototype = {
    * @return {Promise} Resolves once writing to disk is done is done.
    */
   save() {
+    var globalDirPromise = fetch(this.dir)
+      .then(r => r.text())
+      .then(processDTD);
     var dtdPromise = fetch(this.dtd)
       .then(r => r.text())
       .then(processDTD);
     var propsPromise = fetch(this.properties)
       .then(r => r.text())
       .then(processProps);
-    var globalDirPromise = fetch(this.dir)
-      .then(r => r.text())
-      .then(processDTD);
 
-    return Promise.all([dtdPromise, propsPromise, globalDirPromise])
+    return Promise.all([globalDirPromise, dtdPromise, propsPromise])
       .then((results) => validateResults(results, this.locale))
       // Reduce resulting objects into a single object, using the defaultLocale
       // as the base.
@@ -118,7 +118,9 @@ function writeToDisk(data, locale) {
 function processDTD(text) {
   const result = {};
   text.split("\n")
-    .filter(line => line.trim().startsWith("<!ENTITY"))
+    .filter(
+      line => line.trim().startsWith("<!ENTITY")
+    )
     .map(
       line => line.replace("<!ENTITY ", "")
       .replace(">", "")
@@ -127,7 +129,7 @@ function processDTD(text) {
       .filter(item => item)
     )
     .forEach(
-      nameValue => result[nameValue.shift()] = nameValue.shift()
+      nameValue => result[nameValue.shift().trim()] = nameValue.shift().trim()
     );
   return result;
 }
@@ -146,10 +148,11 @@ function processProps(text) {
   text.split("\n")
     .filter(line => !line.startsWith("#") && line.trim(line))
     .map(line => line.split(/=(.+)?/))
-    .forEach(nameValue => result[nameValue.shift()] = nameValue.shift());
+    .forEach(
+      nameValue => result[nameValue.shift().trim()] = nameValue.shift()
+    );
   return result;
 }
-
 /**
  * Reads file from path.
  * @param  {String} file Path to file.
@@ -178,9 +181,9 @@ function generateL10NStrings(allLocales){
 
 //Read the default locale data (en-US)
 Promise.all([
+  readFile(l10nPath + "/global.dtd").then(processDTD),
   readFile(l10nPath + "/newTab.properties").then(processProps),
   readFile(l10nPath + "/newTab.dtd").then(processDTD),
-  readFile(l10nPath + "/global.dtd").then(processDTD),
 ])
 .then(
   defaultStrings => Object.assign(defaultStrings.shift(), defaultStrings.shift())

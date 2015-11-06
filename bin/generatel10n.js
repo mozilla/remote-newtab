@@ -89,12 +89,13 @@ StringBundle.prototype = {
   }
 };
 /**
- * As object's property order is not guaranteed, we need to sort them
+ * As object's property-order is not guaranteed in JS, we need to sort them
  * so we can see what's actually changed. Sort is natural as per ES.
- * @param  {Object} unsortedObject The object whose properties are not sorted
- * @return {Object} A new Object that has been sorted
+ *
+ * @param  {Object} unsortedObject The object whose properties are not sorted.
+ * @return {Object} A new Object that has been sorted.
  */
-function makeSortedObject(unsortedObject){
+function makeSortedObject(unsortedObject) {
   Object.getOwnPropertyNames(unsortedObject)
     .sort()
     .reduce((obj, next) => {
@@ -110,9 +111,10 @@ function makeSortedObject(unsortedObject){
  */
 function assureResponse(response) {
   if (response.ok) {
+    // All is good!
     return Promise.resolve(response);
   }
-  //otherwise, let's try to recover
+  // Otherwise, let's try to recover.
   return new Promise(function(resolve, reject) {
     let msg = "";
     switch (response.status) {
@@ -303,7 +305,7 @@ function trimRedundantProps(obj) {
   return obj;
 }
 
-//Read the default locale data (en-US)
+//Read the default locale data (en-US), get the "shipped locales", and save it all to disk!
 Promise.all([
     fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.dtd")
       .then(assureResponse)

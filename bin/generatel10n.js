@@ -96,7 +96,7 @@ StringBundle.prototype = {
  * @return {Object} A new Object that has been sorted.
  */
 function makeSortedObject(unsortedObject) {
-  Object.getOwnPropertyNames(unsortedObject)
+  return Object.getOwnPropertyNames(unsortedObject)
     .sort()
     .reduce((obj, next) => {
       obj[next] = unsortedObject[next];

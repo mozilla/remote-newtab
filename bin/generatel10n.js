@@ -75,7 +75,10 @@ StringBundle.prototype = {
         trimRedundantProps.bind(this)
       )
       .then(
-        combinedObj => JSON.stringify(combinedObj, null, 2)
+        makeSortedObject
+      )
+      .then(
+        sortedObject => JSON.stringify(sortedObject, null, 2)
       )
       .then(
         (text) => writeToDisk(text, this.locale)
@@ -85,6 +88,20 @@ StringBundle.prototype = {
       );
   }
 };
+/**
+ * As object's property order is not guaranteed, we need to sort them
+ * so we can see what's actually changed. Sort is natural as per ES.
+ * @param  {Object} unsortedObject The object whose properties are not sorted
+ * @return {Object} A new Object that has been sorted
+ */
+function makeSortedObject(unsortedObject){
+  Object.getOwnPropertyNames(unsortedObject)
+    .sort()
+    .reduce((obj, next) => {
+      obj[next] = unsortedObject[next];
+      return obj;
+    }, {});
+}
 /**
  * Attempts to recovers from HTTP errors (404 and 503).
  *

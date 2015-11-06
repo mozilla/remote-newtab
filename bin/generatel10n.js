@@ -12,9 +12,9 @@ const fs = require("fs");
 const path = require("path");
 const clc = require("cli-color");
 const fetch = require("node-fetch"); // jshint ignore:line
-const repo = "http://mxr.mozilla.org/l10n-central/source/";
-const newTabPath = "/browser/chrome/browser/newTab";
-const globalDirPath = "/dom/chrome/global.dtd";
+const repo = "https://hg.mozilla.org/releases/l10n/mozilla-aurora/";
+const newTabPath = "/raw-file/tip/browser/chrome/browser/newTab";
+const globalDirPath = "/raw-file/tip/dom/chrome/global.dtd";
 const l10nPath = path.resolve(`${__dirname}/../l10n/`);
 const defaultLocale = {};
 
@@ -35,13 +35,13 @@ function StringBundle(locale) {
 
 StringBundle.prototype = {
   get properties() {
-    return `${repo}${this.locale}${newTabPath}.properties?raw=1`;
+    return `${repo}${this.locale}${newTabPath}.properties`;
   },
   get dtd() {
-    return `${repo}${this.locale}${newTabPath}.dtd?raw=1`;
+    return `${repo}${this.locale}${newTabPath}.dtd`;
   },
   get dir() {
-    return `${repo}${this.locale}${globalDirPath}?raw=1`;
+    return `${repo}${this.locale}${globalDirPath}`;
   },
   /**
    * Saves the bundle to disk.
@@ -195,7 +195,6 @@ function processDTD(text) {
     .map(
       item => [item[0].trim(), item[1].trim()]
     )
-    .sort(compareName)
     .forEach(
       nameValue => result[nameValue.shift()] = nameValue.shift()
     );
@@ -219,31 +218,10 @@ function processProps(text) {
     .map(
       item => [item[0].trim(), item[1].trim()]
     )
-    .sort(compareName)
     .forEach(
       nameValue => result[nameValue.shift().trim()] = nameValue.shift()
     );
   return result;
-}
-
-function compareName(a, b) {
-  return a[0].localeCompare(b[0]);
-}
-/**
- * Reads file from path.
- *
- * @param  {String} file Path to file.
- * @return {Promise<String>} The data that was read from disk.
- */
-function readFile(file) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(file, "utf8", (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(data);
-    });
-  });
 }
 /**
  * Run only a few network requests at a time.
@@ -274,7 +252,7 @@ function* fetchRunner(stringBundles, throughPut) { // jshint ignore:line
 function generateL10NStrings(allLocales) {
   var stringBundles = allLocales
     .map(locale => new StringBundle(locale));
-  var runner = fetchRunner(stringBundles, 3);
+  var runner = fetchRunner(stringBundles, 5);
   var fetchSequentially = () => {
     var next = runner.next();
     if (!next.done) {
@@ -310,9 +288,18 @@ function trimRedundantProps(obj) {
 
 //Read the default locale data (en-US)
 Promise.all([
-    readFile(l10nPath + "/global.dtd").then(processDTD),
-    readFile(l10nPath + "/newTab.properties").then(processProps),
-    readFile(l10nPath + "/newTab.dtd").then(processDTD),
+    fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.dtd")
+      .then(assureResponse)
+      .then(r => r.text())
+      .then(processDTD),
+    fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.properties")
+      .then(assureResponse)
+      .then(r => r.text())
+      .then(processProps),
+    fetch("https://hg.mozilla.org/releases/l10n/mozilla-aurora/an/raw-file/tip/dom/chrome/global.dtd")
+      .then(assureResponse)
+      .then(r => r.text())
+      .then(processDTD),
   ])
   .then(
     defaultStrings => defaultStrings.reduce(
@@ -320,11 +307,20 @@ Promise.all([
     )
   )
   .then(
-    () => readFile(l10nPath + "/all-locales")
+    () => fetch("https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/browser/locales/shipped-locales")
   )
   .then(
-    locales => locales.split("\n").filter(locale => locale)
+    response => response.text()
+  )
+  .then(
+    //Remove default locale en-US, and discard OS specific invalid tags (e.g., "linux win32")
+    locales => locales.split("\n")
+      .filter(locale => locale && locale !== "en-US")
+      .map(locale => locale.split(/\s/)[0])
   )
   .then(
     allLocales => generateL10NStrings(allLocales)
+  )
+  .catch(
+    err => console.error(error(err))
   );

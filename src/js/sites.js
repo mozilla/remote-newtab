@@ -166,7 +166,7 @@
           this.link.explanation, [targetedName, targetedSite]
         );
       }
-      return gNewTab.newTabString("suggested.button", [targetedName]);
+      return gNewTab.newTabString("suggested-button", [targetedName]);
     },
 
     /**
@@ -231,7 +231,7 @@
       if (this.link.targetedSite) {
         if (this.node.dataset.type !== "sponsored") {
           this._querySelector(".newtab-sponsored").textContent =
-            gNewTab.newTabString("suggested.tag");
+            gNewTab.newTabString("suggested-tag");
         }
         this.node.dataset.suggested = true;
         let explanation = this._getSuggestedTileExplanation();
@@ -340,7 +340,7 @@
 
         let link = `
           <a href="${TILES_EXPLAIN_LINK}">
-            ${gNewTab.newTabString("learn.link")}
+            ${gNewTab.newTabString("learn-link")}
           </a>`;
         let linkType = this.node.dataset.type;
         let isAffiliate = linkType === "affiliate";
@@ -350,7 +350,7 @@
         let icon = `<input type="button"
                       class="newtab-control newtab-${tabClass}">`;
         explain.innerHTML = gNewTab.newTabString(
-          type + (type === "sponsored" ? ".explain2" : ".explain"), [icon, link]
+          type + (type === "sponsored" ? "-explain2" : "-explain"), [icon, link]
         );
 
         button.dataset.active = true;

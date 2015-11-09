@@ -10,7 +10,7 @@
  "use strict";
 
 const ProviderManager = {
-  init: async(function* () {
+  init: async(function*() {
     if (!ProviderManager._initialized) {
       yield DirectoryLinksProvider.init();
       Links.addProvider(PlacesProvider);
@@ -25,8 +25,9 @@ const ProviderManager = {
   /**
    * Extract a "site" from a url in a way that multiple urls of a "site" returns
    * the same "site."
-   * @param aUrl Url spec string
-   * @return The "site" string or null
+   *
+   * @param {URL} url Url spec string
+   * @return {String} The "site" string or null
    */
   extractSite(url) {
     var host;
@@ -35,7 +36,7 @@ const ProviderManager = {
       // URIs, including jar and moz-icon URIs.
       host = new URL(url).host;
     } catch (ex) {
-      return null;
+      return "";
     }
 
     // Strip off common subdomains of the same site (e.g., www, load balancer)

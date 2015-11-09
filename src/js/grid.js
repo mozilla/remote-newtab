@@ -62,7 +62,7 @@
     /**
      * Initializes the grid.
      */
-    init: async(function* () {
+    init: async(function*() {
       gGrid._node = document.getElementById("newtab-grid");
       gGrid._createSiteFragment();
 
@@ -122,7 +122,7 @@
     /**
      * Renders the grid, including cells and sites.
      */
-    refresh: async(function* () {
+    refresh: async(function*() {
       let getLinks = swMessage(gGrid._sw, "NewTab:GetLinks");
       let {links, enhancedLinks} = yield getLinks();
 

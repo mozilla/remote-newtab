@@ -3,14 +3,13 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
  /*globals gUserDatabase */
 
-"use strict";
-
 /**
  * Singleton that keeps track of all pinned links and their positions in the
  * grid.
  */
 
 (function(exports) {
+  "use strict";
   const gPinnedLinks = {
     /**
      * The cached list of pinned links.

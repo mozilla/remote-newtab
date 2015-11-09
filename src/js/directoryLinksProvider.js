@@ -29,17 +29,18 @@ const DirectoryLinksProvider = {
    */
   _suggestedLinks: new Map(),
 
-  init: async(function* () {
+  init: async(function*() {
+    var response;
     Links.addObserver(DirectoryLinksProvider);
     var directoryLinksInCache = yield CacheTasks.has(PREF_DIRECTORY_SOURCE, "directory_cache");
     if (!directoryLinksInCache) {
-      var response = yield fetch(DirectoryLinksProvider._directoryLinksRequest);
+      response = yield fetch(DirectoryLinksProvider._directoryLinksRequest);
       var result = yield CacheTasks.put(PREF_DIRECTORY_SOURCE, response, "directory_cache");
       if (!result) {
         console.warn("Failed to store directory links");
       }
     }
-    var response = yield CacheTasks.match(DirectoryLinksProvider._directoryLinksRequest, "directory_cache");
+    response = yield CacheTasks.match(DirectoryLinksProvider._directoryLinksRequest, "directory_cache");
     var text = yield response.text();
 
     DirectoryLinksProvider._links = JSON.parse(text);
@@ -48,7 +49,7 @@ const DirectoryLinksProvider = {
   /**
    * Get the enhanced link object for a link (whether history or directory)
    */
-  getEnhancedLink: function DirectoryLinksProvider_getEnhancedLink(link) {
+  getEnhancedLink(link) {
     // Use the provided link if it's already enhanced
     return link.enhancedImageURI && link ? link :
            this._enhancedLinks.get(ProviderManager.extractSite(link.url));
@@ -56,6 +57,7 @@ const DirectoryLinksProvider = {
 
   _cacheSuggestedLinks(link) {
     // Don't cache links that don't have the expected 'frecent_sites'
+    //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     if (!link.frecent_sites) {
       return;
     }
@@ -66,12 +68,13 @@ const DirectoryLinksProvider = {
       this._setupStartEndTime(link);
       this._suggestedLinks.set(suggestedSite, suggestedMap);
     }
+    //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
   },
 
   /**
    * Gets the current set of directory links.
    */
-  getLinks: async(function* () {
+  getLinks: async(function*() {
     var rawLinks = DirectoryLinksProvider._links;
 
     // Reset the cache of suggested tiles and enhanced images for this new set of links
@@ -80,6 +83,7 @@ const DirectoryLinksProvider = {
 
     rawLinks.suggested.forEach((link, position) => {
       // Suggested sites must have an adgroup name.
+      //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
       if (!link.adgroup_name) {
         return;
       }
@@ -87,6 +91,7 @@ const DirectoryLinksProvider = {
       link.explanation = this._escapeChars(link.explanation);
       link.targetedName = this._escapeChars(link.adgroup_name);
       link.lastVisitDate = rawLinks.suggested.length - position;
+      //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
       // We cache suggested tiles here but do not push any of them in the links list yet.
       // The decision for which suggested tile to include will be made separately.

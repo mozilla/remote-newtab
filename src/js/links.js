@@ -51,15 +51,16 @@ const Links = {
 
   /**
    * Compares two links.
-   * @param aLink1 The first link.
-   * @param aLink2 The second link.
-   * @return A negative number if aLink1 is ordered before aLink2, zero if
+   *
+   * @param {Link} aLink1 The first link.
+   * @param {Link} aLink2 The second link.
+   * @return {Integer} A negative number if aLink1 is ordered before aLink2, zero if
    *         aLink1 and aLink2 have the same ordering, or a positive number if
    *         aLink1 is ordered after aLink2.
    *
-   * @note compareLinks's this object is bound to Links below.
+   * NOTE: compareLinks's this object is bound to Links below.
    */
-  compareLinks: function Links_compareLinks(aLink1, aLink2) {
+  compareLinks(aLink1, aLink2) {
     for (var prop of this._sortProperties) {
       if (!(prop in aLink1) || !(prop in aLink2)) {
         throw new Error("Comparable link missing required property: " + prop);
@@ -72,7 +73,8 @@ const Links = {
 
   /**
    * Merges the cached lists of links from all providers whose lists are cached.
-   * @return The merged list.
+   *
+   * @return {Array} The merged list.
    */
   _getMergedProviderLinks() {
     // Build a list containing a copy of each provider's sortedLinks list.
@@ -111,7 +113,8 @@ const Links = {
 
   /**
    * Gets the current set of links contained in the grid.
-   * @return The links in the grid.
+   *
+   * @return {Object} The links in the grid.
    */
   getLinks() {
     var pinnedLinks = Array.slice(gPinnedLinks.links);
@@ -125,7 +128,7 @@ const Links = {
     }
 
     // Filter blocked and pinned links and duplicate base domains.
-    links = links.filter(function (link) {
+    links = links.filter(function(link) {
       var site = ProviderManager.extractSite(link.url);
       if (site === null || sites.has(site)) {
         return false;
@@ -175,12 +178,13 @@ const Links = {
 
   /**
    * Calls getLinks on the given provider and populates our cache for it.
-   * @param aProvider The provider whose cache will be populated.
-   * @param aCallback The callback to call when finished.
-   * @param aForce When true, populates the provider's cache even when it's
+   *
+   * @param {Provider} aProvider The provider whose cache will be populated.
+   * @param {Object} cache The provider cache to be populated.
+   * @param {Boolean} aForce When true, populates the provider's cache even when it's
    *               already filled.
    */
-  _populateProviderCache: function (aProvider, cache, aForce) {
+  _populateProviderCache(aProvider, cache, aForce) {
     var createCache = !cache;
     if (createCache) {
       cache = {
@@ -217,11 +221,12 @@ const Links = {
 
   /**
    * Populates the cache with fresh links from the providers.
-   * @param aCallback The callback to call when finished (optional).
-   * @param aForce When true, populates the cache even when it's already filled.
+   *
+   * @param {Boolean} aForce When true, populates the cache even when it's already filled.
    */
-  populateCache: async(function* (aForce) {
-    for (var [provider, links] of Links._providers) {
+  populateCache: async(function*(aForce) {
+    for (var provider of Links._providers.keys()) {
+      var links = Links._providers.get(provider);
       yield Links._populateProviderCache(provider, links, aForce);
     }
   }),
@@ -229,13 +234,14 @@ const Links = {
   /**
    * Registers an object that will be notified when links updates.
    */
-  addObserver: function (aObserver) {
+  addObserver(aObserver) {
     this._observers.push(aObserver);
   },
 
   /**
    * Adds a link provider.
-   * @param aProvider The link provider.
+   *
+   * @param {Provider} aProvider The link provider.
    */
   addProvider(aProvider) {
     this._providers.set(aProvider, null);

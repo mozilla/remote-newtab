@@ -1,8 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gCustomize, gStrings, gUpdater, gUserDatabase,
-  gPinnedLinks, gBlockedLinks, async, swMessage*/
+/*globals gGrid, gPage, gUpdater, gUserDatabase, gPinnedLinks,
+  gBlockedLinks, async, swMessage, Request, CacheTasks*/
 
 "use strict";
 
@@ -69,7 +69,7 @@
       }
     },
 
-    setInitialState: async(function* (message) {
+    setInitialState: async(function*(message) {
       let sw = (yield navigator.serviceWorker.ready).active;
       let cacheHistoryLinks = swMessage(sw, "NewTab:CacheHistoryLinks");
       yield cacheHistoryLinks({placesLinks: message.placesLinks});
@@ -137,7 +137,7 @@
 
   // Document is loaded. Initialize the New Tab Page.
   gNewTab.init();
-  document.addEventListener("NewTabCommandReady", async(function* () {
+  document.addEventListener("NewTabCommandReady", async(function*() {
     let sw = (yield navigator.serviceWorker.ready).active;
     let initProviderManager = swMessage(sw, "NewTab:InitProviderManager");
     yield initProviderManager();

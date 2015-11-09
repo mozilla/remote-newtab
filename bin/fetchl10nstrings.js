@@ -190,7 +190,7 @@ function writeToDisk(data, locale) {
   });
 }
 /**
- * Process DTD files åby:
+ * Process DTD files by:
  *   - Split on each new line,
  *   - then filters out anything that doesn't start with "<!ENTITY"
  *   - then removes "<" and ">" and additional quotation marks.
@@ -219,7 +219,8 @@ function processDTD(text) {
     );
 }
 /**
- * Reduces key value pairs into an Object
+ * Reduces key value pairs into an Object.
+ *
  * @param  {Object} obj The object to reduce into.
  * @param  {String[]} nameValue The name value pair to convert to properties
  * @return {Object} The resulting object
@@ -230,13 +231,14 @@ function toObject(obj, nameValue) {
 }
 /**
  * Trims names and replaces "." for "-"; trims values.
+ *
  * @param  {String[]} item A name value pair
  * @return {String[]} An new Array with the modified values
  */
-function cleanUpNameValuePairs(item){
+function cleanUpNameValuePairs(item) {
   return [
     item[0].trim().replace(/\./g, "-"),
-    item[1].trim()
+    item[1].trim(),
   ];
 }
 /**
@@ -267,20 +269,20 @@ function processProps(text) {
  * @param {Number} throughPut  How many network requests to perform simultaneously.
  */
 function* fetchRunner(stringBundles, throughPut) { // jshint ignore:line
-  // Gather N=throughPut requests, and wait until they are done before continuing.
-  for (var i = 0; i < stringBundles.length;) {
-    let bundles = [];
-    for (var j = 0; j < throughPut; j++) {
-      bundles.push(stringBundles[i++]);
-      if (i >= stringBundles.length) {
-        break;
+    // Gather N=throughPut requests, and wait until they are done before continuing.
+    for (var i = 0; i < stringBundles.length;) {
+      let bundles = [];
+      for (var j = 0; j < throughPut; j++) {
+        bundles.push(stringBundles[i++]);
+        if (i >= stringBundles.length) {
+          break;
+        }
       }
+      yield Promise.all(
+        bundles.map(buldle => buldle.save())
+      );
     }
-    yield Promise.all(
-      bundles.map(buldle => buldle.save())
-    );
   }
-}
 /**
  * Runs through the locales, downloads the data, and saves it.
  *
@@ -326,17 +328,17 @@ function trimRedundantProps(obj) {
 //Read the default locale data (en-US), get the "shipped locales", and save it all to disk!
 Promise.all([
     fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.dtd")
-      .then(assureResponse)
-      .then(r => r.text())
-      .then(processDTD),
+    .then(assureResponse)
+    .then(r => r.text())
+    .then(processDTD),
     fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.properties")
-      .then(assureResponse)
-      .then(r => r.text())
-      .then(processProps),
+    .then(assureResponse)
+    .then(r => r.text())
+    .then(processProps),
     fetch("https://hg.mozilla.org/releases/l10n/mozilla-aurora/an/raw-file/tip/dom/chrome/global.dtd")
-      .then(assureResponse)
-      .then(r => r.text())
-      .then(processDTD),
+    .then(assureResponse)
+    .then(r => r.text())
+    .then(processDTD),
   ])
   .then(
     defaultStrings => defaultStrings.reduce(
@@ -352,8 +354,8 @@ Promise.all([
   .then(
     //Remove default locale en-US, and discard OS specific invalid tags (e.g., "linux win32")
     locales => locales.split("\n")
-      .filter(locale => locale && locale !== "en-US")
-      .map(locale => locale.split(/\s/)[0])
+    .filter(locale => locale && locale !== "en-US")
+    .map(locale => locale.split(/\s/)[0])
   )
   .then(
     allLocales => generateL10NStrings(allLocales)

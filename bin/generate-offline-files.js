@@ -3,6 +3,10 @@
 const fs = require("fs");
 const exec = require("child_process").exec;
 const fileName = "src/js/mainSiteURLs.json";
+const defaultFiles = [
+  "./",
+  "./locale/strings.js",
+];
 
 function fileFinder(dir, pattern) {
   return new Promise((resolve, reject) => {
@@ -23,8 +27,9 @@ function processResults(results) {
     .split("\n")
     .filter(item => item)
     .map(item => item.replace(/^src\//, "/"))
+    .concat(defaultFiles)
     .sort();
-  return JSON.stringify(paths.concat(["/"]), null, 2);
+  return JSON.stringify(paths, null, 2);
 }
 
 function writeFile(template) {

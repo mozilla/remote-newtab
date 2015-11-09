@@ -1,4 +1,6 @@
 [
+  "./",
+  "./locale/strings.js",
   "/css/contentSearchUI.css",
   "/css/images/close.png",
   "/css/images/controls.svg",
@@ -33,7 +35,5 @@
   "/js/transformations.js",
   "/js/undo.js",
   "/js/updater.js",
-  "/js/userDatabase.js",
-  "/locale/newTab.js",
-  "/"
+  "/js/userDatabase.js"
 ]

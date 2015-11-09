@@ -1,7 +1,8 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gCustomize, gStrings, gUpdater, gUserDatabase, gPinnedLinks, gBlockedLinks, async*/
+/*jshint browser:true*/
+/*globals fetch, gGrid, gPage, gCustomize, gUpdater, gUserDatabase, gPinnedLinks, gBlockedLinks, async*/
 
 "use strict";
 
@@ -11,14 +12,30 @@
 
     listeners: {},
 
+    _l10nStrings: new Map(),
+
     init() {
-      // Add a listener for messages sent from the browser.
-      // The listener calls our associated callback functions.
-      window.addEventListener("message", message => {
-        for (let callback of this.listeners[message.data.name]) {
-          callback(message.data.data);
+      return async(function*() {
+        // Add a listener for messages sent from the browser.
+        // The listener calls our associated callback functions.
+        window.addEventListener("message", message => {
+          for (let callback of this.listeners[message.data.name]) {
+            callback(message.data.data);
+          }
+        });
+        let json = {};
+        try {
+          let response = yield fetch("locale/strings.json");
+          json = yield response.json();
+        }catch (err) {
+          console.warn("Error processing localized strings.", err);
         }
-      });
+        // Save the strings in the map
+        Object.getOwnPropertyNames(json)
+          .forEach(
+            name => this._l10nStrings.add(name, json[name])
+          );
+      }, this);
     },
 
     observe(topic, data) {
@@ -67,12 +84,12 @@
     },
 
     newTabString(name, args) {
-      let stringName = "newtab." + name;
+      let key = "newtab-" + name;
       if (!args) {
-        return gStrings[stringName];
+        return this._l10nStrings.get(key);
       }
       let len = args.length;
-      return this._formatStringFromName(gStrings[stringName], args, len);
+      return this._formatStringFromName(this._l10nStrings.get(key), args, len);
     },
 
     _formatStringFromName(str, substrArr) {
@@ -117,16 +134,17 @@
   };
 
   // Document is loaded. Initialize the New Tab Page.
-  gNewTab.init();
-  document.addEventListener("NewTabCommandReady", async(function*() {
-    yield gUserDatabase.init(this._prefsObjectStoreKeys);
-    yield gPinnedLinks.init();
-    yield gBlockedLinks.init();
-    gNewTab.registerListener("NewTab:Observe", message => {
-      gNewTab.observe(message.topic, message.data);
-    });
-    gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
-    gNewTab.sendToBrowser("NewTab:GetInitialState");
-  }, gNewTab));
-  exports.gNewTab = gNewTab;
+  gNewTab.init().then(()=> {
+    document.addEventListener("NewTabCommandReady", async(function*() {
+      yield gUserDatabase.init(this._prefsObjectStoreKeys);
+      yield gPinnedLinks.init();
+      yield gBlockedLinks.init();
+      gNewTab.registerListener("NewTab:Observe", message => {
+        gNewTab.observe(message.topic, message.data);
+      });
+      gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
+      gNewTab.sendToBrowser("NewTab:GetInitialState");
+    }, gNewTab));
+    exports.gNewTab = gNewTab;
+  });
 }(window));

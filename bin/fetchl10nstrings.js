@@ -8,6 +8,7 @@
  */
 /*jshint node:true, esnext: true*/
 "use strict";
+const async = require("marcosc-async");
 const fs = require("fs");
 const path = require("path");
 const clc = require("cli-color");
@@ -22,6 +23,17 @@ const defaultLocale = {};
 const error = clc.red.bold;
 const warn = clc.yellow;
 const notice = clc.blue;
+
+function fetchAndProcessTask(processor){
+  return async(function*(url){
+    var response = yield assureResponse(yield fetch(url));
+    var text = yield response.text();
+    return processor(text);
+  });
+}
+
+const dtdProcessorTask = fetchAndProcessTask(processDTD);
+const propProcessorsTask = fetchAndProcessTask(processProps);
 
 /**
  * Helper object for representing string bundles.
@@ -48,46 +60,29 @@ StringBundle.prototype = {
    *
    * @return {Promise} Resolves once writing to disk is done is done.
    */
-  save() {
-    var globalDirPromise = fetch(this.dir)
-      .then(assureResponse)
-      .then(r => r.text())
-      .then(processDTD);
-    var dtdPromise = fetch(this.dtd)
-      .then(assureResponse)
-      .then(r => r.text())
-      .then(processDTD);
-    var propsPromise = fetch(this.properties)
-      .then(assureResponse)
-      .then(r => r.text())
-      .then(processProps);
-
-    return Promise.all([globalDirPromise, dtdPromise, propsPromise])
-      .then(
-        results => validateResults(results, this.locale)
-      )
+  save(){
+    return async.task(function*(){
+      // kick off downloads
+      let results = yield Promise.all([
+        dtdProcessorTask(this.dir),
+        dtdProcessorTask(this.dtd),
+        propProcessorsTask(this.properties)
+      ]);
+      validateResults(results, this.locale);
       // Reduce resulting objects into a single object, using the defaultLocale
       // as the base.
-      .then(
-        results => results.reduce(
-          (prev, next) => Object.assign(prev, next), Object.assign({}, defaultLocale)
-        )
-      )
-      .then(
-        trimRedundantProps.bind(this)
-      )
-      .then(
-        makeSortedObject
-      )
-      .then(
-        sortedObject => JSON.stringify(sortedObject, null, 2)
-      )
-      .then(
-        text => writeToDisk(text, this.locale)
-      )
-      .catch(
-        err => console.error(error(err))
+      let dirtyObject = results.reduce(
+        (prev, next) => Object.assign(prev, next), Object.assign({}, defaultLocale)
       );
+      try{
+        let trimmedObject = trimRedundantProps.call(this, dirtyObject);
+        let sortedObject = makeSortedObject(trimmedObject);
+        let text = JSON.stringify(sortedObject, null, 2);
+        yield writeToDisk(text, this.locale);
+      }catch(err){
+        console.error(error(err));
+      }
+    }, this);
   }
 };
 /**
@@ -326,40 +321,27 @@ function trimRedundantProps(obj) {
 }
 
 //Read the default locale data (en-US), get the "shipped locales", and save it all to disk!
-Promise.all([
-    fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.dtd")
-    .then(assureResponse)
-    .then(r => r.text())
-    .then(processDTD),
-    fetch("https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.properties")
-    .then(assureResponse)
-    .then(r => r.text())
-    .then(processProps),
-    fetch("https://hg.mozilla.org/releases/l10n/mozilla-aurora/an/raw-file/tip/dom/chrome/global.dtd")
-    .then(assureResponse)
-    .then(r => r.text())
-    .then(processDTD),
-  ])
-  .then(
-    defaultStrings => defaultStrings.reduce(
-      (prev, next) => Object.assign(prev, next), defaultLocale
-    )
-  )
-  .then(
-    () => fetch("https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/browser/locales/shipped-locales")
-  )
-  .then(
-    response => response.text()
-  )
-  .then(
-    //Remove default locale en-US, and discard OS specific invalid tags (e.g., "linux win32")
-    locales => locales.split("\n")
-    .filter(locale => locale && locale !== "en-US")
-    .map(locale => locale.split(/\s/)[0])
-  )
-  .then(
-    allLocales => generateL10NStrings(allLocales)
-  )
-  .catch(
-    err => console.error(error(err))
+async.task(function*(){
+  const newTabDTD = "https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.dtd";
+  const newTabProps = "https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.properties";
+  const globalDTD = "https://hg.mozilla.org/releases/l10n/mozilla-aurora/an/raw-file/tip/dom/chrome/global.dtd";
+  let defaultStrings = yield Promise.all([
+    dtdProcessorTask(newTabDTD),
+    propProcessorsTask(newTabProps),
+    dtdProcessorTask(globalDTD),
+  ]);
+  defaultStrings.reduce(
+    (prev, next) => Object.assign(prev, next), defaultLocale
   );
+  let response = yield fetch("https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/browser/locales/shipped-locales");
+  let rawLocales = yield response.text();
+  //Remove default locale en-US, and discard OS specific invalid tags (e.g., "linux win32")
+  let allLocales = rawLocales.split("\n")
+    .filter(locale => locale && locale !== "en-US")
+    .map(locale => locale.split(/\s/)[0]);
+  try {
+    generateL10NStrings(allLocales);
+  } catch(err){
+    console.error(error(err));
+  }
+});

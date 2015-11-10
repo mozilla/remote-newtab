@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
- /*globals Request, CacheTasks, async, Links, ProviderManager*/
+ /*globals Request, CacheTasks, async, ProviderManager, Links*/
 
 "use strict";
 
@@ -15,6 +15,8 @@ const DIRECTORY_FRECENCY = 1000;
  * Emits notifications to PlacesProvider and Links
  */
 const DirectoryLinksProvider = {
+  _globalFetch: fetch,
+
   _observers: new Set(),
 
   _directoryLinksRequest: new Request(PREF_DIRECTORY_SOURCE),
@@ -29,9 +31,11 @@ const DirectoryLinksProvider = {
    */
   _suggestedLinks: new Map(),
 
-  init: async(function*() {
-    var response;
+  init: async(function*(mockFetch) {
+    var fetch = mockFetch || DirectoryLinksProvider._globalFetch;
+
     Links.addObserver(DirectoryLinksProvider);
+    var response;
     var directoryLinksInCache = yield CacheTasks.has(PREF_DIRECTORY_SOURCE, "directory_cache");
     if (!directoryLinksInCache) {
       response = yield fetch(DirectoryLinksProvider._directoryLinksRequest);
@@ -42,7 +46,6 @@ const DirectoryLinksProvider = {
     }
     response = yield CacheTasks.match(DirectoryLinksProvider._directoryLinksRequest, "directory_cache");
     var text = yield response.text();
-
     DirectoryLinksProvider._links = JSON.parse(text);
   }),
 
@@ -65,10 +68,21 @@ const DirectoryLinksProvider = {
     for (var suggestedSite of link.frecent_sites) {
       var suggestedMap = this._suggestedLinks.get(suggestedSite) || new Map();
       suggestedMap.set(link.url, link);
-      this._setupStartEndTime(link);
       this._suggestedLinks.set(suggestedSite, suggestedMap);
     }
     //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+  },
+
+  _escapeChars(text) {
+    let charMap = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    };
+
+    return text.replace(/[&<>"']/g, (character) => charMap[character]);
   },
 
   /**
@@ -88,8 +102,8 @@ const DirectoryLinksProvider = {
         return;
       }
 
-      link.explanation = this._escapeChars(link.explanation);
-      link.targetedName = this._escapeChars(link.adgroup_name);
+      link.explanation = DirectoryLinksProvider._escapeChars(link.explanation);
+      link.targetedName = DirectoryLinksProvider._escapeChars(link.adgroup_name);
       link.lastVisitDate = rawLinks.suggested.length - position;
       //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 

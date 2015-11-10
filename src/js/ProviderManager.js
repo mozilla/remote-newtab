@@ -10,9 +10,9 @@
  "use strict";
 
 const ProviderManager = {
-  init: async(function*() {
+  init: async(function*(gMockFetch) {
     if (!ProviderManager._initialized) {
-      yield DirectoryLinksProvider.init();
+      yield DirectoryLinksProvider.init(gMockFetch);
       Links.addProvider(PlacesProvider);
       Links.addProvider(DirectoryLinksProvider);
       yield gUserDatabase.init({"pinnedLinks": [], "blockedLinks": []});

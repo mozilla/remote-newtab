@@ -184,14 +184,14 @@ const Links = {
    * @param {Boolean} aForce When true, populates the provider's cache even when it's
    *               already filled.
    */
-  _populateProviderCache(aProvider, cache, aForce) {
+  _populateProviderCache: async(function*(aProvider, cache, aForce) {
     var createCache = !cache;
     if (createCache) {
       cache = {
         // Start with a resolved promise.
         populatePromise: new Promise(resolve => resolve()),
       };
-      this._providers.set(aProvider, cache);
+      Links._providers.set(aProvider, cache);
     }
     // Chain the populatePromise so that calls are effectively queued.
     cache.populatePromise = cache.populatePromise.then(() => {
@@ -206,7 +206,7 @@ const Links = {
           links = links.filter((link) => !!link);
           cache.sortedLinks = links;
           cache.siteMap = links.reduce((map, link) => {
-            this._incrementSiteMap(map, link);
+            Links._incrementSiteMap(map, link);
             return map;
           }, new Map());
           cache.linkMap = links.reduce((map, link) => {
@@ -217,7 +217,8 @@ const Links = {
         });
       });
     });
-  },
+    yield cache.populatePromise;
+  }),
 
   /**
    * Populates the cache with fresh links from the providers.

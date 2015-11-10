@@ -63,7 +63,7 @@ function writeFile(file, data) {
  * @return {Promise} The promise corresponding to the write operation.
  */
 function copyFileToBuildDir(pathname) {
-  return async.task(function*(){
+  return async.task(function*() {
     let splitPath = pathname.split("/");
     let locale = splitPath[splitPath.length - 2];
     let outDir = path.resolve(`${__dirname}/../build/${locale}/locale/`);
@@ -82,7 +82,7 @@ function copyFileToBuildDir(pathname) {
  * @return {Promise}  Resolves once writing all the files to disk is done.
  */
 function createLocalizedHTMLFiles(template) {
-  return async.task(function*(){
+  return async.task(function*() {
     // Read the files from disk
     let textFiles = yield Promise.all(
       l10nFiles.map(stringFile => readFile(stringFile))
@@ -104,7 +104,7 @@ function HTMLFile(stringFile, template) {
   let splitPath = stringFile.path.split("/");
   let locale = splitPath[splitPath.length - 2];
   const outDir = path.resolve(`${__dirname}/../build/${locale}/`);
-  this.save = function () {
+  this.save = function() {
     if (!fs.existsSync(outDir)) {
       fs.mkdirSync(outDir);
     }

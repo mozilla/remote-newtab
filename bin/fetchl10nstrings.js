@@ -24,8 +24,8 @@ const error = clc.red.bold;
 const warn = clc.yellow;
 const notice = clc.blue;
 
-function fetchAndProcessTask(processor){
-  return async(function*(url){
+function fetchAndProcessTask(processor) {
+  return async(function*(url) {
     var response = yield assureResponse(yield fetch(url));
     var text = yield response.text();
     return processor(text);
@@ -60,8 +60,8 @@ StringBundle.prototype = {
    *
    * @return {Promise} Resolves once writing to disk is done is done.
    */
-  save(){
-    return async.task(function*(){
+  save() {
+    return async.task(function*() {
       // kick off downloads
       let results = yield Promise.all([
         dtdProcessorTask(this.dir),
@@ -74,12 +74,12 @@ StringBundle.prototype = {
       let dirtyObject = results.reduce(
         (prev, next) => Object.assign(prev, next), Object.assign({}, defaultLocale)
       );
-      try{
+      try {
         let trimmedObject = trimRedundantProps.call(this, dirtyObject);
         let sortedObject = makeSortedObject(trimmedObject);
         let text = JSON.stringify(sortedObject, null, 2);
         yield writeToDisk(text, this.locale);
-      }catch(err){
+      }catch (err) {
         console.error(error(err));
       }
     }, this);
@@ -321,9 +321,11 @@ function trimRedundantProps(obj) {
 }
 
 //Read the default locale data (en-US), get the "shipped locales", and save it all to disk!
-async.task(function*(){
-  const newTabDTD = "https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.dtd";
-  const newTabProps = "https://hg.mozilla.org/mozilla-central/raw-file/tip/browser/locales/en-US/chrome/browser/newTab.properties";
+async.task(function*() {
+  const mozCentral = "https://hg.mozilla.org/mozilla-central/raw-file/tip/";
+  const mozAurora = "https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/";
+  const newTabDTD = `${mozCentral}browser/locales/en-US/chrome/browser/newTab.dtd`;
+  const newTabProps = `${mozCentral}browser/locales/en-US/chrome/browser/newTab.properties`;
   const globalDTD = "https://hg.mozilla.org/releases/l10n/mozilla-aurora/an/raw-file/tip/dom/chrome/global.dtd";
   let defaultStrings = yield Promise.all([
     dtdProcessorTask(newTabDTD),
@@ -333,7 +335,7 @@ async.task(function*(){
   defaultStrings.reduce(
     (prev, next) => Object.assign(prev, next), defaultLocale
   );
-  let response = yield fetch("https://hg.mozilla.org/releases/mozilla-aurora/raw-file/tip/browser/locales/shipped-locales");
+  let response = yield fetch(`${mozAurora}browser/locales/shipped-locales`);
   let rawLocales = yield response.text();
   //Remove default locale en-US, and discard OS specific invalid tags (e.g., "linux win32")
   let allLocales = rawLocales.split("\n")
@@ -341,7 +343,7 @@ async.task(function*(){
     .map(locale => locale.split(/\s/)[0]);
   try {
     generateL10NStrings(allLocales);
-  } catch(err){
+  } catch (err) {
     console.error(error(err));
   }
 });

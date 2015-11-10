@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize,
+/*global gNewTab, async, gGrid, gIntro, gDrag, gCustomize, gUpdater,
   gUndoDialog, gDropTargetShim, gUserDatabase, gSearch, Request, Response,
   CacheTasks */
 
@@ -24,6 +24,8 @@
         this.update.bind(this));
       gNewTab.registerListener("NewTab:RegularThumbnailURI",
         this.storeAndShowRegularThumb.bind(this));
+      gNewTab.registerListener("NewTab:setEnabled", this.handleEnabled.bind(this));
+      gNewTab.registerListener("NewTab:setEnhanced", this.handleEnhanced.bind(this));
 
       // Listen for 'unload' to unregister this page.
       addEventListener("unload", this, false);
@@ -138,23 +140,17 @@
     /**
      * Updates the 'data-page-disabled' attributes of the respective DOM nodes.
      *
-     * @param {Boolean} aValue Whether the New Tab Page is enabled or not.
+     * @param {Boolean} isEnabled Whether the New Tab Page is enabled or not.
      */
-    _updateAttributes(aValue) {
+    _updateAttributes(isEnabled) {
       // Set the nodes' states.
-      let nodeSelector = "#newtab-grid, #newtab-search-container";
-      for (let node of document.querySelectorAll(nodeSelector)) {
-        if (aValue) {
-          node.pageDisabled = false;
-        } else {
-          node.pageDisabled = true;
-        }
-      }
+      var nodeList = document.querySelectorAll("#newtab-grid, #newtab-search-container");
+      Array.from(nodeList).forEach(node => node.dataset.pageDisabled = !isEnabled);
 
       // Enables/disables the control and link elements.
       let inputSelector = ".newtab-control, .newtab-link";
       for (let input of document.querySelectorAll(inputSelector)) {
-        if (aValue) {
+        if (isEnabled) {
           input.removeAttribute("tabindex");
         } else {
           input.setAttribute("tabindex", "-1");
@@ -194,6 +190,14 @@
       } else {
         gUndoDialog.hide();
       }
+      gNewTab.enabled = enabled;
+      gCustomize.updateSelected();
+    },
+
+    handleEnhanced(enhanced) {
+      gNewTab.enhanced = enhanced;
+      gCustomize.updateSelected();
+      gUpdater.sendUpdate();
     },
 
     /**

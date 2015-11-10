@@ -19,7 +19,9 @@
   "devDependencies": {
     "chai": "^3.2.0",
     "chai-as-promised": "^5.1.0",
+    "cli-color": "^1.1.0",
     "codeclimate-test-reporter": "^0.1.0",
+    "handlebars": "^4.0.4",
     "html2js": "^0.2.0",
     "jscs": "^2.1.0",
     "jshint": "^2.8.0",
@@ -33,8 +35,10 @@
     "karma-mocha": "^0.2.0",
     "karma-requirejs": "^0.2.2",
     "karma-webpack": "^1.7.0",
+    "marcosc-async": "^1.0.2",
     "mocha": "^2.2.5",
     "mozilla-download": "^1.1.1",
+    "node-fetch": "^1.3.3",
     "requirejs": "^2.1.20",
     "webpack": "^1.12.2"
   },
@@ -43,8 +47,8 @@
     "karma": "karma start --single-run",
     "test": "npm run karma",
     "jshint": "jshint src bin",
-    "jscs": "jscs --esnext src",
-    "jscs:fix": "jscs --esnext --fix bin/ src/locale/ src/js/ src/js/lib/ src/test/ src/test/lib",
+    "jscs": "jscs --esnext src bin",
+    "jscs:fix": "jscs --esnext --fix bin/ src/js/ src/js/lib/ src/test/ src/test/lib",
     "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
     "posttest": "awk 'FNR==1{print \"\"}1' ./build/reports/coverage/text-summary.txt ./build/reports/coverage/text.txt"
   }

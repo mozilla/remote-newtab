@@ -1,0 +1,125 @@
+<!doctype html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Tab Baru</title>
+  <link rel="stylesheet" href="css/newTab.css">
+  <link rel="stylesheet" href="css/contentSearchUI.css">
+</head>
+
+<body dir="">
+  <div class="newtab-customize-panel-container">
+    <div id="newtab-customize-panel" data-orient="vertical">
+      <div id="newtab-customize-panel-anchor"></div>
+      <div id="newtab-customize-panel-inner-wrapper">
+        <div id="newtab-customize-title" class="newtab-customize-panel-item">
+          <label>KAWALAN TAB BARU</label>
+        </div>
+        <div class="newtab-customize-complex-option">
+          <div id="newtab-customize-classic" class="newtab-customize-panel-superitem newtab-customize-panel-item selectable">
+            <label>Show your top sites</label>
+          </div>
+          <div id="newtab-customize-enhanced" class="newtab-customize-panel-subitem">
+            <label class="checkbox"></label>
+            <label>Include suggested sites</label>
+          </div>
+        </div>
+        <div id="newtab-customize-blank" class="newtab-customize-panel-item selectable">
+          <label>Show blank page</label>
+        </div>
+        <div id="newtab-customize-learn" class="newtab-customize-panel-item">
+          <label>Learn about New Tab</label>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="newtab-customize-overlay"></div>
+  <div id="newtab-intro-mask">
+    <div id="newtab-intro-modal">
+      <div id="newtab-intro-header"></div>
+      <div id="newtab-intro-body">
+        <div id="newtab-intro-content">
+          <div id="newtab-intro-text">
+            <p></p>
+            <p></p>
+          </div>
+        </div>
+        <div id="newtab-intro-buttons">
+          <input id="newtab-intro-button" type="button" default="true" onclick="gIntro._exitIntro()"></input>
+        </div>
+      </div>
+      <div id="newtab-intro-footer">
+        <ul>
+          <li id="newtab-intro-link"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="newtab-scrollbox">
+    <div id="newtab-vertical-margin">
+      <div id="newtab-margin-top"></div>
+      <div id="newtab-margin-undo-container">
+        <div id="newtab-undo-container" data-undo-disabled="true">
+          <label id="newtab-undo-label">Thumbnail dihapus.</label>
+          <button id="newtab-undo-button" tabindex="-1" class="newtab-undo-button">Kembali asal.</button>
+          <button id="newtab-undo-restore-button" tabindex="-1" class="newtab-undo-button">Kembalikan Semua.</button>
+          <div id="newtab-undo-close-button" tabindex="-1" class="close-icon tabbable" data-tooltiptext="Sembunyi"></div>
+        </div>
+      </div>
+      <div id="newtab-search-container">
+        <div id="newtab-search-form">
+          <div id="newtab-search-icon"></div>
+          <input type="text" name="q" value="" id="newtab-search-text" aria-label="" maxlength="256" dir="auto">
+          <input id="newtab-search-submit" type="button" value="" aria-label="">
+        </div>
+      </div>
+      <div id="newtab-horizontal-margin">
+        <div class="newtab-side-margin"></div>
+        <div id="newtab-grid"></div>
+        <div class="newtab-side-margin"></div>
+      </div>
+      <div id="newtab-margin-bottom"></div>
+    </div>
+    <button id="newtab-customize-button" dir="ltr" title="Customize your New Tab page"></button>
+  </div>
+  <script src="js/lib/async.js"></script>
+  <script src="js/lib/cachetasks.js"></script>
+  <script src="js/intro.js"></script>
+  <script src="locale/newTab.js"></script>
+  <script src="js/customize.js"></script>
+  <script src="js/rectangle.js"></script>
+  <script src="js/dropTargetShim.js"></script>
+  <script src="js/dropPreview.js"></script>
+  <script src="js/drop.js"></script>
+  <script src="js/dragDataHelper.js"></script>
+  <script src="js/transformations.js"></script>
+  <script src="js/drag.js"></script>
+  <script src="js/userDatabase.js"></script>
+  <script src="js/pinnedLinks.js"></script>
+  <script src="js/blockedLinks.js"></script>
+  <script src="js/sites.js"></script>
+  <script src="js/cells.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/contentSearchUI.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/page.js"></script>
+  <script src="js/newTab.js"></script>
+  <script src="js/updater.js"></script>
+  <script src="js/undo.js"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", async(function*() {
+    try {
+      yield navigator.serviceWorker.register("sw.js", {
+        scope: "./"
+      });
+    } catch (err) {
+      console.error("ServiceWorker registration failed:", err);
+    }
+  }));
+  </script>
+</body>
+

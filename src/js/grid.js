@@ -203,7 +203,7 @@
       // Create the site's inner HTML code.
       site.innerHTML = `
         <span class="newtab-sponsored">
-          ${gNewTab.newTabString("sponsored.button")}
+          ${gNewTab.newTabString("sponsored-button")}
         </span>
         <a class="newtab-link">
           <span class="newtab-thumbnail"></span>

@@ -275,4 +275,113 @@ describe("CacheTasks", function() {
       expect(hasEntry).to.be.false;
     }));
   });
+  describe("update() method", () => {
+    it("should not update a response that is not stale.", async(function*() {
+      var request = new Request("update-test");
+      var response = new Response(".");
+      var theFuture = new Date(Date.now() + 100000).toGMTString();
+      var now = new Date(Date.now()).toGMTString();
+      response.headers.set("Date", now);
+      response.headers.set("Expires", theFuture);
+      response.headers.set("X-Test", "pass");
+      yield CacheTasks.put(request, response, CACHENAME);
+      var updatedResponse = yield CacheTasks.update(request, CACHENAME);
+      expect(updatedResponse.headers.get("X-Test")).to.equal("pass");
+      expect(updatedResponse.headers.get("Date")).to.equal(now);
+      expect(updatedResponse.headers.get("Expires")).to.equal(theFuture);
+    }));
+    it("should update a response that has expired.", async(function*() {
+      var request = new Request("./");
+      var response = new Response(".");
+      var thePast = new Date(Date.now() - 100000).toGMTString();
+      var now = new Date(Date.now()).toGMTString();
+      response.headers.set("Date", thePast);
+      response.headers.set("Expires", thePast);
+      response.headers.set("X-Test", "fail");
+      yield CacheTasks.put(request, response, CACHENAME);
+      var updatedResponse = yield CacheTasks.update(request, CACHENAME);
+      expect(updatedResponse.headers.get("Expires")).to.not.equal(thePast);
+      expect(updatedResponse.headers.get("Date")).to.equal(now);
+      expect(updatedResponse.headers.get("X-Test")).to.equal(null);
+    }));
+    it("should put a request that doesn't exist.", async(function*() {
+      var request = new Request("./");
+      yield CacheTasks.delete(request, CACHENAME);
+      var response = yield CacheTasks.update("./", CACHENAME);
+      expect(response).to.be.ok;
+    }));
+    it("should forcibly update a request.", async(function*() {
+      var request = new Request("./");
+      var response = new Response("");
+      var thePast = new Date(Date.now() - 100000).toGMTString();
+      var theFuture = new Date(Date.now() + 100000).toGMTString();
+      var now = new Date(Date.now()).toGMTString();
+      response.headers.set("Date", thePast);
+      response.headers.set("Expires", theFuture);
+      response.headers.set("X-Test", "fail");
+      yield CacheTasks.put(request, response, CACHENAME);
+      var ops = {force: true};
+      var updatedResponse = yield CacheTasks.update(request, CACHENAME, ops);
+      expect(updatedResponse.headers.get("X-Test")).to.equal(null);
+      expect(updatedResponse.headers.get("Date")).to.equal(now);
+      expect(updatedResponse.headers.get("Expires")).to.not.equal(theFuture);
+    }));
+    it("should not update a response when not forced.", async(function*() {
+      var request = new Request("update-test");
+      var response = new Response(".");
+      var theFuture = new Date(Date.now() + 100000).toGMTString();
+      var now = new Date(Date.now()).toGMTString();
+      response.headers.set("Date", now);
+      response.headers.set("Expires", theFuture);
+      response.headers.set("X-Test", "pass");
+      yield CacheTasks.put(request, response, CACHENAME);
+      var ops = {force: false};
+      var updatedResponse = yield CacheTasks.update(request, CACHENAME, ops);
+      expect(updatedResponse.headers.get("X-Test")).to.equal("pass");
+      expect(updatedResponse.headers.get("Date")).to.equal(now);
+      expect(updatedResponse.headers.get("Expires")).to.equal(theFuture);
+    }));
+    it("should return an existing/expired response when fetch fails.", async(function*() {
+      // The port should cause a network error
+      var request = new Request("http://localhost:9999/");
+      var response = new Response(".");
+      var thePast = new Date(Date.now() - 100000).toGMTString();
+      var now = new Date(Date.now()).toGMTString();
+      response.headers.set("Date", now);
+      response.headers.set("Expires", thePast);
+      response.headers.set("X-Test", "pass");
+      // store the bad req/resp pair, as it it was good.
+      yield CacheTasks.put(request, response, CACHENAME);
+      var updatedResponse = yield CacheTasks.update(request, CACHENAME);
+      expect(updatedResponse.headers.get("X-Test")).to.equal("pass");
+      expect(updatedResponse.headers.get("Date")).to.equal(now);
+      expect(updatedResponse.headers.get("Expires")).to.equal(thePast);
+      yield CacheTasks.delete(request, CACHENAME);
+    }));
+    it("should throw when forced, but fetch fails.", async(function*() {
+      // The port should cause a network error
+      var request = new Request("http://localhost:9999/");
+      var response = new Response(".");
+      var thePast = new Date(Date.now() - 100000).toGMTString();
+      var now = new Date(Date.now()).toGMTString();
+      response.headers.set("Date", now);
+      response.headers.set("Expires", thePast);
+      response.headers.set("X-Test", "pass");
+      // store the bad req/resp pair, as it it was good.
+      yield CacheTasks.put(request, response, CACHENAME);
+      var promise = CacheTasks.update(request, CACHENAME, {force: true});
+      promise.should.eventually.be.rejected;
+      try {
+        yield promise;
+      } catch (err) {}
+      yield CacheTasks.delete(request, CACHENAME);
+    }));
+    it("should throw when fetch fails, and there is no fallback response.", ()=> {
+      // The port should cause a network error
+      var request = new Request("http://localhost:9999/");
+      CacheTasks.update(request, CACHENAME).should.be.rejected;
+      CacheTasks.update(request, CACHENAME, {force: true}).should.be.rejected;
+      CacheTasks.update(request, CACHENAME, {force: false}).should.be.rejected;
+    });
+  });
 });

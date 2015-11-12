@@ -191,6 +191,39 @@
       }, this);
     },
     /**
+     * Update the response associated with a request.
+     *
+     * @param  {Request} request   The request to check.
+     * @param  {String} cacheName The name of the cache to use.
+     * @param  {Object} options    options
+     *                              - force: true or false
+     * @return {Promise} Resolves once operations complete.
+     */
+    update(request, cacheName, options = {force: false}) {
+      return async.task(function*() {
+        let cache = yield MemoizedCaches.open(cacheName);
+        let response = yield cache.match(request);
+        let shouldUpdate = !response || options.force || this.isStale(response);
+        // We don't need to update, so just return what we have
+        if (!shouldUpdate) {
+          return response;
+        }
+        // Let's try to update
+        try {
+          response = yield fetch(request);
+        } catch (err) {
+          // if we don't have a response at all, all we can do is throw.
+          if (!response) {
+            throw err;
+          }
+          return response;
+        }
+        // Cache the response, and return it
+        yield this.put(request, response, cacheName);
+        return response;
+      }, this);
+    },
+    /**
      * Respond to a request from the SW's caches.
      *
      * @param {Request|String} request The request

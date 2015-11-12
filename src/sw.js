@@ -3,8 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*jshint worker:true*/
-/*globals async, CacheTasks, Response, fetch */
+/*jshint worker:true, browser:true*/
+/*globals async, CacheTasks, Response, Request, fetch */
 "use strict";
 importScripts("js/lib/async.js"); // imports async()
 importScripts("js/lib/cachetasks.js"); // imports CacheTasks
@@ -21,9 +21,10 @@ const SWTasks = {
         "ads_cache", // Advertisement tiles
       ]);
       var request = yield fetch("js/mainSiteURLs.json");
-      var mainSiteURLs = (yield request.json())
-        .map(path => `${location.origin}${path}`);
-      yield CacheTasks.addAll(mainSiteURLs, "skeleton_cache");
+      var requests = (yield request.json()).map(
+        path => new Request(path)
+      );
+      yield CacheTasks.addAll(requests, "skeleton_cache");
     }, this);
   },
   /**

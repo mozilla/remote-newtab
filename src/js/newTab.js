@@ -1,24 +1,43 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals gGrid, gPage, gStrings, gUpdater, gUserDatabase, gPinnedLinks, gBlockedLinks, async*/
+/*globals Request, CacheTasks, gGrid, gPage, gUpdater, gUserDatabase,
+  gPinnedLinks, gBlockedLinks, async*/
 
 "use strict";
 
 (function(exports) {
   const gNewTab = {
-    _prefsObjectStoreKeys: {"pinnedLinks": [], "blockedLinks": []},
 
     listeners: {},
 
+    _l10nStrings: new Map(),
+
     init() {
-      // Add a listener for messages sent from the browser.
-      // The listener calls our associated callback functions.
-      window.addEventListener("message", message => {
-        for (let callback of this.listeners[message.data.name]) {
-          callback(message.data.data);
+      return async.task(function*() {
+        // Add a listener for messages sent from the browser.
+        // The listener calls our associated callback functions.
+        window.addEventListener("message", message => {
+          for (let callback of this.listeners[message.data.name]) {
+            callback(message.data.data);
+          }
+        });
+        let json = {};
+        try {
+          let request = new Request("./locale/strings.json");
+          let response = yield CacheTasks.update(request, "skeleton_cache");
+          json = yield response.json();
+        } catch (err) {
+          console.warn("Error handling localized strings.", err);
         }
-      });
+        // Save the strings in the map
+        Object.getOwnPropertyNames(json)
+          // weed out any potentially empty values
+          .filter(name => name.trim())
+          .forEach(
+            name => this._l10nStrings.set(name, json[name])
+          );
+      }, this);
     },
 
     observe(topic, data) {
@@ -63,12 +82,12 @@
     },
 
     newTabString(name, args) {
-      let stringName = "newtab." + name;
+      let key = "newtab-" + name;
       if (!args) {
-        return gStrings[stringName];
+        return this._l10nStrings.get(key);
       }
       let len = args.length;
-      return this._formatStringFromName(gStrings[stringName], args, len);
+      return this._formatStringFromName(this._l10nStrings.get(key), args, len);
     },
 
     _formatStringFromName(str, substrArr) {

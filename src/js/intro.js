@@ -41,7 +41,7 @@ const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
 
       // Set the button
       document.getElementById("newtab-intro-button")
-        .value = gNewTab.newTabString("intro.gotit");
+        .value = gNewTab.newTabString("intro-gotit");
     },
 
     _bold: function(str) {
@@ -62,10 +62,10 @@ const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
     _generateParagraphs() {
       let customizeIcon =
         `<input type="button" class="newtab-control newtab-customize"/>`;
-      this._paragraphs.push(gNewTab.newTabString("intro1.paragraph1"));
-      this._paragraphs.push(gNewTab.newTabString("intro1.paragraph2", [
+      this._paragraphs.push(gNewTab.newTabString("intro1-paragraph1"));
+      this._paragraphs.push(gNewTab.newTabString("intro1-paragraph2", [
         this._link(TILES_PRIVACY_LINK,
-          gNewTab.newTabString("privacy.link")),
+          gNewTab.newTabString("privacy-link")),
         customizeIcon
       ]));
     },
@@ -92,13 +92,13 @@ const TILES_INTRO_LINK = "https://www.mozilla.org/firefox/tiles/";
       this._showMessage();
 
       // Header text
-      let text = "intro.header.update";
+      let text = "intro-header-update";
       this._nodes.header.innerHTML = gNewTab.newTabString(text);
 
       // Footer links
       let footerLinkNode = document.getElementById("newtab-intro-link");
       footerLinkNode.innerHTML =
-        this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn.link2"));
+        this._link(TILES_INTRO_LINK, gNewTab.newTabString("learn-link2"));
     },
   };
   exports.gIntro = gIntro;

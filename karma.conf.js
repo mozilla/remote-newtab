@@ -42,11 +42,6 @@ module.exports = function(config) {
         watched: true,
         served: true,
         included: false
-      }, {
-        pattern: "src/locale/newTab.js",
-        watched: true,
-        served: true,
-        included: false
       },
     ],
 
@@ -96,7 +91,6 @@ module.exports = function(config) {
       "/js/undo.js": "http://localhost:9876/base/src/js/undo.js",
       "/js/updater.js": "http://localhost:9876/base/src/js/updater.js",
       "/js/userDatabase.js": "http://localhost:9876/base/src/js/userDatabase.js",
-      "/locale/newTab.js": "http://localhost:9876/base/src/locale/newTab.js",
       "/test/rectangle.js": "http://localhost:9876/base/src/test/rectangle.js",
       "/test/script_test_example.js": "http://localhost:9876/base/src/test/script_test_example.js",
       "/test/sw_spec.js": "http://localhost:9876/base/src/test/sw_spec.js",

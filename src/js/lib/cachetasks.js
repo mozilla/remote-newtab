@@ -204,22 +204,32 @@
         let cache = yield MemoizedCaches.open(cacheName);
         let response = yield cache.match(request);
         let shouldUpdate = !response || options.force || this.isStale(response);
-        // We don't need to update, so just return what we have
+        // We don't need to update, so just return what we have.
         if (!shouldUpdate) {
           return response;
         }
-        // Let's try to update
+        // Let's try to update.
         try {
-          response = yield fetch(request);
+          let potentialResponse = yield fetch(request);
+          // check that the response was "ok" (i.e., in the 200 range).
+          if(potentialResponse.ok){
+            response = potentialResponse;
+            yield this.put(request, response, cacheName);
+          } else {
+            let url = request.url || request;
+            let status = potentialResponse.status;
+            let msg = `Response not OK for: ${url} (Got back a ${status}).`;
+            console.error(msg);
+          }
         } catch (err) {
           // if we don't have a response at all, all we can do is throw.
           if (!response) {
             throw err;
           }
+          let msg = `Exception when fetching: ${request.url || request}`
+          console.warn(msg)
           return response;
         }
-        // Cache the response, and return it
-        yield this.put(request, response, cacheName);
         return response;
       }, this);
     },

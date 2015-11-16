@@ -177,7 +177,7 @@ module.exports = function(config) {
       port: 9999,
       // this function takes express app object and allows you to modify it
       // to your liking. For more see http://expressjs.com/4x/api.html
-      appVisitor: function (app, log) {
+      appVisitor(app) {
         //CORS middleware
         var cors = require('cors');
         var corsOptions = {

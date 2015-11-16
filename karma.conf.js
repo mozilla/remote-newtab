@@ -49,8 +49,8 @@ module.exports = function(config) {
       match: ".*",
       name: "Service-Worker-Allowed",
       value: "/"
-      },
-    ],
+    },
+  ],
 
     proxies: {
       '/sw.js': 'http://localhost:9876/base/src/sw.js',
@@ -187,7 +187,7 @@ module.exports = function(config) {
         app.use(cors(corsOptions));
         app.options('/update-tests', cors(corsOptions));
         app.get('/update-tests', (req, res) => {
-          if(req.get("statusoverride")){
+          if (req.get("statusoverride")) {
             res.status(req.get("statusoverride"));
           }
           res.set("ReponseFrom", "server");

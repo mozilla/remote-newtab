@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 /*jshint browser:true, worker:true*/
-/*globals async, Request, Response, caches*/
+/*globals async, Request, Response, caches, fetch*/
 /*exported CacheTasks */
 "use strict";
 (function(exports) {
@@ -211,8 +211,8 @@
         // Let's try to update.
         try {
           let potentialResponse = yield fetch(request);
-          // check that the response was "ok" (i.e., in the 200 range).
-          if(potentialResponse.ok){
+          // check that the fetching was "ok" (i.e., in the 200 range).
+          if (potentialResponse.ok) {
             response = potentialResponse;
             yield this.put(request, response, cacheName);
           } else {
@@ -226,8 +226,8 @@
           if (!response) {
             throw err;
           }
-          let msg = `Exception when fetching: ${request.url || request}`
-          console.warn(msg)
+          let msg = `Exception when fetching: ${request.url || request}`;
+          console.warn(msg);
           return response;
         }
         return response;

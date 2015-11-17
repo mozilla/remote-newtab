@@ -147,7 +147,7 @@ describe("CacheTasks", function() {
       var maxAge = (afterNow - beforeNow) / 1000; //to seconds
       response.headers.set("Date", beforeNow.toGMTString());
       response.headers.set("Cache-Control", `max-age=${maxAge}`);
-      var result = yield CacheTasks.put(request, response);
+      var result = yield CacheTasks.put(request, response, CACHENAME);
       expect(result).to.be.true;
     }));
     it("should put a response that has not expired.", async(function*() {
@@ -156,7 +156,7 @@ describe("CacheTasks", function() {
       var now = new Date(Date.now()).toGMTString();
       response.headers.set("Date", now);
       response.headers.set("Expires", theFuture);
-      var result = yield CacheTasks.put(request, response);
+      var result = yield CacheTasks.put(request, response, CACHENAME);
       expect(result).to.be.true;
     }));
     it("should put a response that has expired.", async(function*() {
@@ -165,7 +165,7 @@ describe("CacheTasks", function() {
       var now = new Date(Date.now()).toGMTString();
       response.headers.set("Date", now);
       response.headers.set("Expires", thePast);
-      var result = yield CacheTasks.put(request, response);
+      var result = yield CacheTasks.put(request, response, CACHENAME);
       expect(result).to.be.true;
     }));
   });

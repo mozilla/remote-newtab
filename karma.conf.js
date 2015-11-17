@@ -11,7 +11,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ["mocha", "chai-as-promised", "chai"],
+    frameworks: ["mocha", "chai-as-promised", "chai", "express-http-server"],
 
     // list of files / patterns to load in the browser
     files: [{
@@ -49,8 +49,8 @@ module.exports = function(config) {
       match: ".*",
       name: "Service-Worker-Allowed",
       value: "/"
-      },
-    ],
+    },
+  ],
 
     proxies: {
       '/sw.js': 'http://localhost:9876/base/src/sw.js',
@@ -170,6 +170,29 @@ module.exports = function(config) {
           "dom.serviceWorkers.exemptFromPerDomainMax": true,
           "dom.serviceWorkers.interception.opaque.enabled": true,
         }
+      }
+    },
+
+    expressHttpServer: {
+      port: 9999,
+      // this function takes express app object and allows you to modify it
+      // to your liking. For more see http://expressjs.com/4x/api.html
+      appVisitor(app) {
+        //CORS middleware
+        var cors = require('cors');
+        var corsOptions = {
+          origin: '*',
+          allowedHeaders: "statusoverride"
+        };
+        app.use(cors(corsOptions));
+        app.options('/update-tests', cors(corsOptions));
+        app.get('/update-tests', (req, res) => {
+          if (req.get("statusoverride")) {
+            res.status(req.get("statusoverride"));
+          }
+          res.set("ReponseFrom", "server");
+          res.send("<meta charset=utf8><h1>This is a test</h1>");
+        });
       }
     },
 

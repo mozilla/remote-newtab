@@ -10,4 +10,4 @@ test:
         - PATH=/tmp/firefox/firefox:$PATH npm test
     post:
         - cd ~/$CIRCLE_PROJECT_REPONAME
-        - ./node_modules/.bin/codeclimate-test-reporter < ./build/reports/coverage/lcov/lcov.info 
+        - ./node_modules/.bin/codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info

@@ -89,11 +89,6 @@ self.addEventListener("message", async(function*({data, source}) {
   default:
     console.warn("Unhandled message", data.name);
   }
-  // Only respond to messages that have an id, even if unhandeled.
-  // This is to prevents locking any expecting promises.
-  if (!id) {
-    return;
-  }
   source.postMessage({result, id});
 }));
 

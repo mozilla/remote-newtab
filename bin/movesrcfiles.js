@@ -154,7 +154,7 @@ const Tasks = {
       let obj = {
         branch: branch,
         stringSrc: `${l10nBaseDir}/${locale}/strings.json`,
-        stringDest: `${outBaseDir}/${version}/${branch}/${locale}/locale/strings.json`,
+        stringDest: `${outBaseDir}/${version}/${branch}/langs/${locale}/locale/strings.json`,
       };
       return obj;
     }

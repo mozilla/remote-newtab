@@ -11,7 +11,7 @@ describe("DirectoryLinksProvider API", function() {
     }
   };
 
-  var directoryLinks = {
+  let directoryLinks = {
     "directory": [{
         "directoryId": 1,
         "title": "Mozilla Community",
@@ -47,13 +47,13 @@ describe("DirectoryLinksProvider API", function() {
 
   it("should populate suggested and directory links", async(function*() {
     // Save original CacheTasks functions and update them with mock functions.
-    var tmpUpdate = CacheTasks.update;
+    let tmpUpdate = CacheTasks.update;
     CacheTasks.update = gMockCacheTasks.update;
 
     yield ProviderManager.init();
     assert.equal(DirectoryLinksProvider._observers.size, 1);
 
-    var links = yield DirectoryLinksProvider.getLinks();
+    let links = yield DirectoryLinksProvider.getLinks();
 
     // Suggested tile wasn't parsed because it's missing adgroup_name.
     assert.equal(DirectoryLinksProvider._suggestedLinks.size, 0);
@@ -70,9 +70,9 @@ describe("DirectoryLinksProvider API", function() {
 
     // There are 2 directory links.
     assert.equal(links.length, 2);
-    for (var i = 0; i < links.length; i++) {
-      var expectedLink = directoryLinks.directory[i];
-      var givenLink = links[i];
+    for (let i = 0; i < links.length; i++) {
+      let expectedLink = directoryLinks.directory[i];
+      let givenLink = links[i];
 
       assert.equal(givenLink.title, expectedLink.title);
       assert.equal(givenLink.id, expectedLink.id);
@@ -85,4 +85,8 @@ describe("DirectoryLinksProvider API", function() {
     // Returning to original functions of CacheTasks
     CacheTasks.update = tmpUpdate;
   }));
+
+  it("should escape chars", function() {
+    assert.equal("&lt;test&gt;", DirectoryLinksProvider._escapeChars("<test>"));
+  });
 });

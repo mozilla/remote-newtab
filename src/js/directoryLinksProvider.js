@@ -30,7 +30,7 @@ const DIRECTORY_FRECENCY = 1000;
 
     init: async(function*() {
       Links.addObserver(DirectoryLinksProvider);
-      var response = yield CacheTasks.update(PREF_DIRECTORY_SOURCE, "ads_cache");
+      let response = yield CacheTasks.update(PREF_DIRECTORY_SOURCE, "ads_cache");
       DirectoryLinksProvider._links = yield response.json();
     }),
 
@@ -46,12 +46,12 @@ const DIRECTORY_FRECENCY = 1000;
     _cacheSuggestedLinks(link) {
       // Don't cache links that don't have the expected 'frecent_sites'
       //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-      if (!link.frecent_sites) {
+      if (!link.hasOwnProperty("frecent_sites")) {
         return;
       }
 
-      for (var suggestedSite of link.frecent_sites) {
-        var suggestedMap = this._suggestedLinks.get(suggestedSite) || new Map();
+      for (let suggestedSite of link.frecent_sites) {
+        let suggestedMap = this._suggestedLinks.get(suggestedSite) || new Map();
         suggestedMap.set(link.url, link);
         this._suggestedLinks.set(suggestedSite, suggestedMap);
       }
@@ -59,22 +59,22 @@ const DIRECTORY_FRECENCY = 1000;
     },
 
     _escapeChars(text) {
-      let charMap = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        "\"": "&quot;",
-        "'": "&#039;"
-      };
+      let charMap = new Map([
+        ["&", "&amp;"],
+        ["<", "&lt;"],
+        [">", "&gt;"],
+        ["\"", "&quot;"],
+        ["'", "&#039;"],
+      ]);
 
-      return text.replace(/[&<>"']/g, (character) => charMap[character]);
+      return text.replace(/[&<>"']/g, (character) => charMap.get(character));
     },
 
     /**
      * Gets the current set of directory links.
      */
     getLinks: async(function*() {
-      var rawLinks = DirectoryLinksProvider._links;
+      let rawLinks = DirectoryLinksProvider._links;
 
       // Reset the cache of suggested tiles and enhanced images for this new set of links
       DirectoryLinksProvider._enhancedLinks.clear();
@@ -97,7 +97,7 @@ const DIRECTORY_FRECENCY = 1000;
         DirectoryLinksProvider._cacheSuggestedLinks(link);
       });
 
-      var links = rawLinks.directory.map((link, position) => {
+      let links = rawLinks.directory.map((link, position) => {
         link.lastVisitDate = rawLinks.length - position;
         link.frecency = DIRECTORY_FRECENCY;
         return link;

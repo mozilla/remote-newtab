@@ -58,7 +58,7 @@ describe("Links API", function() {
 
   const gMockCacheTasks = {
     update() {
-      return {text: function() { return Promise.resolve(JSON.stringify(directoryLinks)); }};
+      return {json: function() { return Promise.resolve(directoryLinks); }};
     }
   };
 

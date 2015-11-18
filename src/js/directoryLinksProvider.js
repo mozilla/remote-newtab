@@ -30,9 +30,8 @@ const DIRECTORY_FRECENCY = 1000;
 
     init: async(function*() {
       Links.addObserver(DirectoryLinksProvider);
-      var response = yield CacheTasks.update(PREF_DIRECTORY_SOURCE, "directory_cache");
-      var text = yield response.text();
-      DirectoryLinksProvider._links = JSON.parse(text);
+      var response = yield CacheTasks.update(PREF_DIRECTORY_SOURCE, "ads_cache");
+      DirectoryLinksProvider._links = yield response.json();
     }),
 
     /**

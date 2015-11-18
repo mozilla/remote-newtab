@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
  /*jshint worker:true*/
- /*globals CacheTasks, async, ProviderManager, Links, fetch*/
+ /*globals CacheTasks, async, ProviderManager, Links*/
 "use strict";
 
 // The const that tells where to obtain directory links
@@ -16,11 +16,7 @@ const DIRECTORY_FRECENCY = 1000;
    * Emits notifications to PlacesProvider and Links
    */
   const DirectoryLinksProvider = {
-    _globalFetch: fetch,
-
     _observers: new Set(),
-
-    _directoryLinksRequest: PREF_DIRECTORY_SOURCE,
 
     /**
      * A mapping from eTLD+1 to an enhanced link objects
@@ -32,20 +28,9 @@ const DIRECTORY_FRECENCY = 1000;
      */
     _suggestedLinks: new Map(),
 
-    init: async(function*(mockFetch) {
-      var fetch = mockFetch || DirectoryLinksProvider._globalFetch;
-
+    init: async(function*() {
       Links.addObserver(DirectoryLinksProvider);
-      var response;
-      var directoryLinksInCache = yield CacheTasks.has(PREF_DIRECTORY_SOURCE, "directory_cache");
-      if (!directoryLinksInCache) {
-        response = yield fetch(DirectoryLinksProvider._directoryLinksRequest);
-        var result = yield CacheTasks.put(PREF_DIRECTORY_SOURCE, response, "directory_cache");
-        if (!result) {
-          console.warn("Failed to store directory links");
-        }
-      }
-      response = yield CacheTasks.match(DirectoryLinksProvider._directoryLinksRequest, "directory_cache");
+      var response = yield CacheTasks.update(PREF_DIRECTORY_SOURCE, "directory_cache");
       var text = yield response.text();
       DirectoryLinksProvider._links = JSON.parse(text);
     }),

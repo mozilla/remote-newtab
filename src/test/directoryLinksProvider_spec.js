@@ -6,23 +6,9 @@ describe("DirectoryLinksProvider API", function() {
   "use strict";
 
   const gMockCacheTasks = {
-    _cache: {},
-    has() {
-      return false;
-    },
-    put(url, response, cacheName) {
-      gMockCacheTasks._cache[cacheName] = {url, response};
-    },
-    match(request, cacheName) {
-      if (!request) {
-        return;
-      }
-      return gMockCacheTasks._cache[cacheName].response;
+    update() {
+      return {text: function() { return Promise.resolve(JSON.stringify(directoryLinks)); }};
     }
-  };
-
-  var gMockFetch = function() {
-    return {text: function() { return Promise.resolve(JSON.stringify(directoryLinks)); }};
   };
 
   var directoryLinks = {
@@ -61,14 +47,10 @@ describe("DirectoryLinksProvider API", function() {
 
   it("should populate suggested and directory links", async(function*() {
     // Save original CacheTasks functions and update them with mock functions.
-    var tmpHas = CacheTasks.has;
-    var tmpPut = CacheTasks.put;
-    var tmpMatch = CacheTasks.match;
-    CacheTasks.has = gMockCacheTasks.has;
-    CacheTasks.put = gMockCacheTasks.put;
-    CacheTasks.match = gMockCacheTasks.match;
+    var tmpUpdate = CacheTasks.update;
+    CacheTasks.update = gMockCacheTasks.update;
 
-    yield ProviderManager.init(gMockFetch);
+    yield ProviderManager.init();
     assert.equal(DirectoryLinksProvider._observers.size, 1);
 
     var links = yield DirectoryLinksProvider.getLinks();
@@ -80,7 +62,7 @@ describe("DirectoryLinksProvider API", function() {
     //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
     directoryLinks.suggested[0].adgroup_name = "Technology";
     //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
-    yield DirectoryLinksProvider.init(gMockFetch);
+    yield DirectoryLinksProvider.init();
     links = yield DirectoryLinksProvider.getLinks();
 
     // There are 4 frecent sites.
@@ -97,12 +79,10 @@ describe("DirectoryLinksProvider API", function() {
     }
 
     // Re-initing ProviderManager should not re-add observers.
-    yield ProviderManager.init(gMockFetch);
+    yield ProviderManager.init();
     assert.equal(DirectoryLinksProvider._observers.size, 1);
 
     // Returning to original functions of CacheTasks
-    CacheTasks.has = tmpHas;
-    CacheTasks.put = tmpPut;
-    CacheTasks.match = tmpMatch;
+    CacheTasks.update = tmpUpdate;
   }));
 });

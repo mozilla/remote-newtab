@@ -57,23 +57,9 @@ describe("Links API", function() {
   ];
 
   const gMockCacheTasks = {
-    _cache: {},
-    has() {
-      return false;
-    },
-    put(url, response, cacheName) {
-      gMockCacheTasks._cache[cacheName] = {url, response};
-    },
-    match(request, cacheName) {
-      if (!request) {
-        return;
-      }
-      return gMockCacheTasks._cache[cacheName].response;
+    update() {
+      return {text: function() { return Promise.resolve(JSON.stringify(directoryLinks)); }};
     }
-  };
-
-  var gMockFetch = function() {
-    return {text: function() { return Promise.resolve(JSON.stringify(directoryLinks)); }};
   };
 
   var firstLink = {url: "http://example0.com/", title: "site#0"};
@@ -81,16 +67,12 @@ describe("Links API", function() {
 
   it("should populate cache and get links", async(function*() {
     // Save original CacheTasks functions and update them with mock functions.
-    var tmpHas = CacheTasks.has;
-    var tmpPut = CacheTasks.put;
-    var tmpMatch = CacheTasks.match;
-    CacheTasks.has = gMockCacheTasks.has;
-    CacheTasks.put = gMockCacheTasks.put;
-    CacheTasks.match = gMockCacheTasks.match;
+    var tmpUpdate = CacheTasks.update;
+    CacheTasks.update = gMockCacheTasks.update;
 
     yield gUserDatabase.init({"pinnedLinks": []});
     yield gPinnedLinks.init();
-    yield ProviderManager.init(gMockFetch);
+    yield ProviderManager.init();
 
     // There are 0 links before we populate
     var links = yield Links.getLinks();
@@ -112,8 +94,6 @@ describe("Links API", function() {
     yield gPinnedLinks.unpin(secondLink);
 
     // Returning to original functions of CacheTasks
-    CacheTasks.has = tmpHas;
-    CacheTasks.put = tmpPut;
-    CacheTasks.match = tmpMatch;
+    CacheTasks.update = tmpUpdate;
   }));
 });

@@ -185,7 +185,7 @@ const Links = {
    *               already filled.
    */
   _populateProviderCache: async(function*(aProvider, cache, aForce) {
-    var createCache = !cache;
+    var createCache = !cache.populatePromise;
     if (createCache) {
       cache = {
         // Start with a resolved promise.
@@ -245,7 +245,7 @@ const Links = {
    * @param {Provider} aProvider The link provider.
    */
   addProvider(aProvider) {
-    this._providers.set(aProvider, null);
+    this._providers.set(aProvider, {});
     aProvider.addObserver(this);
   },
 };

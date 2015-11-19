@@ -3,26 +3,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 /**
- * Moves the site files, and performs localization on a per release branch basis.
- * How it works, for each of the release train branches:
+ * Moves the site files, and performs localization on a per release channel basis.
+ * How it works, for each of the release train channels:
  *
- *    1. it checks out the appropriate branch (e.g., nightly).
+ *    1. it sets up the appropriate directory structure:
+ *      ./build/version/channel/locale/
  *
- *    2. it sets up the appropriate directory structure:
- *      ./build/version/branch/locale/
- *
- *    3. it copies over the files:
+ *    2. it copies over the files:
  *      - the service worker.
  *      - the js and css folders
  *
- *    4. Performs localization on HTML template (src/lang-tag/index.html)
+ *    3. Performs localization on HTML template (src/lang-tag/index.html)
  *       using Handlebars.
  *
- *    5. Copies the localized HTML to the appropriate version/branch/locale
+ *    4. Copies the localized HTML to the appropriate version/channel locale
  *       directory.
  *
- *  Best of all, files that don't need to be localized are just placed at the
- *  "branch" level, so to avoid duplication. For example, there sw.js:
+ *  Files that don't need to be localized are just placed at the
+ *  "channel" level, so to avoid duplication. For example, there sw.js:
  *   ./build/v2/nightly/sw.js
  *
  *  Localized HTML and the string.json files, then gets place in:
@@ -40,53 +38,7 @@ const handlebars = require("handlebars");
 const baseSrcDir = path.resolve(`${__dirname}/../src`);
 const outBaseDir = path.resolve(`${__dirname}/../build`);
 const l10nBaseDir = path.resolve(`${__dirname}/../l10n`);
-const exec = require("child_process").exec;
 const version = "v2";
-let workingBranch = "gh-pages";
-
-/**
- * Basic wrapper for performing Git operations asynchronously.
- *
- * @type {Object}
- */
-const Git = {
-  /**
-   * Checks out a git branch.
-   *
-   * @param  {String} branch The branch to checkout out.
-   * @return {Promise} Resolves when command is done executing.
-   */
-  checkout(branch) {
-    return this.promisedExec(`git checkout ${branch}`);
-  },
-  /**
-   * Gets the current branch git is on.
-   *
-   * @return {String} the name of the branch.
-   */
-  get currentBranch() {
-    const command = "git rev-parse --abbrev-ref HEAD";
-    return this.promisedExec(command)
-      .then(r => r.trim());
-  },
-  /**
-   * Runs a command on the OS.
-   *
-   * @param  {String} command The command to run.
-   * @return {Promise} Resolves when command is done executing.
-   */
-  promisedExec(command) {
-    return new Promise((resolve,reject) => {
-      exec(command, (error, stdout, stderr) => {
-        if (stderr) {
-          console.error(stderr);
-        }
-        return (error) ? reject(error) : resolve(stdout);
-      });
-    });
-  }
-};
-
 /**
  * Tasks to be performed, in no particular order.
  *
@@ -146,45 +98,39 @@ const Tasks = {
   /**
    * Performs the localization of the site.
    *
-   * @param  {String[]} branches A list of git branches.
+   * @param  {String[]} channels A list of git channels.
    * @return {Promise} Resolves when all operations complete.
    */
-  doLocalization(branches) {
-    function makeLocaleStruct(locale, branch) {
+  doLocalization(channels) {
+    function makeLocaleStruct(locale, channel) {
       let obj = {
-        branch: branch,
-        stringSrc: `${l10nBaseDir}/${locale}/strings.json`,
-        stringDest: `${outBaseDir}/${version}/${branch}/langs/${locale}/locale/strings.json`,
+        src: `${l10nBaseDir}/${locale}/`,
+        dest: `${outBaseDir}/${version}/${channel}/${locale}/locale/`,
       };
       return obj;
     }
     return async.task(function*() {
-      // Make a simple array, containing src at 0, and destination at 1.
       const locales = yield this.fetchLocales();
-      const l10nSrcAndDests = branches.map(
-          branch => locales.map((locale) => makeLocaleStruct(locale, branch))
+      // Makes an array of objects that contain {src: path, dest: path}.
+      const sources = channels.map(
+          channel => locales.map((locale) => makeLocaleStruct(locale, channel))
         // Reduce to a single array
         ).reduce(
           (prev, next) => prev.concat(next), []
         );
-      // Copy the string.json from the right branch to the appropriate directory
-      let currentBranch = yield Git.currentBranch;
-      let template; // prevents template from being created over and over.
-      for (let source of l10nSrcAndDests) {
-        // Make sure we are on the right git branch
-        if (currentBranch !== source.branch) {
-          yield Git.checkout(source.branch);
-          currentBranch = source.branch;
-          // Load up the template for this branch
-          let rawTemplate = yield this.readFile(`${baseSrcDir}/lang-tag/index.html`);
-          template = handlebars.compile(rawTemplate.data);
-        }
+      const templatePath = `${baseSrcDir}/lang-tag/index.html`;
+      const rawTemplate = yield this.readFile(templatePath);
+      const template = handlebars.compile(rawTemplate.data);
+      for (let source of sources) {
+        yield this.ensureDir(source.dest);
         // copy string.json files
-        yield this.copy(source.stringSrc, source.stringDest);
+        let stringsSrc = `${source.src}strings.json`;
+        let stringDest = `${source.dest}strings.json`;
+        yield this.copy(stringsSrc, stringDest);
         // Localize HTML using the JSON string
-        let file = yield this.readFile(source.stringDest);
-        let html = template(JSON.parse(file.data));
-        let dest = path.resolve(source.stringDest, "../../index.html");
+        let file = yield this.readFile(stringDest);
+        let html = template(file.json);
+        let dest = path.resolve(source.dest, "../index.html");
         yield this.writeFile(dest, html);
       }
     }, this);
@@ -214,25 +160,12 @@ const Tasks = {
         return (error) ? reject(error) : resolve({
           path: file,
           data: data,
+          get json(){
+            return JSON.parse(this.data);
+          }
         });
       });
     });
-  },
-  /**
-   * Deletes the build directories for all branches. Makes sure there is no
-   * left over stuff accidentally in any of them.
-   *
-   * @param  {String[]} branches The git branches to operate on.
-   * @param  {String} dir the directory to clean out.
-   * @return {Promise} Resolves once operations have completed.
-   */
-  cleanBuildDirs(branches, dir) {
-    return async.task(function*() {
-      for (let branch of branches) {
-        yield Git.checkout(branch);
-        yield this.emptyDir(dir);
-      }
-    },this);
   },
   /**
    * Wrapper for fse.ensureDir().
@@ -254,14 +187,13 @@ const Tasks = {
    * Copy a single file or folder to multiple folders.
    *
    * @param  {String} source     The file or folder to copy.
-   * @param  {String[]} branches The git branches to use.
+   * @param  {String[]} channels The git channels to use.
    * @return {Promise} Resolves when all copy operations are complete.
    */
-  copyToDirs(source, branches) {
+  copyToDirs(source, channels) {
     return async.task(function*() {
-      for (let branch of branches) {
-        let dest = `${outBaseDir}/${version}/${branch}/`;
-        yield Git.checkout(branch);
+      for (let channel of channels) {
+        let dest = `${outBaseDir}/${version}/${channel}/`;
         yield this.ensureDir(dest);
         dest += path.basename(source);
         let stat = fse.lstatSync(source);
@@ -273,25 +205,20 @@ const Tasks = {
     }, this);
   },
 };
-
 /**
  * Copy sites files to build directory + perform localization.
  * See top of this document for a more detailed description of how it
  * all works.
  */
 async.task(function*() {
-  workingBranch = yield Git.currentBranch;
-  const branches = ["nightly", "aurora", "beta", "release", "esr"];
+  const channels = ["nightly", "aurora", "beta", "release", "esr"];
   // Trash the build directory.
-  yield Tasks.cleanBuildDirs([workingBranch].concat(branches), outBaseDir);
+  yield Tasks.emptyDir(outBaseDir);
   // Move the sw, js, and css.
-  yield Tasks.copyToDirs(`${baseSrcDir}/sw.js`, branches);
-  yield Tasks.copyToDirs(`${baseSrcDir}/css/`, branches);
-  yield Tasks.copyToDirs(`${baseSrcDir}/js/`, branches);
+  yield Tasks.copyToDirs(`${baseSrcDir}/sw.js`, channels);
+  yield Tasks.copyToDirs(`${baseSrcDir}/css/`, channels);
+  yield Tasks.copyToDirs(`${baseSrcDir}/js/`, channels);
   // Do the localization.
-  yield Git.checkout(workingBranch);
-  yield Tasks.doLocalization(branches);
-  yield Git.checkout(workingBranch);
+  yield Tasks.doLocalization(channels);
 })
- .catch(err => console.log(err))
- .then(() => Git.checkout(workingBranch));
+  .catch(err => console.log(err));

@@ -15,4 +15,4 @@ before_script:
     - firefox -v
 
 after_script:
-    - ./node_modules/.bin/codeclimate-test-reporter < ./build/reports/coverage/lcov/lcov.info 
+    - ./node_modules/.bin/codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info

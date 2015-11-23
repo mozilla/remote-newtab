@@ -1,27 +1,61 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/*globals Request, CacheTasks, gGrid, gPage, gUpdater, gUserDatabase,
-  gPinnedLinks, gBlockedLinks, async*/
+/*globals Request, CacheTasks, gGrid, gPage, gUpdater, async*/
 
 "use strict";
 
 (function(exports) {
   const gNewTab = {
 
-    listeners: {},
+    listeners: new Map(),
 
     _l10nStrings: new Map(),
 
+    privateBrowsingMode: false,
+
+    rows: -1,
+
+    columns: -1,
+
+    introShown: false,
+
+    windowID: -1,
+
+    enabled: true,
+
     init() {
       return async.task(function*() {
+        yield this._cacheL10nStrings();
+        this.registerListener("NewTab:Observe", message => {
+          this.observe(message.topic, message.data);
+        });
+        this.registerListener("NewTab:State", message => {
+          this._setInitialState(message);
+        });
         // Add a listener for messages sent from the browser.
         // The listener calls our associated callback functions.
         window.addEventListener("message", message => {
-          for (let callback of this.listeners[message.data.name]) {
+          let callbacks = this.listeners.get(message.data.name);
+          if (!callbacks) {
+            let msg = `No callbacks for message: "${message.data.name}"`;
+            console.warn(msg);
+            return;
+          }
+          for (let callback of callbacks) {
             callback(message.data.data);
           }
         });
+        this.sendToBrowser("NewTab:GetInitialState");
+      }, this);
+    },
+    /**
+     * Downloads and stores the localized strings.
+     *
+     * @return {Promise} Resolves when caching is complete.
+     */
+    _cacheL10nStrings() {
+      return async.task(function*() {
         let json = {};
         try {
           let request = new Request("./locale/strings.json");
@@ -39,18 +73,16 @@
           );
       }, this);
     },
-
     observe(topic, data) {
       switch (topic) {
       case "page-thumbnail:create":
         if (!gGrid.ready) {
+          console.warn("Grid is not ready. Can't create page thumb.");
           return;
         }
-        for (let site of gGrid.sites) {
-          if (site && site.url === data) {
-            site.refreshThumbnail();
-          }
-        }
+        gGrid.sites
+          .filter(site => site && site.url === data)
+          .forEach(site => site.refreshThumbnail());
         break;
       case "browser.newtabpage.enabled":
         this.enabled = data;
@@ -69,7 +101,7 @@
       }
     },
 
-    setInitialState(message) {
+    _setInitialState(message) {
       this.privateBrowsingMode = message.privateBrowsingMode;
       this.rows = message.rows;
       this.columns = message.columns;
@@ -121,27 +153,15 @@
     },
 
     registerListener(type, callback) {
-      if (!this.listeners[type]) {
-        this.listeners[type] = [];
+      if (!this.listeners.has(type)) {
+        this.listeners.set(type, new Set());
       }
-      this.listeners[type].push(callback);
+      let callbacks = this.listeners.get(type);
+      callbacks.add(callback);
       this.sendToBrowser("NewTab:Register", {
         type
       });
     }
   };
-
-  // Document is loaded. Initialize the New Tab Page.
-  gNewTab.init();
-  document.addEventListener("NewTabCommandReady", async(function*() {
-    yield gUserDatabase.init(this._prefsObjectStoreKeys);
-    yield gPinnedLinks.init();
-    yield gBlockedLinks.init();
-    gNewTab.registerListener("NewTab:Observe", message => {
-      gNewTab.observe(message.topic, message.data);
-    });
-    gNewTab.registerListener("NewTab:State", gNewTab.setInitialState.bind(gNewTab));
-    gNewTab.sendToBrowser("NewTab:GetInitialState");
-  }, gNewTab));
   exports.gNewTab = gNewTab;
 }(window));

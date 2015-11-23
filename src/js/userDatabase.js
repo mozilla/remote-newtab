@@ -8,7 +8,7 @@
   const gUserDatabase = {
     _database: null,
 
-    init(keys, db = window.indexedDB) {
+    init(keys = {"pinnedLinks": [], "blockedLinks": []}, db = window.indexedDB) {
       this._keys = keys;
       return new Promise((resolve, reject) => {
         var request = db.open("NewTabData", 1);

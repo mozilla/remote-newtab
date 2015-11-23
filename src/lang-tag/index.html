@@ -126,13 +126,12 @@
       },
       initializeNewTabPage(){
         return async.task(function*(){
-          gNewTab.registerListener("NewTab:Observe", message => {
-            gNewTab.observe(message.topic, message.data);
-          });
-          gNewTab.registerListener("NewTab:State",
-            gNewTab.setInitialState.bind(gNewTab)
-          );
-          gNewTab.sendToBrowser("NewTab:GetInitialState");
+          yield gUserDatabase.init();
+          yield gNewTab.init();
+          document.addEventListener("NewTabCommandReady", async(function*() {
+            yield gPinnedLinks.init();
+            yield gBlockedLinks.init();
+          }));
         }, this);
       },
       addIndexToCache(){
@@ -142,11 +141,9 @@
       }
     };
     document.addEventListener("DOMContentLoaded", async(function* () {
-      yield Promise.all([
-        Tasks.registerServiceWorker(),
-        Tasks.initializeNewTabPage(),
-        Tasks.addIndexToCache()
-      ]);
+      yield Tasks.registerServiceWorker();
+      yield Tasks.initializeNewTabPage();
+      yield Tasks.addIndexToCache();
     }));
   }());
   </script>

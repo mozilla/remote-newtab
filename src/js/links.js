@@ -80,15 +80,12 @@
      * @return {Object} The links in the grid.
      */
     getLinks() {
-      let pinnedLinks = Array.slice(gPinnedLinks.links);
+      let pinnedLinks = gPinnedLinks.links.slice();
       let links = this._getMergedProviderLinks();
 
-      let sites = new Set();
-      for (let link of pinnedLinks) {
-        if (link) {
-          sites.add(ProviderManager.extractSite(link.url));
-        }
-      }
+      let sites = pinnedLinks
+        .map(link => link && ProviderManager.extractSite(link.url))
+        .reduce((set, site) => set.add(site), new Set());
 
       // Filter blocked and pinned links and duplicate base domains.
       links = links.filter(function(link) {
@@ -113,21 +110,20 @@
         pinnedLinks = pinnedLinks.concat(links);
       }
 
-      for (let link of pinnedLinks) {
+      pinnedLinks.forEach(link => {
         if (link) {
           link.baseDomain = ProviderManager.extractSite(link.url);
         }
-      }
+      });
 
       // Get the set of enhanced links (if any) from the Directory Links Provider.
-      let enhancedLinks = [];
-      for (let link of pinnedLinks) {
-        if (link) {
-          enhancedLinks.push(DirectoryLinksProvider.getEnhancedLink(link));
-        }
-      }
+      let enhancedLinks = pinnedLinks
+        .map(link => link && DirectoryLinksProvider.getEnhancedLink(link));
 
-      return {links: pinnedLinks, enhancedLinks};
+      return {
+        links: pinnedLinks,
+        enhancedLinks
+      };
     },
 
     _incrementSiteMap: function(map, link) {

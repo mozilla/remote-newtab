@@ -91,7 +91,7 @@
       // Filter blocked and pinned links and duplicate base domains.
       links = links.filter(function(link) {
         let site = ProviderManager.extractSite(link.url);
-        if (site === null || sites.has(site)) {
+        if (!site || sites.has(site)) {
           return false;
         }
         sites.add(site);

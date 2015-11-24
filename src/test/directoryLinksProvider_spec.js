@@ -54,4 +54,10 @@ describe("DirectoryLinksProvider API", function() {
   it("should escape chars", function() {
     assert.equal("&lt;test&gt;", DirectoryLinksProvider._escapeChars("<test>"));
   });
+
+  it("should not cache links that don't have frecent_sites", function() {
+    DirectoryLinksProvider._suggestedLinks.clear();
+    DirectoryLinksProvider._cacheSuggestedLinks(directoryLinks.directory[0]);
+    assert.equal(DirectoryLinksProvider._suggestedLinks.size, 0);
+  });
 });

@@ -27,7 +27,7 @@ module.exports = function(config) {
       "src/test/directoryLinksWithAdgroup.json",
       "src/js/directoryLinksProvider.js",
       "src/js/links.js",
-      "src/js/PlacesProvider.js",
+      "src/js/placesProvider.js",
       "src/js/ProviderManager.js",
       "src/js/lib/cachetasks.js",
       "src/js/blockedLinks.js",

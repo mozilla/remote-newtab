@@ -28,10 +28,13 @@ const DIRECTORY_FRECENCY = 1000;
      */
     _suggestedLinks: new Map(),
 
-    init: async(function*() {
+    init: async(function*(requestURL) {
       Links.addObserver(DirectoryLinksProvider);
-      let response = yield CacheTasks.update(PREF_DIRECTORY_SOURCE, "ads_cache");
+      let response = yield CacheTasks.update(requestURL || PREF_DIRECTORY_SOURCE, "ads_cache");
       DirectoryLinksProvider._links = yield response.json();
+      if (requestURL) {
+        DirectoryLinksProvider._links = DirectoryLinksProvider._links[0];
+      }
     }),
 
     /**

@@ -21,9 +21,9 @@ const ProviderManager = {
     this._initialized = initialized;
   },
 
-  init: async(function*(gMockFetch) {
+  init: async(function*(requestURL) {
     if (!ProviderManager.initialized) {
-      yield DirectoryLinksProvider.init(gMockFetch);
+      yield DirectoryLinksProvider.init(requestURL);
       Links.addProvider(PlacesProvider);
       Links.addProvider(DirectoryLinksProvider);
       yield gUserDatabase.init({"pinnedLinks": [], "blockedLinks": []});

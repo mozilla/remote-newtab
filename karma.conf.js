@@ -23,6 +23,8 @@ module.exports = function(config) {
       "src/js/pinnedLinks.js",
       "src/js/userDatabase.js",
       "src/js/lib/async.js",
+      "src/test/directoryLinksNoAdgroup.json",
+      "src/test/directoryLinksWithAdgroup.json",
       "src/js/directoryLinksProvider.js",
       "src/js/links.js",
       "src/js/PlacesProvider.js",
@@ -103,6 +105,8 @@ module.exports = function(config) {
       "/test/script_test_example.js": "http://localhost:9876/base/src/test/script_test_example.js",
       "/test/sw_spec.js": "http://localhost:9876/base/src/test/sw_spec.js",
       "/test/test.js": "http://localhost:9876/base/src/test/test.js",
+      "/test/directoryLinksNoAdgroup.json": "http://localhost:9876/base/src/test/directoryLinksNoAdgroup.json",
+      "/test/directoryLinksWithAdgroup.json": "http://localhost:9876/base/src/test/directoryLinksWithAdgroup.json"
     },
 
     // list of files to exclude

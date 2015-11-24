@@ -76,7 +76,7 @@ const DIRECTORY_FRECENCY = 1000;
     /**
      * Gets the current set of directory links.
      */
-    getLinks: async(function*() {
+    getLinks() {
       let rawLinks = DirectoryLinksProvider._links;
 
       // Reset the cache of suggested tiles and enhanced images for this new set of links
@@ -108,7 +108,7 @@ const DIRECTORY_FRECENCY = 1000;
       DirectoryLinksProvider.maxNumLinks = links.length + 1;
 
       return links;
-    }),
+    },
 
     addObserver(aObserver) {
       this._observers.add(aObserver);

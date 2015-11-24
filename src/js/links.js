@@ -14,7 +14,7 @@
  *   lastVisitDate: 1394678824766431,
  * }
  */
- /*globals gPinnedLinks, gBlockedLinks, ProviderManager, DirectoryLinksProvider, async*/
+ /*globals gPinnedLinks, gBlockedLinks, ProviderManager, DirectoryLinksProvider*/
  /*jshint worker:true*/
 
 "use strict";
@@ -84,7 +84,8 @@
       let links = this._getMergedProviderLinks();
 
       let sites = pinnedLinks
-        .map(link => link && ProviderManager.extractSite(link.url))
+        .filter(link => link)
+        .map(link => ProviderManager.extractSite(link.url))
         .reduce((set, site) => set.add(site), new Set());
 
       // Filter blocked and pinned links and duplicate base domains.
@@ -139,57 +140,40 @@
      * Calls getLinks on the given provider and populates our cache for it.
      *
      * @param {Provider} aProvider The provider whose cache will be populated.
-     * @param {Object} cache The provider cache to be populated.
-     * @param {Boolean} aForce When true, populates the provider's cache even when it's
-     *               already filled.
+     * @param {Object} options {force:false}, when true, populates the provider's
+     *                 cache even when it's already filled.
      */
-    _populateProviderCache: async(function*(aProvider, cache, aForce) {
-      let createCache = !cache.populatePromise;
-      if (createCache) {
-        cache = {
-          // Start with a resolved promise.
-          populatePromise: new Promise(resolve => resolve()),
-        };
+    _populateProviderCache(aProvider, options={force: false}) {
+      let  cache = this._providers.get(aProvider);
+      if (!cache || options.force) {
+        cache = {};
         Links._providers.set(aProvider, cache);
       }
-      // Chain the populatePromise so that calls are effectively queued.
-      cache.populatePromise = cache.populatePromise.then(() => {
-        return new Promise(resolve => {
-          if (!createCache && !aForce) {
-            resolve();
-            return;
-          }
-          aProvider.getLinks().then((links) => {
-            // Filter out null and undefined links so we don't have to deal with
-            // them in getLinks when merging links from providers.
-            links = links.filter((link) => !!link);
-            cache.sortedLinks = links;
-            cache.siteMap = links.reduce((map, link) => {
-              Links._incrementSiteMap(map, link);
-              return map;
-            }, new Map());
-            cache.linkMap = links.reduce((map, link) => {
-              map.set(link.url, link);
-              return map;
-            }, new Map());
-            resolve();
-          });
-        });
-      });
-      yield cache.populatePromise;
-    }),
+      let links = aProvider.getLinks()
+        // Filter out null and undefined links so we don't have to deal with
+        // them in getLinks when merging links from providers.
+        .filter(link => link);
+      cache.sortedLinks = links;
+      cache.siteMap = links.reduce((map, link) => {
+        Links._incrementSiteMap(map, link);
+        return map;
+      }, new Map());
+      cache.linkMap = links.reduce((map, link) => {
+        map.set(link.url, link);
+        return map;
+      }, new Map());
+    },
 
     /**
      * Populates the cache with fresh links from the providers.
      *
      * @param {Boolean} aForce When true, populates the cache even when it's already filled.
      */
-    populateCache: async(function*(aForce) {
+    populateCache(aForce) {
       for (let provider of Links._providers.keys()) {
-        let links = Links._providers.get(provider);
-        yield Links._populateProviderCache(provider, links, aForce);
+        Links._populateProviderCache(provider, aForce);
       }
-    }),
+    },
 
     /**
      * Registers an object that will be notified when links updates.

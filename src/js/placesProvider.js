@@ -15,7 +15,7 @@ const PlacesProvider = {
   },
 
   getLinks() {
-    return Promise.resolve(this._placesLinks);
+    return this._placesLinks;
   },
 
   addObserver(aObserver) {

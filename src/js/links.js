@@ -170,9 +170,8 @@
      * @param {Boolean} aForce When true, populates the cache even when it's already filled.
      */
     populateCache(aForce) {
-      for (let provider of Links._providers.keys()) {
-        Links._populateProviderCache(provider, aForce);
-      }
+      Array.from(this._providers.keys())
+        .forEach(provider => this._populateProviderCache(provider, {force: aForce}));
     },
 
     /**

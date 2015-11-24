@@ -83,22 +83,20 @@ const DIRECTORY_FRECENCY = 1000;
       DirectoryLinksProvider._enhancedLinks.clear();
       DirectoryLinksProvider._suggestedLinks.clear();
 
-      rawLinks.suggested.forEach((link, position) => {
-        // Suggested sites must have an adgroup name.
-        //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-        if (!link.adgroup_name) {
-          return;
-        }
+      //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+      rawLinks.suggested
+        .filter(link => link.hasOwnProperty("adgroup_name"))
+        .forEach((link, position) => {
+          link.explanation = DirectoryLinksProvider._escapeChars(link.explanation);
+          link.targetedName = DirectoryLinksProvider._escapeChars(link.adgroup_name);
 
-        link.explanation = DirectoryLinksProvider._escapeChars(link.explanation);
-        link.targetedName = DirectoryLinksProvider._escapeChars(link.adgroup_name);
-        link.lastVisitDate = rawLinks.suggested.length - position;
-        //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+          link.lastVisitDate = rawLinks.suggested.length - position;
 
-        // We cache suggested tiles here but do not push any of them in the links list yet.
-        // The decision for which suggested tile to include will be made separately.
-        DirectoryLinksProvider._cacheSuggestedLinks(link);
-      });
+          // We cache suggested tiles here but do not push any of them in the links list yet.
+          // The decision for which suggested tile to include will be made separately.
+          DirectoryLinksProvider._cacheSuggestedLinks(link);
+        });
+      //jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
       let links = rawLinks.directory.map((link, position) => {
         link.lastVisitDate = rawLinks.length - position;

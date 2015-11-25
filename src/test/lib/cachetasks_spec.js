@@ -21,7 +21,7 @@ var tRequest = testType(new Request(""));
 describe("CacheTasks", function() {
   describe("deleteCaches() method", () => {
     it("should delete all caches when no argument is given.", async(function*() {
-      var cacheNames = [CACHENAME, "foo", "bar", "baz", "bing", "skeleton_cache"];
+      var cacheNames = [CACHENAME, "foo", "bar", "baz", "bing"].concat(yield caches.keys());
       for (var name of cacheNames) {
         yield caches.open(name);
       }

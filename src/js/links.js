@@ -14,7 +14,7 @@
  *   lastVisitDate: 1394678824766431,
  * }
  */
- /*globals gPinnedLinks, gBlockedLinks, ProviderManager, DirectoryLinksProvider*/
+ /*globals gPinnedLinks, gBlockedLinks, DirectoryLinksProvider*/
  /*jshint worker:true*/
 
 "use strict";
@@ -74,6 +74,25 @@
         .slice(0, this.maxNumLinks);
     },
 
+    _filterLinks(pinnedLinks, links) {
+      // Create sitesMap to contain only one link at each base domain.
+      let sitesMap = pinnedLinks.concat(links)
+        .filter(link => link)
+        .reduce((map, link) => {
+          let site = this.extractSite(link.url);
+          return map.get(site) ? map : map.set(site, link);
+        }, new Map());
+
+      // Filter blocked and pinned links and duplicate base domains.
+      links = links.filter(function(link) {
+        let site = Links.extractSite(link.url);
+        return !gBlockedLinks.isBlocked(link) &&
+               !gPinnedLinks.isPinned(link) &&
+               (site && (sitesMap.get(site).url === link.url));
+      });
+      return links;
+    },
+
     /**
      * Gets the current set of links contained in the grid.
      *
@@ -81,23 +100,7 @@
      */
     getLinks() {
       let pinnedLinks = gPinnedLinks.links.slice();
-      let links = this._getMergedProviderLinks();
-
-      let sites = pinnedLinks
-        .filter(link => link)
-        .map(link => ProviderManager.extractSite(link.url))
-        .reduce((set, site) => set.add(site), new Set());
-
-      // Filter blocked and pinned links and duplicate base domains.
-      links = links.filter(function(link) {
-        let site = ProviderManager.extractSite(link.url);
-        if (!site || sites.has(site)) {
-          return false;
-        }
-        sites.add(site);
-
-        return !gBlockedLinks.isBlocked(link) && !gPinnedLinks.isPinned(link);
-      });
+      let links = this._filterLinks(pinnedLinks, this._getMergedProviderLinks());
 
       // Try to fill the gaps between pinned links.
       for (let i = 0; i < pinnedLinks.length && links.length; i++) {
@@ -113,7 +116,7 @@
 
       pinnedLinks.forEach(link => {
         if (link) {
-          link.baseDomain = ProviderManager.extractSite(link.url);
+          link.baseDomain = this.extractSite(link.url);
         }
       });
 
@@ -132,7 +135,7 @@
         // Don't count blocked URLs.
         return;
       }
-      let site = ProviderManager.extractSite(link.url);
+      let site = this.extractSite(link.url);
       map.set(site, (map.get(site) || 0) + 1);
     },
 
@@ -189,6 +192,26 @@
     addProvider(aProvider) {
       this._providers.set(aProvider, {});
       aProvider.addObserver(this);
+    },
+
+    /**
+     * Extract a "site" from a url in a way that multiple urls of a "site" returns
+     * the same "site."
+     *
+     * @param {String} url Url spec string
+     * @return {String} The "site" string
+     */
+    extractSite(url) {
+      var host = "";
+      try {
+        // Note that URL interface might throw for non-standard urls.
+        host = new URL(url).host;
+      } catch (ex) {
+        return "";
+      }
+
+      // Strip off common subdomains of the same site (e.g., www, load balancer)
+      return host.replace(/^(m|mobile|www\d*)\./, "");
     },
   };
   exports.Links = Links;

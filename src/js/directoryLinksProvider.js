@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
  /*jshint worker:true*/
- /*globals CacheTasks, async, ProviderManager, Links*/
+ /*globals CacheTasks, async, Links*/
 "use strict";
 
-// The const that tells where to obtain directory links
-const PREF_DIRECTORY_SOURCE = "https://tiles.services.mozilla.com/v3/links/fetch/en-US/nightly";
-
-// The frecency of a directory link
-const DIRECTORY_FRECENCY = 1000;
-
 (function(exports) {
+  // The const that tells where to obtain directory links
+  const PREF_DIRECTORY_SOURCE = "https://tiles.services.mozilla.com/v3/links/fetch/en-US/nightly";
+
+  // The frecency of a directory link
+  const DIRECTORY_FRECENCY = 1000;
+
   /**
    * Emits notifications to PlacesProvider and Links
    */
@@ -43,16 +43,16 @@ const DIRECTORY_FRECENCY = 1000;
     getEnhancedLink(link) {
       // Use the provided link if it's already enhanced
       return link.enhancedImageURI && link ? link :
-             this._enhancedLinks.get(ProviderManager.extractSite(link.url));
+             this._enhancedLinks.get(Links.extractSite(link.url));
     },
 
     _cacheSuggestedLinks(link) {
       // Don't cache links that don't have the expected 'frecent_sites'
-      //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
       if (!link.hasOwnProperty("frecent_sites")) {
         return;
       }
 
+      //jscs:disable requireCamelCaseOrUpperCaseIdentifiers
       for (let suggestedSite of link.frecent_sites) {
         let suggestedMap = this._suggestedLinks.get(suggestedSite) || new Map();
         suggestedMap.set(link.url, link);

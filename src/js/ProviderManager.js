@@ -13,43 +13,15 @@ const ProviderManager = {
 
   _initialized: false,
 
-  get initialized() {
-    return this._initialized;
-  },
-
-  set initialized(initialized) {
-    this._initialized = initialized;
-  },
-
   init: async(function*(requestURL) {
-    if (!ProviderManager.initialized) {
+    if (!ProviderManager._initialized) {
       yield DirectoryLinksProvider.init(requestURL);
       Links.addProvider(PlacesProvider);
       Links.addProvider(DirectoryLinksProvider);
       yield gUserDatabase.init({"pinnedLinks": [], "blockedLinks": []});
       yield gPinnedLinks.init();
       yield gBlockedLinks.init();
-      ProviderManager.initialized = true;
+      ProviderManager._initialized = true;
     }
   }),
-
-  /**
-   * Extract a "site" from a url in a way that multiple urls of a "site" returns
-   * the same "site."
-   *
-   * @param {String} url Url spec string
-   * @return {String} The "site" string
-   */
-  extractSite(url) {
-    var host = "";
-    try {
-      // Note that URL interface might throw for non-standard urls.
-      host = new URL(url).host;
-    } catch (ex) {
-      return "";
-    }
-
-    // Strip off common subdomains of the same site (e.g., www, load balancer)
-    return host.replace(/^(m|mobile|www\d*)\./, "");
-  },
 };

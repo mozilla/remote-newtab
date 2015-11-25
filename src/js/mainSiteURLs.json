@@ -20,6 +20,7 @@
   "./js/dropPreview.js",
   "./js/dropTargetShim.js",
   "./js/grid.js",
+  "./js/init.js",
   "./js/intro.js",
   "./js/lib/async.js",
   "./js/lib/cachetasks.js",

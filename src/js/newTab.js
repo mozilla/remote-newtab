@@ -24,6 +24,8 @@
 
     enabled: true,
 
+    enhanced: false,
+
     init() {
       return async.task(function*() {
         yield this._cacheL10nStrings();

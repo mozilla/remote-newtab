@@ -109,45 +109,5 @@
   <script src="../js/newTab.js"></script>
   <script src="../js/updater.js"></script>
   <script src="../js/undo.js"></script>
-  <script>
-  (function(){
-    "use strict";
-    const Tasks ={
-      registerServiceWorker(){
-        return async.task(function*(){
-          try {
-            yield navigator.serviceWorker.register("../sw.js", {
-              scope: "./"
-            });
-          } catch (err) {
-            console.error("ServiceWorker registration failed:", err);
-          }
-        },this);
-      },
-      initializeNewTabPage(){
-        return async.task(function*(){
-          gNewTab.registerListener("NewTab:Observe", message => {
-            gNewTab.observe(message.topic, message.data);
-          });
-          gNewTab.registerListener("NewTab:State",
-            gNewTab.setInitialState.bind(gNewTab)
-          );
-          gNewTab.sendToBrowser("NewTab:GetInitialState");
-        }, this);
-      },
-      addIndexToCache(){
-        return async.task(function*(){
-          yield CacheTasks.update(window.location.href, "skeleton_cache");
-        }, this);
-      }
-    };
-    document.addEventListener("DOMContentLoaded", async(function* () {
-      yield Promise.all([
-        Tasks.registerServiceWorker(),
-        Tasks.initializeNewTabPage(),
-        Tasks.addIndexToCache()
-      ]);
-    }));
-  }());
-  </script>
+  <script src="../js/init.js"></script>
 </body>

@@ -1,5 +1,8 @@
 // require('babel-polyfill');
 
+const registerServiceWorker = require('lib/registerServiceWorker');
+registerServiceWorker();
+
 const React = require('react');
 const ReactDOM = require('react-dom');
 const {combineReducers} = require('redux');

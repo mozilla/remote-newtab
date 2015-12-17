@@ -31,7 +31,7 @@ function writeFile(template) {
 }
 
 // Process and generate file
-fileFinder(`www`, `-iname "*.js" -or -iname "*.css" -or -iname "*.svg" -or -iname "*.png" `)
+fileFinder(`www`, `-iname "*.js" -and -not -iname "sw.js" -or -iname "*.css" -or -iname "*.svg" -or -iname "*.png" `)
   .then(processResults)
   .then(writeFile)
   .catch(err => console.error(err));

@@ -13,13 +13,8 @@ function fileFinder(dir, pattern) {
   });
 }
 
-// Find css and JS files
-const findJs = fileFinder(`www`, `-iname "*.js" `);
-const findCss = fileFinder(`www`, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
-
 function processResults(results) {
   const paths = results
-    .reduce((current, next) => next.concat(current), [])
     .split("\n")
     .filter(item => item)
     .map(item => item.replace(/^www\//, "./"))
@@ -36,7 +31,7 @@ function writeFile(template) {
 }
 
 // Process and generate file
-Promise.all([findJs, findCss])
+fileFinder(`www`, `-iname "*.js" -or -iname "*.css" -or -iname "*.svg" -or -iname "*.png" `)
   .then(processResults)
   .then(writeFile)
   .catch(err => console.error(err));

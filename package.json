@@ -4,9 +4,11 @@
   "description": "Remote new tab (third version)",
   "main": "src/main.js",
   "scripts": {
-    "start": "npm run clean && npm run watch:js & npm run watch:css",
-    "build": "npm run clean && npm run build:js && npm run build:css && npm run build:offline",
+    "setup": "npm run clean && npm run build:static",
+    "start": "npm run setup && npm run watch:js & npm run watch:css",
+    "build": "npm run setup && npm run build:js && npm run build:css && npm run build:offline",
     "clean": "rm -rf ./www",
+    "build:static": "cp -r src/static/* www",
     "build:offline": "bin/generate-offline-files.js",
     "build:js": "NODE_ENV=production webpack -p --optimize-dedupe",
     "build:css": "node-sass src/main.scss -o www",

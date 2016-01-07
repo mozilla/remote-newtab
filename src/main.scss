@@ -24,7 +24,7 @@ $search-height: 36px;
 $search-left-padding: 36px;
 
 @mixin bgimage($file) {
-  $url: "../img/#{$file}";
+  $url: "./img/#{$file}";
   background-image: url($url);
 }
 

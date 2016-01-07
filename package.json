@@ -6,7 +6,6 @@
   "scripts": {
     "start": "npm run clean && npm run watch:js & npm run watch:css",
     "build": "npm run clean && npm run build:js & npm run build:css",
-    "test": "karma start",
     "test:watch": "karma start --no-single-run --browsers ChromeCanary",
     "clean": "rm -rf ./www",
     "build:js": "NODE_ENV=production webpack -p --optimize-dedupe",
@@ -18,12 +17,11 @@
     "test": "npm run karma",
     "jshint": "jshint src bin",
     "jscs": "jscs --esnext src",
-    "jscs:fix": "jscs --esnext --fix bin/ src/locale/ src/js/ src/js/lib/ src/test/ src/test/lib",
-    "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
-    "posttest": "awk 'FNR==1{print \"\"}1' ./logs/reports/coverage/text-summary.txt ./logs/reports/coverage/text.txt"
+    "jscs:fix": "jscs --esnext --fix bin/ src/locale/ src/js/ src/js/lib/ src/test/ src/test/lib"
   },
   "author": "k88hudson",
   "license": "MPL-2.0",
+  "repository": "https://github.com/mozilla/remote-newtab",
   "devDependencies": {
     "babel": "^6.3.13",
     "babel-core": "^6.3.17",
@@ -79,7 +77,7 @@
   },
   "dependencies": {
     "classnames": "2.2.1",
-    "react": "0.14.5",
+    "react": "^0.14.6",
     "react-dom": "0.14.3",
     "react-redux": "4.0.1",
     "redux": "3.0.5",

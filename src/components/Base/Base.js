@@ -1,5 +1,6 @@
 const React = require("react");
 const {connect} = require("react-redux");
+const {injectIntl} = require("react-intl");
 
 const Platform = require("lib/platform");
 const TileUtils = require("lib/TileUtils");
@@ -12,7 +13,7 @@ const Settings = require("components/Settings/Settings");
 const Base = React.createClass({
   componentWillMount: function () {
     // this.props.dispatch(actions.getPrefs());
-    this.props.dispatch(actions.getSuggestedDirectory());
+    this.props.dispatch(actions.getSuggestedDirectory(this.props.intl.locale));
     this.props.dispatch(actions.getCurrentEngine());
     this.props.dispatch(actions.getVisibleEngines());
     // this.props.dispatch(actions.getFrecentSites());
@@ -48,4 +49,4 @@ function select(state) {
   return state;
 }
 
-module.exports = connect(select)(Base);
+module.exports = connect(select)(injectIntl(Base));

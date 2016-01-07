@@ -1,6 +1,4 @@
-const constants = {
-  SUGGESTED_TILES_URL: "https://tiles.services.mozilla.com/v3/links/fetch/en-US/nightly"
-};
+const constants = {};
 
 // Add action names
 [

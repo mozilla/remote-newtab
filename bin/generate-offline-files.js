@@ -2,7 +2,7 @@
 "use strict";
 const fs = require("fs");
 const exec = require("child_process").exec;
-const fileName = "src/js/mainSiteURLs.json";
+const fileName = "www/mainSiteURLs.json";
 
 function fileFinder(dir, pattern) {
   return new Promise((resolve, reject) => {
@@ -14,15 +14,15 @@ function fileFinder(dir, pattern) {
 }
 
 // Find css and JS files
-const findJs = fileFinder(`src/js`, `-iname "*.js"`);
-const findCss = fileFinder(`src/css`, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
+const findJs = fileFinder(`www`, `-iname "*.js" `);
+const findCss = fileFinder(`www`, `-iname "*.css" -or -iname "*.svg" -or -iname "*.png"`);
 
 function processResults(results) {
   const paths = results
     .reduce((current, next) => next.concat(current), [])
     .split("\n")
     .filter(item => item)
-    .map(item => item.replace(/^src\//, "./"))
+    .map(item => item.replace(/^www\//, "./"))
     .sort();
   return JSON.stringify(paths, null, 2);
 }

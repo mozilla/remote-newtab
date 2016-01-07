@@ -1,0 +1,97 @@
+.tile {
+  position: relative;
+  text-decoration: none;
+  border: 1px solid #DDD;
+  border-radius: $tile-border-radius;
+  box-shadow: $tile-box-shadow;
+  border: $tile-border;
+  overflow: hidden;
+  margin: 0 $tile-gutter-h $tile-gutter-v 0;
+  color: $tile-text-color;
+  font-size: $tile-font-size;
+
+  .tile-img-container {
+    width: $tile-width;
+    height: $tile-height;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tile-img,
+  .tile-img-rollover {
+    border-radius: $tile-border-radius $tile-border-radius 0 0;
+    width: 100%;
+    height: 100%;
+    background-color: #FFF;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .tile-img-rollover {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
+  }
+
+  &:hover .tile-img-rollover {
+    opacity: 1;
+  }
+
+  .tile-title {
+    background-color: $tile-title-bg-color;
+    text-align: center;
+    padding: 10px;
+  }
+
+  &:hover .tile-title {
+    background-color: $tile-title-hover-color;
+    color: $tile-title-hover-text-color;
+  }
+
+  $search-height-offset: $search-height + $tile-gutter-v * 2;
+
+  // the +2px is for a border
+  @function totalWidth($n) {
+    @return ($tile-width + 2px) * $n + $tile-gutter-h * ($n - 1)
+  }
+  @function totalHeight($n) {
+    @return $search-height-offset + ($tile-height + $tile-title-height + 2px) * $n + $tile-gutter-v * $n;
+  }
+
+  @mixin displayN($n) {
+    &:nth-child(-n+#{$n}) { display: inline-block; }
+  }
+
+  @mixin heightQuery($n, $t) {
+    @media (min-height: totalHeight($n)) {
+      @include displayN($t);
+    }
+  }
+
+  display: none;
+  &:first-child {display: inline-block; }
+
+  @include heightQuery(2, 2);
+  @include heightQuery(3, 3);
+
+  @media (min-width: totalWidth(2)) {
+    @include displayN(2);
+    @include heightQuery(2, 4);
+    @include heightQuery(3, 6);
+  }
+  @media (min-width: totalWidth(3)) {
+    @include displayN(3);
+    @include heightQuery(2, 6);
+    @include heightQuery(3, 9);
+  }
+  @media (min-width: totalWidth(4)) {
+    @include displayN(4);
+    @include heightQuery(2, 8);
+    @include heightQuery(3, 12);
+  }
+}
+
+

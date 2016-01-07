@@ -1,0 +1,60 @@
+$bg-color: #F9F9F9;
+$font: 'Lucida Grande', sans-serif;
+$focus-blue: #00ACFB;
+
+$tile-height: 180px;
+$tile-width: 290px;
+$tile-title-height: 36px;
+
+$tile-font-size: 13px;
+$tile-border-radius: 8px;
+$tile-box-shadow: 0 1px 3px #c1c1c1;
+$tile-border: 1px solid white;
+$tile-gutter-h: 20px;
+$tile-gutter-v: 40px;
+$tile-text-color: #5c5c5c;
+$tile-title-bg-color: #F2F2F2;
+$tile-title-hover-color: #333;
+$tile-title-hover-text-color: white;
+
+//1248
+$grid-max-width: ($tile-width + 2px) * 4 + $tile-gutter-h * 5;
+
+$search-height: 36px;
+$search-left-padding: 36px;
+
+@mixin bgimage($file) {
+  $url: "../img/#{$file}";
+  background-image: url($url);
+}
+
+@mixin listreset() {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+@import './styles/normalize';
+
+body {
+  font-family: $font;
+  background-color: $bg-color;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+.grid {
+  padding-left: $tile-gutter-h;
+  max-width: $grid-max-width;
+  margin: 0 auto;
+  text-align: center;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@import './components/Tile/Tile';
+@import './components/Search/Search';
+@import './components/Settings/Settings';
+@import './components/SearchMagic/SearchMagic';

@@ -1,8 +1,8 @@
-const React = require('react');
-const SearchMagic = require('components/SearchMagic/SearchMagic');
-const {connect} = require('react-redux');
-const actions = require('actions/index');
-const Platform = require('lib/platform');
+const React = require("react");
+const SearchMagic = require("components/SearchMagic/SearchMagic");
+const {connect} = require("react-redux");
+const actions = require("actions/index");
+const Platform = require("lib/platform");
 
 const Search = React.createClass({
   getInitialState: function () {
@@ -22,8 +22,8 @@ const Search = React.createClass({
     Platform.search.performSearch({
       engineName: options.engineName,
       searchString: options.searchString,
-      healthReportKey: '1',
-      searchPurpose: 'd'
+      healthReportKey: "1",
+      searchPurpose: "d"
     });
   },
   render: function () {

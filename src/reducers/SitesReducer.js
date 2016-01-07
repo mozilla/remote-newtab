@@ -1,6 +1,6 @@
-const c = require('lib/constants');
-const TileUtils = require('lib/TileUtils');
-const {updateState} = require('lib/utils');
+const c = require("lib/constants");
+const TileUtils = require("lib/TileUtils");
+const {updateState} = require("lib/utils");
 
 const initialState = {
   suggested: [],

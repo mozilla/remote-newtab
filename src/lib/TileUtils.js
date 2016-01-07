@@ -27,9 +27,9 @@ const TileUtils = {
    */
   compareLinks: function (aLink1, aLink2) {
     // The properties of link objects used to sort them.
-    const requiredProps = ['frecency', 'lastVisitDate', 'url'];
+    const requiredProps = ["frecency", "lastVisitDate", "url"];
     if (!requiredProps.every(prop => prop in aLink1 && prop in aLink2)) {
-      throw new Error('Comparable link missing required property');
+      throw new Error("Comparable link missing required property");
     }
     const result = aLink2.frecency - aLink1.frecency ||
                  aLink2.lastVisitDate - aLink1.lastVisitDate ||
@@ -40,7 +40,7 @@ const TileUtils = {
   formatHistoryTiles: function (sites) {
     return sites.map(site => {
       return {
-        title: new URL(site.url).host.replace('www.', ''),
+        title: new URL(site.url).host.replace("www.", ""),
         type: site.type,
         url: site.url,
         lastVisitDate: site.lastVisitDate,

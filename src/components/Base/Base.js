@@ -1,13 +1,13 @@
-const React = require('react');
-const {connect} = require('react-redux');
+const React = require("react");
+const {connect} = require("react-redux");
 
-const Platform = require('lib/platform');
-const TileUtils = require('lib/TileUtils');
-const actions = require('actions/index');
+const Platform = require("lib/platform");
+const TileUtils = require("lib/TileUtils");
+const actions = require("actions/index");
 
-const Tile = require('components/Tile/Tile');
-const Search = require('components/Search/Search');
-const Settings = require('components/Settings/Settings');
+const Tile = require("components/Tile/Tile");
+const Search = require("components/Search/Search");
+const Settings = require("components/Settings/Settings");
 
 const Base = React.createClass({
   componentWillMount: function () {

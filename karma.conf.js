@@ -1,23 +1,54 @@
-const webpack = require('./webpack.config');
+const webpack = require("./webpack.config");
+const path = require("path");
 
 module.exports = function (config) {
   config.set({
     singleRun: true,
-    browsers: ['FirefoxNightly'],
-    frameworks: ['mocha'],
-    reporters: ['mocha'],
+    browsers: ["FirefoxNightly"],
+    frameworks: ["mocha"],
+    reporters: ["mocha", "coverage", "coveralls"],
+    coverageReporter: {
+      dir: "logs/reports/coverage",
+      reporters: [
+        {
+          type: "lcov",
+          subdir: "lcov"
+        },
+        {
+          type: "html",
+          subdir: "html"
+        },
+        {
+          type: "text",
+          subdir: ".",
+          file: "text.txt"
+        },
+        {
+          type: "text-summary",
+          subdir: ".",
+          file: "text-summary.txt"
+        }
+      ]
+    },
+
     files: [
-      'tests/index.js'
+      "tests/index.js"
     ],
     preprocessors: {
-     'tests/**/*.js': ['webpack', 'sourcemap']
+      "tests/**/*.js": ["webpack", "sourcemap"]
     },
     webpack: {
-      devtool: 'inline-source-map',
+      devtool: "inline-source-map",
       resolve: webpack.resolve,
       module: {
-        loaders: webpack.module.loaders
-      }
+        loaders: webpack.module.loaders,
+        postLoaders: [{
+          test: /\.js$/,
+          loader: 'istanbul-instrumenter',
+          include: [path.join(__dirname, '/src')]
+        }]
+      },
+      plugins: webpack.plugins
     },
     webpackMiddleware: {
       noInfo: true

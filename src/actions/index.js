@@ -1,4 +1,4 @@
-const req = require.context('.', false, /Actions.js$/);
+const req = require.context(".", false, /Actions.js$/);
 const files = req.keys();
 
 // Looks for all actions in this folder

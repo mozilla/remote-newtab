@@ -2,20 +2,21 @@
 "use strict";
 
 // NOTE: To invalidate cached resources, change the version number below.
-const VERSION = '1';
-const CACHE_NAME = 'remote-newtab-v' + VERSION;
+const VERSION = "1";
+const CACHE_NAME = "remote-newtab-v" + VERSION;
 
-self.addEventListener('install', function (event) {
-  let resourcesToCache = ['./'];
+self.addEventListener("install", function (event) {
+  let resourcesToCache = ["./"];
 
   event.waitUntil(
     // Fetch the list of resources to cache.
-    fetch('./mainSiteURLs.json')
+    fetch("./mainSiteURLs.json")
       .then(function(response){
         return response.json();
       }).then(function(data) {
         resourcesToCache = resourcesToCache.concat(data);
         caches.open(CACHE_NAME).then(function (cache) {
+          console.log(resourcesToCache);
           return cache.addAll(resourcesToCache);
         })
       })
@@ -46,11 +47,11 @@ function networkFirst(evt) {
     // resolved the promise with cache.put() above.
     waitUntilResolve();
     // Final fallback if we are offline and cached content isn't available.
-    return response || new Response('Offline and content unavailable.');
+    return response || new Response("Offline and content unavailable.");
   }));
 }
 
-addEventListener('fetch', function(evt) {
+addEventListener("fetch", function(evt) {
   // TODO: Here we can skip any resources we don't want to cache.
   // let skip = false;
   // if (skip) {
@@ -64,7 +65,7 @@ addEventListener('fetch', function(evt) {
   networkFirst(evt);
 });
 
-self.addEventListener('activate', function (event) {
+self.addEventListener("activate", function (event) {
   // Claim the client that registered this service worker
   event.waitUntil(self.clients.claim());
 

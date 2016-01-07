@@ -1,9 +1,9 @@
-const React = require('react');
-const classnames = require('classnames');
+const React = require("react");
+const classnames = require("classnames");
 
 const Icon = React.createClass({
   render: function () {
-    return (<img className={classnames('icon', {padded: this.props.padded})}
+    return (<img className={classnames("icon", {padded: this.props.padded})}
       width={this.props.width}
       height={this.props.height}
       src={this.props.url}
@@ -32,7 +32,9 @@ const SearchMagic = React.createClass({
         <ul>
           {this.props.suggestions.map(suggestion => {
             return (<li key={suggestion}>
-              <a onClick={() => performSearch({engineName: currentEngine.name, searchString: suggestion})}>{suggestion}</a>
+              <a onClick={() => performSearch({
+                engineName: currentEngine.name, searchString: suggestion
+              })}>{suggestion}</a>
             </li>);
           })}
         </ul>

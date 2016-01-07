@@ -1,5 +1,5 @@
 $bg-color: #F9F9F9;
-$font: 'Lucida Grande', sans-serif;
+$font: "Lucida Grande", sans-serif;
 $focus-blue: #00ACFB;
 
 $tile-height: 180px;
@@ -34,7 +34,7 @@ $search-left-padding: 36px;
   list-style: none;
 }
 
-@import './styles/normalize';
+@import "./styles/normalize";
 
 body {
   font-family: $font;
@@ -54,7 +54,7 @@ body {
   display: none !important;
 }
 
-@import './components/Tile/Tile';
-@import './components/Search/Search';
-@import './components/Settings/Settings';
-@import './components/SearchMagic/SearchMagic';
+@import "./components/Tile/Tile";
+@import "./components/Search/Search";
+@import "./components/Settings/Settings";
+@import "./components/SearchMagic/SearchMagic";

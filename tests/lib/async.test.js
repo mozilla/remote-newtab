@@ -1,10 +1,9 @@
-const should = require('chai').should();
-const async = require('lib/async');
+const {expect} = require("chai");
+const async = require("lib/async");
 
 describe("async API", () => {
   it("should reject when invoked with no arguments.", () => {
     var test = async();
-    console.log(test.should);
     return test().should.be.rejected;
   });
 

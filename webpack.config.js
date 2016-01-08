@@ -27,7 +27,8 @@ module.exports = {
       "reducers": absolute("./src/reducers"),
       "actions": absolute("./src/actions"),
       "constants": absolute("./src/constants"),
-      "lib": absolute("./src/lib")
+      "lib": absolute("./src/lib"),
+      "tests": absolute("./tests")
     }
   },
   devtool: "eval",

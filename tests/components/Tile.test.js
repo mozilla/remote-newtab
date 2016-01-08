@@ -2,7 +2,7 @@ const assert = require("chai").assert;
 const Tile = require("components/Tile/Tile");
 const React = require("react");
 const ReactDOM = require("react-dom");
-
+const {shouldConsoleError} = require('tests/test-utils');
 const fakeProps = {
   title: "My tile",
   imageURI: "https://foo.com/foo.jpg",
@@ -57,13 +57,13 @@ describe("Tile", () => {
 
   describe("missing props", () => {
     it("should warn if title is missing", () => {
-      assert.throw(
+      shouldConsoleError(
         () => ReactDOM.render(<Tile url="foo.com" />, node),
         /Failed propType/
       );
     });
     it("should warn if url is missing", () => {
-      assert.throw(
+      shouldConsoleError(
         () => ReactDOM.render(<Tile title="foo" />, node),
         /Failed propType/
       );

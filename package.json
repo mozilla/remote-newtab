@@ -4,9 +4,9 @@
   "description": "Remote new tab (third version)",
   "main": "src/main.js",
   "scripts": {
-    "setup": "npm run clean && npm run build:static && npm run build:offline",
+    "setup": "npm run clean && npm run build:static",
     "start": "npm run setup && npm run watch:js & npm run watch:css",
-    "build": "npm run setup && npm run build:js && npm run build:css",
+    "build": "npm run setup && npm run build:js && npm run build:css && npm run build:offline",
     "clean": "rm -rf www && mkdir www",
     "build:static": "cp -r src/static/* www",
     "build:offline": "bin/generate-offline-files.js",

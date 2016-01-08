@@ -14,9 +14,6 @@ const Settings = React.createClass({
     this.props.setPrefs(result);
   },
   render: function () {
-    console.log("HELLO I AM RENDERING THE CUSTOMIZE PANEL=======================");
-    const request = new Request("./locale/strings.json");
-    console.log(request);
     return (<div className="settings">
       <div className="settings-toggle-container">
         <button className="settings-toggle" onClick={this.toggleMenu}>

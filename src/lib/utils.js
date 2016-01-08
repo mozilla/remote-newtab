@@ -16,12 +16,12 @@ module.exports = {
    * @return {boolean}                   Coerced value
    */
   parseBoolean(value) {
-    return typeof value === 'string' ? value === 'true' : !!value;
+    return typeof value === "string" ? value === "true" : !!value;
   },
 
   /**
    * For redux actions - simple "request" type action
-   * @param  {string} type  e.g. 'REQUEST_FOO'
+   * @param  {string} type  e.g. "REQUEST_FOO"
    * @return {object}       Action object
    */
   request(type) {
@@ -30,7 +30,7 @@ module.exports = {
 
   /**
    * For redux actions - simple "receive" type action
-   * @param  {string} type  e.g. 'RECEIVE_FOO'
+   * @param  {string} type  e.g. "RECEIVE_FOO"
    * @param  {object} data  Any data to be sent with the object
    * @return {object}       Action object
    */

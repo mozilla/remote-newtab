@@ -1,7 +1,7 @@
-const c = require('lib/constants');
-const {request, receive} = require('lib/utils');
-const Platform = require('lib/platform');
-const async = require('lib/async');
+const c = require("lib/constants");
+const {request, receive} = require("lib/utils");
+const Platform = require("lib/platform");
+const async = require("lib/async");
 
 module.exports = {
   getSiteThumbnail(url) {

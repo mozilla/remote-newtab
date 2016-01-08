@@ -1,6 +1,6 @@
-const c = require('lib/constants');
-const {receive} = require('lib/utils');
-const Platform = require('lib/platform');
+const c = require("lib/constants");
+const {receive} = require("lib/utils");
+const Platform = require("lib/platform");
 
 module.exports = {
   getPrefs() {

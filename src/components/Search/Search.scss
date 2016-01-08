@@ -49,6 +49,6 @@
     background-size: 20px;
     background-repeat: no-repeat;
     background-position: 8px center;
-    @include bgimage('magnifier.png');
+    @include bgimage("magnifier.png");
   }
 }

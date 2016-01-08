@@ -1,15 +1,13 @@
-// require('babel-polyfill');
-
-const registerServiceWorker = require('lib/registerServiceWorker');
+const registerServiceWorker = require("lib/registerServiceWorker");
 registerServiceWorker();
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const {combineReducers} = require('redux');
-const {Provider} = require('react-redux');
-const finalCreateStore = require('lib/finalCreateStore');
-const reducers = require('reducers/index');
-const Base = require('components/Base/Base');
+const React = require("react");
+const ReactDOM = require("react-dom");
+const {combineReducers} = require("redux");
+const {Provider} = require("react-redux");
+const finalCreateStore = require("lib/finalCreateStore");
+const reducers = require("reducers/index");
+const Base = require("components/Base/Base");
 
 const reducer = combineReducers(reducers);
 const store = finalCreateStore(reducer);
@@ -22,4 +20,4 @@ const Root = React.createClass({
   }
 });
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+ReactDOM.render(<Root />, document.getElementById("root"));

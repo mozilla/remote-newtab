@@ -3,7 +3,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
- * This is an approximate implementation of ES7's async-await pattern.
+ * This is an approximate implementation of ES7"s async-await pattern.
  * see: https://github.com/tc39/ecmascript-asyncawait
  *
  * It allows for simple creation of async function and "tasks".
@@ -28,60 +28,60 @@
  * myTask().then(doSomethingElse);
  *
  */
-const {warn} = require('lib/log');
+const {warn} = require("lib/log");
 
 function async(func, self) {
- return function asyncFunction() {
-   const args = Array.from(arguments);
-   return new Promise(function (resolve, reject) {
-     let gen;
+  return function asyncFunction() {
+    const args = Array.from(arguments);
+    return new Promise(function (resolve, reject) {
+      let gen;
 
-     function step(next) {
-       const value = next.value;
-       if (next.done) {
-         return resolve(value);
-       }
-       if (value instanceof Promise) {
-         return value.then(
-           result => step(gen.next(result)),
-           error => {
-             try {
-               step(gen.throw(error));
-             } catch (err) {
-               throw err;
-             }
-           }
-         ).catch((err) => {
-           warn('Unhandled error in async function.', err);
-           reject(err);
-         });
-       }
-       step(gen.next(value));
-     }
+      function step(next) {
+        const value = next.value;
+        if (next.done) {
+          return resolve(value);
+        }
+        if (value instanceof Promise) {
+          return value.then(
+            result => step(gen.next(result)),
+            error => {
+              try {
+                step(gen.throw(error));
+              } catch (err) {
+                throw err;
+              }
+            }
+          ).catch((err) => {
+            warn("Unhandled error in async function.", err);
+            reject(err);
+          });
+        }
+        step(gen.next(value));
+      }
 
-     if (typeof func !== 'function') {
-       reject(new TypeError('Expected a Function.'));
-     }
-     // not a generator, wrap it.
-     if (func.constructor.name !== 'GeneratorFunction') {
-       gen = (function*() {
-         return func.call(self, ...args);
-       }());
-     } else {
-       gen = func.call(self, ...args);
-     }
-     try {
-       step(gen.next());
-     } catch (err) {
-       warn('The generator threw immediately.', err);
-       reject(err);
-     }
-   });
- };
+      if (typeof func !== "function") {
+        reject(new TypeError("Expected a Function."));
+      }
+      // not a generator, wrap it.
+      if (func.constructor.name !== "GeneratorFunction") {
+        gen = (function*() {
+          return func.call(self, ...args);
+        }());
+      } else {
+        gen = func.call(self, ...args);
+      }
+      try {
+        step(gen.next());
+      } catch (err) {
+        warn("The generator threw immediately.", err);
+        reject(err);
+      }
+    });
+  };
 }
 
 async.task = function (func, self) {
- return async(func, self)();
+  return async(func, self)();
 };
 
 module.exports = async;

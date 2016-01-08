@@ -1,5 +1,5 @@
-const c = require('lib/constants');
-const {updateState} = require('lib/utils');
+const c = require("lib/constants");
+const {updateState} = require("lib/utils");
 
 const initialState = {
   isReady: false,

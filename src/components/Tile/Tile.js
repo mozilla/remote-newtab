@@ -1,11 +1,13 @@
-const React = require('react');
+const React = require("react");
 
 const Tile = React.createClass({
   render: function () {
     return (<a className="tile" href={this.props.url}>
       <div className="tile-img-container">
-        {this.props.imageURI && <div className="tile-img" style={{backgroundImage: `url(${this.props.imageURI})`}} />}
-        {this.props.enhancedImageURI && <div className="tile-img-rollover" style={{backgroundImage: `url(${this.props.enhancedImageURI})`}} />}
+        {this.props.imageURI && <div className="tile-img"
+          style={{backgroundImage: `url(${this.props.imageURI})`}} />}
+        {this.props.enhancedImageURI && <div className="tile-img-rollover"
+          style={{backgroundImage: `url(${this.props.enhancedImageURI})`}} />}
       </div>
       <div className="tile-title">
         {this.props.title}

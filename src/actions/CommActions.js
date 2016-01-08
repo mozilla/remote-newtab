@@ -1,8 +1,8 @@
-const c = require('lib/constants');
-const Comm = require('lib/comm');
-const {request, receive} = require('lib/utils');
+const c = require("lib/constants");
+const Comm = require("lib/comm");
+const {request, receive} = require("lib/utils");
 const relayEvents = new Map([
-  'NewTab:ContentSearchService'
+  "NewTab:ContentSearchService"
 ].map(event => [event, event]));
 
 // This triggers actions received from comm
@@ -10,9 +10,9 @@ const relayEvents = new Map([
 function commRelay(dispatch) {
   return function onMessage(event, data) {
     switch (event) {
-      case relayEvents.get('NewTab:ContentSearchService'):
+      case relayEvents.get("NewTab:ContentSearchService"):
         switch (data.name) {
-          case 'Suggestions':
+          case "Suggestions":
             return dispatch(receive(c.RECEIVE_SEARCH_SUGGESTIONS, {suggestions: data.suggestion.remote}));
           default:
             return null;
@@ -43,8 +43,8 @@ module.exports = {
   getSearchSuggestions(searchString) {
     return function next(dispatch) {
       dispatch(request(c.REQUEST_SEARCH_SUGGESTIONS));
-      Comm.dispatch('NewTab:GetSuggestions', {
-        engineName: 'Google',
+      Comm.dispatch("NewTab:GetSuggestions", {
+        engineName: "Google",
         searchString,
         remoteTimeout: undefined
       });

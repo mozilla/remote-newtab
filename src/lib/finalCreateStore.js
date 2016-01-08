@@ -1,11 +1,11 @@
-const {createStore, applyMiddleware, compose} = require('redux');
-const thunk = require('redux-thunk');
-const createLogger = require('redux-logger');
+const {createStore, applyMiddleware, compose} = require("redux");
+const thunk = require("redux-thunk");
+const createLogger = require("redux-logger");
 
 module.exports = function finalCreateStore(reducer) {
   // TODO: turn off for production based on config
   const loggerMiddleware = createLogger({
-    level: 'info',
+    level: "info",
     collapsed: true
   });
 

@@ -1,4 +1,4 @@
-const {FAKE_PREFS, FAKE_FRECENT, FAKE_ENGINES, FAKE_THUMBNAILS, EventEmitter} = require('lib/platform-placeholder');
+const {FAKE_PREFS, FAKE_FRECENT, FAKE_ENGINES, FAKE_THUMBNAILS, EventEmitter} = require("lib/platform-placeholder");
 
 class Prefs extends EventEmitter {
   getCurrent() {
@@ -26,25 +26,25 @@ class Search extends EventEmitter {
   getCurrentEngine() {
     return new Promise(resolve => resolve(FAKE_ENGINES.currentEngine));
   }
-  getSuggestions({searchString = '', engineName = 'Yahoo'} = {}) {
+  getSuggestions({searchString = "", engineName = "Yahoo"} = {}) {
     return new Promise(resolve => {
       resolve({
         engineName,
         searchString,
-        formHistory: [''],
+        formHistory: [""],
         remote: [
           searchString,
-          searchString + ' rules',
-          searchString + ' is cool',
-          searchString + ' sucks',
-          searchString + ' is ok'
+          searchString + " rules",
+          searchString + " is cool",
+          searchString + " sucks",
+          searchString + " is ok"
         ]
       });
     });
   }
-  performSearch({engineName = 'Google', searchString = '', healthReportKey = '1', searchPurpose = 'd'} = {}) {
+  performSearch({engineName = "Google", searchString = "", healthReportKey = "1", searchPurpose = "d"} = {}) {
     switch (engineName) {
-      case 'Google':
+      case "Google":
         window.location = `https://www.google.ca/search?q=${encodeURI(searchString)}`;
         break;
       default:

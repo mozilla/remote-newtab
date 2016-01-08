@@ -132,7 +132,7 @@ function assureResponse(response) {
 }
 /**
  * Validate the data against the canonical default object.
- * Invalid properties are console.log()'ed.
+ * Invalid properties are logged via console.log.
  *
  * @param  {Map} results results to be validated.
  * @param  {String} locale The corresponding locale.

@@ -1,4 +1,4 @@
-const req = require.context('.', true, /\.test.js$/);
+const req = require.context(".", true, /\.test.js$/);
 const files = req.keys();
 
 // Throw if we get console.error

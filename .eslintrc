@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "airbnb",
+  ],
+  "rules": {
+    "indent": 0,
+    "quotes": [2, "double"],
+    "semi": [2, "always"],
+    "func-names": 0,
+    "comma-dangle": [2, "never"],
+    "object-curly-spacing": [2, "never"],
+    "space-before-function-paren": [2, {"anonymous": "always", "named": "never"}],
+    "react/prop-types": 0,
+    "react/sort-comp": 0,
+    "react/no-multi-comp": 0,
+    "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+    "generator-star-spacing": [2, {"before": false, "after": true}]
+  },
+  "ecmaFeatures": {
+    "experimentalObjectRestSpread": true,
+    "generators": true
+  },
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "globals": {
+    "__CONFIG__": false
+  }
+}

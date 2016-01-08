@@ -1,10 +1,10 @@
 {
-  "preset": "google",
   "fileExtensions": [".js"],
   "esnext": true,
   "validateQuoteMarks": true,
   "maximumLineLength": 120,
   "excludeFiles": [
-    "node_modules/**"
+    "node_modules/**",
+    "src/lib/platform-placeholder.js"
   ]
 }

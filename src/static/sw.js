@@ -27,12 +27,12 @@ function networkFirst(evt) {
   // synchronously during the event dispatch.  In the future we should
   // be able to move the evt.waitUntil() down to directly where we
   // need it in the respondWith() async handling.
-  var waitUntilResolve;
+  let waitUntilResolve;
   evt.waitUntil(new Promise(function(resolve) {
     waitUntilResolve = resolve;
   }));
 
-  var cache;
+  let cache;
   evt.respondWith(caches.open(CACHE_NAME).then(function(c) {
     cache = c;
     return fetch(evt.request);

@@ -16,7 +16,6 @@ self.addEventListener('install', function (event) {
       }).then(function(data) {
         resourcesToCache = resourcesToCache.concat(data);
         caches.open(CACHE_NAME).then(function (cache) {
-          console.log(resourcesToCache);
           return cache.addAll(resourcesToCache);
         })
       })

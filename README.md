@@ -7,8 +7,8 @@ This is a remote implementation of the "new tab" page for Firefox. It can be run
 ### Web assets
 
 ```bash
-git clone https://github.com/mozilla/newtab.git
-cd newtab
+git clone https://github.com/mozilla/remote-newtab.git
+cd remote-newtab
 npm install && npm start
 ```
 

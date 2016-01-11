@@ -10,6 +10,41 @@
   color: $tile-text-color;
   font-size: $tile-font-size;
 
+  .control {
+    background-color: transparent;
+    background-size: 24px;
+    border: none;
+    height: 24px;
+    width: 24px;
+
+    position: absolute;
+    top: 4px;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 100ms ease-out;
+    cursor: pointer;
+  }
+
+  .tile-img-container:hover > .control {
+    opacity: 1;
+  }
+
+  .control-block:-moz-dir(ltr) {
+    right: 4px;
+  }
+
+  .control-block {
+    background-image: -moz-image-rect(url(../img/controls.svg), 0, 192, 32, 160);
+  }
+
+  .control-block:hover {
+    background-image: -moz-image-rect(url(../img/controls.svg), 0, 224, 32, 192);
+  }
+
+  .control-block:hover:active {
+    background-image: -moz-image-rect(url(../img/controls.svg), 0, 256, 32, 224);
+  }
+
   &.tile-placeholder {
     border: 2px dashed #c1c1c1;
     width: $tile-width;

@@ -6,7 +6,7 @@ module.exports = function (config) {
     singleRun: true,
     browsers: ["FirefoxNightly"],
     frameworks: ["mocha"],
-    reporters: ["mocha", "coverage", "coveralls"],
+    reporters: ["mocha", "coverage"],
     coverageReporter: {
       dir: "logs/reports/coverage",
       reporters: [
@@ -30,7 +30,6 @@ module.exports = function (config) {
         }
       ]
     },
-
     files: [
       "tests/index.js"
     ],

@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-   - "4.1"
+  - "4.1"
 
 before_install:
   - "export DISPLAY=:99.0"
@@ -13,6 +13,9 @@ before_script:
   - export FIREFOX_PATH=$TRAVIS_BUILD_DIR/firefox/firefox
   - export PATH=$FIREFOX_PATH:$PATH
   - firefox -v
+
+script:
+  - npm run test:travis
 
 after_script:
   - npm run test:codeclimate

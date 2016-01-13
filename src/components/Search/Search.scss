@@ -28,16 +28,19 @@
   .search-submit {
     font-size: 14px;
     height: 100%;
-    background: transparent linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1)) repeat scroll 0% 0% padding-box;
+    background: url("./img/search-arrow-go.svg#search-arrow-go") center center no-repeat, linear-gradient(hsla(0,0%,100%,.8), hsla(0,0%,100%,.1)) padding-box;
     border: 1px solid;
     border-color: rgba(23, 51, 78, 0.15) rgba(23, 51, 78, 0.17) rgba(23, 51, 78, 0.2);
     padding: 0 15px;
     border-radius: 0 3px 3px 0;
+    width: 50px;
+    &:hover {
+      background: url("chrome://browser/skin/search-arrow-go.svg#search-arrow-go-inverted") center center no-repeat, linear-gradient(#4cb1ff, #1793e5);
+    }
   }
 
   .search-input:focus + .search-submit {
-    background: linear-gradient(#4cb1ff, #1793e5);
-    color: white;
+    background: url("chrome://browser/skin/search-arrow-go.svg#search-arrow-go-inverted") center center no-repeat, linear-gradient(#4cb1ff, #1793e5);
   }
 
   .search-icon {
@@ -46,9 +49,9 @@
     left: 0;
     height: 100%;
     width: $search-left-padding;
-    background-size: 20px;
+    background-size: 25px;
     background-repeat: no-repeat;
-    background-position: 8px center;
-    @include bgimage("magnifier.png");
+    background-position: 5px center;
+    @include bgimage("magnifier.svg");
   }
 }

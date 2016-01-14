@@ -1,0 +1,26 @@
+
+scripts:
+  setup: "npm-run-all setup:*"
+  # setup:clean: Removes the www directory
+  setup:clean: "rm -rf www && mkdir www"
+  # setup:html: Generates an html file with locale info
+  setup:html: "node ./bin/generate-html.js > www/index.html"
+  setup:intl: "node ./bin/generate-locale-data > www/locale-data.js"
+  setup:static: "cp -r src/static/* www"
+  setup:fake: "touch www/main.js www/main.css"
+
+  setup:offline: "bin/generate-offline-files.js"
+  build: "npm run setup && npm-run-all build:*"
+  build:js: "NODE_ENV=production webpack -p --optimize-dedupe"
+  build:css: "node-sass src/main.scss -o www"
+
+  start: "npm run setup && npm-run-all --parallel watch:*"
+  watch:css: "npm run build:css && npm run build:css -- --source-map www/main.css.map -w -r"
+  watch:js: "webpack-dev-server --hot --port=1944 --content-base www"
+
+  test:travis: "karma start --reporters mocha,coverage,coveralls && npm run test:mocha"
+  test: "karma start && npm run test:mocha"
+  test:mocha: "mocha ./tests-node -R spec"
+  test:watch: "karma start --no-single-run --browsers ChromeCanary"
+  test:codeclimate: "codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info"
+  posttest: "awk 'FNR==1{print \"\"}1' ./logs/reports/coverage/text-summary.txt ./logs/reports/coverage/text.txt"

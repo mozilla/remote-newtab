@@ -4,7 +4,7 @@
   "description": "Remote new tab (third version)",
   "main": "src/main.js",
   "scripts": {
-    "__": "# NOTE: THESE ARE COMPILED!!! EDIT yamscripts.yml instead!!!",
+    "__": "# NOTE: THESE SCRIPTS ARE COMPILED!!! EDIT yamscripts.yml instead!!!",
     "setup": "npm-run-all setup:*",
     "setup:clean": "rm -rf www && mkdir www",
     "setup:html": "node ./bin/generate-html.js > www/index.html",
@@ -18,12 +18,12 @@
     "start": "npm run setup && npm-run-all --parallel watch:*",
     "watch:css": "npm run build:css && npm run build:css -- --source-map www/main.css.map -w -r",
     "watch:js": "webpack-dev-server --hot --port=1944 --content-base www",
-    "test:travis": "karma start --reporters mocha,coverage,coveralls && npm run test:mocha",
     "test": "karma start && npm run test:mocha",
     "test:mocha": "mocha ./tests-node -R spec",
     "test:watch": "karma start --no-single-run --browsers ChromeCanary",
-    "test:codeclimate": "codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info",
     "posttest": "awk 'FNR==1{print \"\"}1' ./logs/reports/coverage/text-summary.txt ./logs/reports/coverage/text.txt",
+    "test:travis": "karma start --reporters mocha,coverage,coveralls && npm run test:mocha",
+    "test:codeclimate": "codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info",
     "yamscripts": "yamscripts"
   },
   "author": "k88hudson",

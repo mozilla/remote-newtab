@@ -1,26 +1,36 @@
 
 scripts:
+  # setup: Clean the build directories, generate html,
+  # copy static files, and service worker manifest
   setup: "npm-run-all setup:*"
-  # setup:clean: Removes the www directory
   setup:clean: "rm -rf www && mkdir www"
-  # setup:html: Generates an html file with locale info
   setup:html: "node ./bin/generate-html.js > www/index.html"
   setup:intl: "node ./bin/generate-locale-data > www/locale-data.js"
   setup:static: "cp -r src/static/* www"
+  # This is a hack so that setup:offline will work
   setup:fake: "touch www/main.js www/main.css"
-
+  # This is for service worker stuff
   setup:offline: "bin/generate-offline-files.js"
+
+  # build: Build production assets
   build: "npm run setup && npm-run-all build:*"
   build:js: "NODE_ENV=production webpack -p --optimize-dedupe"
   build:css: "node-sass src/main.scss -o www"
 
+  # start: Start development server at port 1944
   start: "npm run setup && npm-run-all --parallel watch:*"
   watch:css: "npm run build:css && npm run build:css -- --source-map www/main.css.map -w -r"
   watch:js: "webpack-dev-server --hot --port=1944 --content-base www"
 
-  test:travis: "karma start --reporters mocha,coverage,coveralls && npm run test:mocha"
+  # test: Runs tests a single time
   test: "karma start && npm run test:mocha"
   test:mocha: "mocha ./tests-node -R spec"
+  # test:watch: Runs tests continuously
   test:watch: "karma start --no-single-run --browsers ChromeCanary"
-  test:codeclimate: "codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info"
+  # Outputs coverage info to console
   posttest: "awk 'FNR==1{print \"\"}1' ./logs/reports/coverage/text-summary.txt ./logs/reports/coverage/text.txt"
+
+  # This is a travis-specific task that will output to coveralls
+  test:travis: "karma start --reporters mocha,coverage,coveralls && npm run test:mocha"
+  # For code climate
+  test:codeclimate: "codeclimate-test-reporter < ./logs/reports/coverage/lcov/lcov.info"

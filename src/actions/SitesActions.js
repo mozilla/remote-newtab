@@ -12,10 +12,10 @@ module.exports = {
     };
   },
 
-  getSuggestedDirectory() {
+  getSuggestedDirectory(locale, channel = "nightly") {
     return function next(dispatch) {
       dispatch(request(c.REQUEST_SUGGESTED_DIRECTORY));
-      return fetch(c.SUGGESTED_TILES_URL)
+      return fetch(`https://tiles.services.mozilla.com/v3/links/fetch/${locale}/${channel}`)
         .then(response => response.json())
         .then(response => dispatch(receive(c.RECEIVE_SUGGESTED_DIRECTORY, response)));
     };

@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 "use strict";
 const path = require("path");
 const fs = require("fs");
@@ -53,7 +54,16 @@ function generateFile(locale) {
   const baseLocale = locale.split("-")[0];
   const localeData = readLocaleDataFile(locale) || readLocaleDataFile(baseLocale) || defaultLocaleData;
   const messages = getMessages(locale) || getMessages(baseLocale) || defaultMessages;
-  return template({locale, messages, localeData});
+  return {
+    fileString: template({locale, messages, localeData}),
+    messages
+  };
 }
 
-process.stdout.write(generateFile(DEFAULT_LOCALE));
+module.exports = generateFile;
+
+if (require.main === module)  {
+  // called from command line
+  const args = require("minimist")(process.argv.slice(2), {alias: {locale: 'l'}});
+  process.stdout.write(generateFile(args.locale).fileString);
+}

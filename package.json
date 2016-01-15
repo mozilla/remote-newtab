@@ -11,15 +11,13 @@
     "setup:static": "cp -r src/static/* www",
     "setup:fake": "touch www/main.js www/main.css",
     "setup:offline": "bin/generate-offline-files.js",
-
     "build": "npm run setup && npm-run-all build:*",
     "build:js": "NODE_ENV=production webpack -p --optimize-dedupe",
     "build:css": "node-sass src/main.scss -o www",
-
+    "postbuild": "node ./bin/generate-directories --static www -o build",
     "start": "npm run setup && npm-run-all --parallel watch:*",
     "watch:css": "npm run build:css && npm run build:css -- --source-map www/main.css.map -w -r",
     "watch:js": "webpack-dev-server --hot --port=1944 --content-base www",
-
     "test:travis": "karma start --reporters mocha,coverage,coveralls && npm run test:mocha",
     "test": "karma start && npm run test:mocha",
     "test:mocha": "mocha ./tests-node -R spec",
@@ -50,6 +48,7 @@
     "eslint-loader": "^1.1.1",
     "eslint-plugin-react": "^3.10.0",
     "fs-extra": "^0.26.2",
+    "glob": "^5.0.14",
     "handlebars": "^4.0.4",
     "html2js": "^0.2.0",
     "inject-loader": "^2.0.1",
@@ -72,6 +71,7 @@
     "karma-sourcemap-loader": "^0.3.6",
     "karma-webpack": "^1.7.0",
     "marcosc-async": "^1.0.2",
+    "minimist": "^1.2.0",
     "mocha": "^2.3.4",
     "mozilla-download": "^1.1.1",
     "nock": "^3.5.0",

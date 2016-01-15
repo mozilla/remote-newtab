@@ -6,5 +6,6 @@ module.exports = {
   Sites: require("reducers/SitesReducer"),
   Prefs: require("reducers/PrefsReducer"),
   // TODO: remove when we get rid of all comm stuff
-  Comm: require("reducers/CommReducer")
+  Comm: require("reducers/CommReducer"),
+  Init: require('reducers/InitReducer')
 };

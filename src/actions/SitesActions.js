@@ -28,5 +28,9 @@ module.exports = {
       sites.forEach(site => dispatch(this.getSiteThumbnail(site.url)));
       dispatch(receive(c.RECEIVE_FRECENT, {sites}));
     }, this);
+  },
+
+  removeSite(url) {
+    return receive(c.RECEIVE_REMOVE_SITE, {url});
   }
 };

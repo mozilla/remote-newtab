@@ -15,6 +15,7 @@ const Base = React.createClass({
   componentWillMount: function () {
     // this.props.dispatch(actions.getPrefs());
     this.props.dispatch(actions.getSuggestedDirectory(this.props.intl.locale));
+    this.props.dispatch(actions.initUserDatabase());
     this.props.dispatch(actions.getCurrentEngine());
     this.props.dispatch(actions.getVisibleEngines());
     // this.props.dispatch(actions.getFrecentSites());

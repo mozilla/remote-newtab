@@ -5,6 +5,11 @@
     right: 20px;
     z-index: 1;
     text-align: right;
+    &:-moz-dir(rtl) {
+      right: auto;
+      text-align: left;
+      left: 20px;
+    }
   }
   .settings-toggle {
     background: none;
@@ -76,6 +81,19 @@
         &:last-child {
           border-bottom: none;
         }
+      }
+    }
+    &:-moz-dir(rtl) {
+      &::before {
+        right: auto;
+        left: 10px;
+      }
+      &::after {
+        right: auto;
+        left: 10px;
+      }
+      &.active {
+        text-align: right;
       }
     }
   }

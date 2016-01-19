@@ -5,14 +5,15 @@ const defaults = {
   title: "New Tab",
   cssPath: "./main.css",
   jsPath: "./main.js",
-  localeDataPath: "./locale-data.js"
+  localeDataPath: "./locale-data.js",
+  localeDir: "ltr"
 };
 
 function template(rawOptions) {
   const options = Object.assign({}, defaults, rawOptions || {});
   return `
 <!DOCTYPE html>
-<html lang="${options.locale}">
+<html dir="${options.localeDir}" lang="${options.locale}">
 <head>
   <meta charset="utf-8">
    <meta name="viewport" content="width=device-width user-scalable=no" />

@@ -1,6 +1,6 @@
 const React = require("react");
 const classnames = require("classnames");
-const {FormattedMessage} = require("react-intl");
+const {FormattedMessage, injectIntl} = require("react-intl");
 
 const Settings = React.createClass({
   getInitialState: function () {
@@ -16,7 +16,7 @@ const Settings = React.createClass({
   },
   render: function () {
     return (<div className="settings">
-      <div className="settings-toggle-container">
+      <div dir={this.props.intl.formatMessage({id: "locale-dir"})} className="settings-toggle-container">
         <button className="settings-toggle"
           onClick={this.toggleMenu}>
           <img src="./img/icon-gear.svg" />
@@ -60,4 +60,4 @@ Settings.propTypes = {
   setPrefs: React.PropTypes.func.isRequired
 };
 
-module.exports = Settings;
+module.exports = injectIntl(Settings);

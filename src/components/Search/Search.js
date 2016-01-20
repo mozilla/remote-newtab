@@ -39,7 +39,9 @@ const Search = React.createClass({
         <button onClick={e => {
           e.preventDefault();
           this.performSearch({engineName: currentEngine.name, searchString});
-        }} className="search-submit"></button>
+        }} className="search-submit">
+         <span className="sr-only" >Search</span>
+        </button>
         <SearchMagic
           show={searchString && this.state.focus}
           performSearch={this.performSearch}

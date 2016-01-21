@@ -1,0 +1,75 @@
+.undo {
+  transition: opacity 100ms ease-out;
+  -moz-box-align: center;
+  -moz-box-pack: center;
+  display: -moz-box;
+  left: 6px;
+  position: absolute;
+  top: 6px;
+  z-index: 1;
+  padding: 4px 3px;
+  border: 1px solid;
+  border-color: rgba(8,22,37,.12) rgba(8,22,37,.14) rgba(8,22,37,.16);
+  background-color: rgba(255,255,255,.4);
+  color: #525e69;
+  font-size: 11px;
+
+  #undo-label {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .undo-button {
+    -moz-appearance: none;
+    cursor: pointer;
+    padding: 0;
+    margin: 0 4px;
+    border: 0;
+    background: transparent;
+    text-decoration: none;
+    min-width: 0;
+    color: rgb(20,79,174);
+  }
+
+  .undo-button:hover {
+    text-decoration: underline;
+  }
+
+  .undo-button:-moz-focusring {
+    outline: 1px dotted;
+  }
+
+  #undo-close-button:-moz-dir(rtl) {
+    float:left;
+  }
+
+  #undo-close-button {
+    -moz-appearance: none;
+    padding: 0;
+    border: none;
+    height: 16px;
+    width: 16px;
+    float: right;
+    right: 0;
+    background-image: -moz-image-rect(url(../img/close.png), 0, 16, 16, 0);
+    background-color: transparent;
+  }
+
+  #undo-close-button:hover {
+    background-image: -moz-image-rect(url(../img/close.png), 0, 32, 16, 16);
+  }
+
+  #undo-close-button:hover:active {
+    background-image: -moz-image-rect(url(../img/close.png), 0, 48, 16, 32);
+  }
+}
+
+.undo[data-undo-disabled="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.undo:-moz-dir(rtl) {
+  left: auto;
+  right: 6px;
+}

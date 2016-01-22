@@ -1,5 +1,7 @@
-const c = require('lib/constants');
-const {updateState} = require('lib/utils');
+/* jshint node:true, esnext:true */
+
+const c = require("lib/constants");
+const {updateState} = require("lib/utils");
 
 const initialState = {
   isInitialized: false

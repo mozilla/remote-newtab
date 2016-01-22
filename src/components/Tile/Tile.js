@@ -1,6 +1,5 @@
 const React = require("react");
-const gBlockedLinks = require('lib/blockedLinks');
-const async = require("lib/async");
+const gBlockedLinks = require("lib/blockedLinks");
 const {connect} = require("react-redux");
 const actions = require("actions/index");
 
@@ -9,7 +8,7 @@ const Tile = React.createClass({
    * Blocks the site (removes it from the grid) and calls the given callback
    * when done.
    */
-  block: function(e) {
+  block: function (e) {
     e.preventDefault();
     if (!this.isBlocked()) {
       gBlockedLinks.block(this.props.url);
@@ -24,7 +23,7 @@ const Tile = React.createClass({
    *
    * @return {Boolean} Whether this site is blocked.
    */
-  isBlocked: function() {
+  isBlocked: function () {
     return gBlockedLinks.isBlocked(this.props.url);
   },
 

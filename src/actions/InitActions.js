@@ -1,10 +1,10 @@
-const c = require('lib/constants');
-const {request, receive} = require('lib/utils');
-const gUserDatabase = require('lib/userDatabase');
-const gBlockedLinks = require('lib/blockedLinks');
-const async = require('lib/async');
+/* jshint node:true, esnext:true */
 
-const {log} = require('lib/log');
+const c = require("lib/constants");
+const {request, receive} = require("lib/utils");
+const gUserDatabase = require("lib/userDatabase");
+const gBlockedLinks = require("lib/blockedLinks");
+const async = require("lib/async");
 
 module.exports = {
   initUserDatabase() {
@@ -14,5 +14,5 @@ module.exports = {
       yield gBlockedLinks.init(gUserDatabase);
       dispatch(receive(c.REQUEST_INIT_USER_DATABASE_COMPLETE));
     }, this);
-  },
+  }
 };

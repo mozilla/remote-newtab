@@ -1,3 +1,5 @@
+/* jshint node:true, esnext:true */
+
 const c = require("lib/constants");
 const {receive} = require("lib/utils");
 
@@ -7,5 +9,5 @@ module.exports = {
       visible: isVisible,
       blockedURL: blockedURL
     });
-  },
+  }
 };

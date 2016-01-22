@@ -1,11 +1,10 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* globals gUserDatabase, async */
-"use strict";
+/* jshint node:true, esnext:true */
 
 const async = require("lib/async");
-const gUserDatabase = require('lib/userDatabase');
+const gUserDatabase = require("lib/userDatabase");
 
 /**
  * Singleton that keeps track of all blocked links in the grid.
@@ -20,8 +19,8 @@ const gBlockedLinks = {
    * Load the blocked links from gUserDatabase and cache them.
    */
   init: async(function*() {
-    var result = yield gUserDatabase.load("prefs", "blockedLinks");
-    var blockedLinks = JSON.parse(result);
+    const result = yield gUserDatabase.load("prefs", "blockedLinks");
+    const blockedLinks = JSON.parse(result);
     if (blockedLinks && blockedLinks.length) {
       gBlockedLinks._links.clear();
       blockedLinks.forEach(item => gBlockedLinks._links.add(item));
@@ -45,7 +44,7 @@ const gBlockedLinks = {
    * @param {String} aURL The link to unblock.
    */
   unblock(aURL) {
-    var isBlocked = this.isBlocked(aURL);
+    const isBlocked = this.isBlocked(aURL);
     if (isBlocked) {
       this._links.delete(aURL);
       return this.save();
@@ -84,6 +83,6 @@ const gBlockedLinks = {
   reset() {
     gBlockedLinks._links.clear();
     return gBlockedLinks.save();
-  },
+  }
 };
 module.exports = gBlockedLinks;

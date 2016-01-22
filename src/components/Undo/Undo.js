@@ -1,7 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const actions = require("actions/index");
-const gBlockedLinks = require('lib/blockedLinks');
+const gBlockedLinks = require("lib/blockedLinks");
 
 const Undo = React.createClass({
   /**
@@ -39,7 +39,8 @@ const Undo = React.createClass({
       <label id="undo-label">Thumbnail removed.</label>
       <button id="undo-button" className="undo-button" onClick={e => this.undo(e)}>Undo.</button>
       <button id="restore-button" className="undo-button" onClick={e => this.undoAll(e)}>Restore All.</button>
-      <div id="undo-close-button" className="close-icon tabbable" data-tooltiptext="CLOSE" onClick={e => this.hide(e)}></div>
+      <div id="undo-close-button" className="close-icon tabbable"
+        data-tooltiptext="CLOSE" onClick={e => this.hide(e)}></div>
     </div>);
   }
 });

@@ -1,4 +1,4 @@
-const gBlockedLinks = require('lib/blockedLinks');
+const gBlockedLinks = require("lib/blockedLinks");
 
 const TileUtils = {
   DIRECTORY_FRECENCY: 1000,

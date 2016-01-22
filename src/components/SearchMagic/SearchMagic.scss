@@ -43,7 +43,8 @@
       li a {
         display: block;
         padding: 5px 5px 5px 20px;
-        &:hover {
+        &:hover,
+        &.active {
           background: $magic-blue;
           color: white;
         }
@@ -57,7 +58,8 @@
       li {
         display: inline-block;
         padding: 5px 0;
-        &:hover {
+        &:hover,
+        &.active {
           background: $magic-blue;
           color: white;
           a {border-color: transparent;}
@@ -81,7 +83,8 @@
       text-align: center;
       width: 100%;
       display: block;
-      &:hover {
+      &:hover,
+      &.active {
         background: darken($magic-grey, 5%);
       }
     }

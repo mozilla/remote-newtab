@@ -24,16 +24,23 @@ const SearchMagic = React.createClass({
     const currentEngine = this.props.currentEngine;
     const performSearch = this.props.performSearch;
     const currentIcon = currentEngine.icons[0] || {};
-    return (<div className="search-magic" hidden={!this.props.show}>
+    let suggestionsIdIndex = 0;
+    let enginesIdIndex = 0;
+    return (<div id="search-magic-container" className="search-magic" role="presentation" hidden={!this.props.show}>
       <section className="search-magic-title" hidden={!this.props.suggestions.length}>
         <Icon padded {...currentIcon} /> {currentEngine.placeholder}
       </section>
       <section className="search-magic-suggestions" hidden={!this.props.suggestions.length}>
-        <ul>
+        <ul role="listbox">
           {this.props.suggestions.map(suggestion => {
-            return (<li key={suggestion}>
-              <a onClick={() => performSearch({
-                engineName: currentEngine.name, searchString: suggestion
+            const active = (suggestion === this.props.activeSuggestion);
+            const activeEngine = this.props.activeEngine || this.props.currentEngine;
+            return (<li key={suggestion} role="presentation">
+              <a id={"search-magic-suggestions-" + suggestionsIdIndex++ }
+                 className={active ? "active" : ""} role="option"
+                 aria-selected={active}
+                 onClick={() => performSearch({
+                  engineName: activeEngine.name, searchString: suggestion
               })}>{suggestion}</a>
             </li>);
           })}
@@ -42,21 +49,26 @@ const SearchMagic = React.createClass({
       <section className="search-magic-title">
         <span>Search for <strong>{this.props.searchString}</strong> with:</span>
       </section>
-      <section className="search-magic-other-search-partners">
+      <section className="search-magic-other-search-partners" role="group">
         <ul>
           {this.props.engines.map(option => {
             const icon = option.icons[0];
-            return (<li key={option.name}>
-              <a onClick={() => performSearch({engineName: option.name, searchString: this.props.searchString})}>
+            const active = this.props.activeEngine && (this.props.activeEngine.name === option.name);
+            return (<li key={option.name} className={active ? "active" : ""}>
+              <a id={"search-magic-other-search-partners-" + enginesIdIndex++ } aria-selected={active}
+                onClick={() => performSearch({engineName: option.name, searchString: this.props.searchString})}>
               <Icon {...icon} alt={option.name} /></a>
             </li>);
           })}
         </ul>
       </section>
       <section className="search-magic-settings">
-        <button onClick={(e) => {
-          e.preventDefault();
-          this.props.manageEngines();
+        <button id="search-magic-settings-button"
+          className={this.props.settingsButtonIsActive ? "active" : ""}
+          aria-selected={this.props.settingsButtonIsActive}
+          onClick={(e) => {
+            e.preventDefault();
+            this.props.manageEngines();
         }}>
           Change Search Settings
         </button>
@@ -72,6 +84,9 @@ const EngineShape = React.PropTypes.shape({
 
 SearchMagic.propTypes = {
   currentEngine: EngineShape.isRequired,
+  activeEngine: EngineShape,
+  activeSuggestion: React.PropTypes.string,
+  settingsButtonIsActive: React.PropTypes.bool,
   suggestions: React.PropTypes.arrayOf(React.PropTypes.string).isRequired,
   engines: React.PropTypes.arrayOf(EngineShape).isRequired,
   searchString: React.PropTypes.string,

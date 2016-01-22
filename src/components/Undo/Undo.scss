@@ -1,5 +1,4 @@
 .undo {
-  transition: opacity 100ms ease-out;
   -moz-box-align: center;
   -moz-box-pack: center;
   display: -moz-box;
@@ -62,11 +61,6 @@
   #undo-close-button:hover:active {
     background-image: -moz-image-rect(url(../img/close.png), 0, 48, 16, 32);
   }
-}
-
-.undo[data-undo-disabled="true"] {
-  opacity: 0;
-  pointer-events: none;
 }
 
 .undo:-moz-dir(rtl) {

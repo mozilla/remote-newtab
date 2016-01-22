@@ -42,7 +42,7 @@ const Base = React.createClass({
       blankTiles.push(<div className="tile tile-placeholder" />);
     }
     return (<div>
-      <Undo />
+      <Undo {...this.props.Undo} />
       <Search foo={10} />
       <div className="grid" hidden={!prefs.enabled}>
         {tiles.map((tile, index) => <Tile key={index} {...tile} />)}

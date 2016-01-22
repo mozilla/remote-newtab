@@ -30,7 +30,7 @@ module.exports = {
     }, this);
   },
 
-  removeSite(url) {
-    return receive(c.RECEIVE_REMOVE_SITE, {url});
+  updateSites() {
+    return receive(c.RECEIVE_UPDATE_SITES);
   }
 };

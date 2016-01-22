@@ -12,9 +12,9 @@ const Tile = React.createClass({
   block: function(e) {
     e.preventDefault();
     if (!this.isBlocked()) {
-      //gUndoDialog.show(this);
       gBlockedLinks.block(this.props.url);
-      this.props.dispatch(actions.removeSite(this.props.url));
+      this.props.dispatch(actions.setUndoDialogVisibility(true, this.props.url));
+      this.props.dispatch(actions.updateSites());
     }
   },
 

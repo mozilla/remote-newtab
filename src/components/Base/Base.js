@@ -1,6 +1,7 @@
 const React = require("react");
 const {connect} = require("react-redux");
 const {injectIntl} = require("react-intl");
+const {MAX_TILES} = require("lib/constants");
 
 const Platform = require("lib/platform");
 const TileUtils = require("lib/TileUtils");
@@ -34,11 +35,15 @@ const Base = React.createClass({
     const {history, directory} = this.props.Sites;
     let tiles = history;
     if (prefs.showSuggested) tiles = TileUtils.getMergedLinks([history, directory]);
-
+    const blankTiles = [];
+    for (let i = 0; i < (MAX_TILES - tiles.length); i++) {
+      blankTiles.push(<div className="tile tile-placeholder" />);
+    }
     return (<div>
       <Search foo={10} />
       <div className="grid" hidden={!prefs.enabled}>
         {tiles.map((tile, index) => <Tile key={index} {...tile} />)}
+        {blankTiles}
       </div>
       <Settings {...prefs} setPrefs={p => Platform.prefs.set(p)} />
     </div>);

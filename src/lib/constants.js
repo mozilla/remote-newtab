@@ -1,4 +1,6 @@
-const constants = {};
+const constants = {
+  MAX_TILES: 15
+};
 
 // Add action names
 [

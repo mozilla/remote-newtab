@@ -2,9 +2,11 @@ $bg-color: #F9F9F9;
 $font: "Lucida Grande", sans-serif;
 $focus-blue: #00ACFB;
 
-$tile-height: 180px;
-$tile-width: 290px;
+$tile-img-width: 290px;
+$tile-img-height: 180px;
 $tile-title-height: 36px;
+$tile-width: $tile-img-width + 2px;
+$tile-height: $tile-img-height + $tile-title-height + 2px;
 
 $tile-font-size: 13px;
 $tile-border-radius: 8px;
@@ -17,11 +19,12 @@ $tile-title-bg-color: #F2F2F2;
 $tile-title-hover-color: #333;
 $tile-title-hover-text-color: white;
 
-//1248
-$grid-max-width: ($tile-width + 2px) * 4 + $tile-gutter-h * 5;
+// 5 tiles
+$grid-max-width: $tile-width * 5 + $tile-gutter-h * 6;
 
 $search-height: 36px;
 $search-left-padding: 36px;
+$search-height-offset: $search-height + $tile-gutter-v * 2;
 
 @mixin bgimage($file) {
   $url: "./img/#{$file}";
@@ -36,11 +39,21 @@ $search-left-padding: 36px;
 
 @import "./styles/normalize";
 
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
 body {
   font-family: $font;
   background-color: $bg-color;
   font-size: 13px;
-  overflow: hidden;
+  @media (min-height: $search-height-offset + $tile-height + $tile-gutter-v * 2) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .grid {

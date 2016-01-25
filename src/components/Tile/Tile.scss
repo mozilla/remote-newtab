@@ -10,9 +10,16 @@
   color: $tile-text-color;
   font-size: $tile-font-size;
 
-  .tile-img-container {
+  &.tile-placeholder {
+    border: 2px dashed #c1c1c1;
     width: $tile-width;
     height: $tile-height;
+    box-shadow: none;
+  }
+
+  .tile-img-container {
+    width: $tile-img-width;
+    height: $tile-img-height;
     position: relative;
     overflow: hidden;
   }
@@ -55,10 +62,11 @@
 
   // the +2px is for a border
   @function totalWidth($n) {
-    @return ($tile-width + 2px) * $n + $tile-gutter-h * ($n - 1)
+    $grid-container-padding: $tile-gutter-h;
+    @return $tile-width * $n + ($tile-gutter-h * $n) + $grid-container-padding;
   }
   @function totalHeight($n) {
-    @return $search-height-offset + ($tile-height + $tile-title-height + 2px) * $n + $tile-gutter-v * $n;
+    @return $search-height-offset + $tile-height * $n + $tile-gutter-v * $n;
   }
 
   @mixin displayN($n) {
@@ -79,6 +87,7 @@
 
   @media (min-width: totalWidth(2)) {
     @include displayN(2);
+    @include heightQuery(1, 2)
     @include heightQuery(2, 4);
     @include heightQuery(3, 6);
   }
@@ -92,6 +101,9 @@
     @include heightQuery(2, 8);
     @include heightQuery(3, 12);
   }
+  @media (min-width: totalWidth(5)) {
+    @include displayN(5);
+    @include heightQuery(2, 10);
+    @include heightQuery(3, 15);
+  }
 }
-
-

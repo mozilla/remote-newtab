@@ -25,11 +25,6 @@
       outline: none;
       border-color: $focus-blue;
     }
-    &:-moz-dir(rtl) {
-      border: 1px solid;
-      border-color: rgba(23, 51, 78, 0.15) rgba(23, 51, 78, 0.17) rgba(23, 51, 78, 0.2);
-      border-left: none;
-    }
   }
 
   .search-submit {
@@ -43,9 +38,6 @@
     width: 50px;
     &:hover {
       background: url("chrome://browser/skin/search-arrow-go.svg#search-arrow-go-inverted") center center no-repeat, linear-gradient(#4cb1ff, #1793e5);
-    }
-    &:-moz-dir(rtl) {
-      border-radius: 2px 0 0 2px;
     }
   }
 
@@ -63,8 +55,5 @@
     background-repeat: no-repeat;
     background-position: 5px center;
     @include bgimage("magnifier.svg");
-    &:-moz-dir(rtl) {
-      right: 0;
-    }
   }
 }

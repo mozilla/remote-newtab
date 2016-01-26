@@ -10,6 +10,9 @@ const defaults = {
 };
 
 function template(rawOptions) {
+  if (defaults.localeDir === "rtl") {
+    defaults.cssPath = "./main-rtl.css";
+  }
   const options = Object.assign({}, defaults, rawOptions || {});
   return `
 <!DOCTYPE html>

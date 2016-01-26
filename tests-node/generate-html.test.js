@@ -14,11 +14,14 @@ function execute(args) {
 describe("generateHTML", () => {
   it("should generate some html", () => {
     assert.ok(generateHTML());
-    assert.include(generateHTML(), `<html lang="en-US">`);
+    assert.include(generateHTML(), `<html dir="ltr" lang="en-US">`);
     assert.include(generateHTML(), `<title>New Tab</title>`);
   });
   it("should render locale", () => {
-    assert.include(generateHTML({locale: "es-ES"}), `<html lang="es-ES">`);
+    assert.include(generateHTML({locale: "es-ES"}), `<html dir="ltr" lang="es-ES">`);
+  });
+  it("should render page direction", () => {
+    assert.include(generateHTML({localeDir: "rtl"}), `<html dir="rtl" lang="en-US">`);
   });
   it("should include file paths", () => {
     const result = execute();
@@ -31,8 +34,8 @@ describe("generateHTML", () => {
       assert.ok(execute());
     });
     it("should take locale as an arg", () => {
-      assert.include(execute("-l es-ES"), `<html lang="es-ES">`);
-      assert.include(execute("--locale es-ES"), `<html lang="es-ES">`);
+      assert.include(execute("-l es-ES"), `<html dir="ltr" lang="es-ES">`);
+      assert.include(execute("--locale es-ES"), `<html dir="ltr" lang="es-ES">`);
     });
     it("should take title as an arg", () => {
       assert.include(execute("-t foo"), `<title>foo</title>`);

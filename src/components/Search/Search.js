@@ -33,6 +33,7 @@ const Search = React.createClass({
         <div className="search-icon" />
         <input ref="input" className="search-input" type="search"
           value={searchString}
+          placeholder="Search"
           onChange={e => this.setValueAndSuggestions(e.target.value)}
           onFocus={() => this.setState({focus: true})}
           onBlur={() => setTimeout(() => this.setState({focus: false}), 200)} />

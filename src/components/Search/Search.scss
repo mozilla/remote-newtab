@@ -18,10 +18,17 @@
     padding: 0 10px 0 $search-left-padding;
     height: $search-height;
     margin: 0;
-    border-radius: 3px 0 0 3px;
+    border-radius: 2px 0 0 2px;
+    font-size: 16px;
+    text-align: left;
     &:focus {
       outline: none;
       border-color: $focus-blue;
+    }
+    &:-moz-dir(rtl) {
+      border: 1px solid;
+      border-color: rgba(23, 51, 78, 0.15) rgba(23, 51, 78, 0.17) rgba(23, 51, 78, 0.2);
+      border-left: none;
     }
   }
 
@@ -32,10 +39,13 @@
     border: 1px solid;
     border-color: rgba(23, 51, 78, 0.15) rgba(23, 51, 78, 0.17) rgba(23, 51, 78, 0.2);
     padding: 0 15px;
-    border-radius: 0 3px 3px 0;
+    border-radius: 0 2px 2px 0;
     width: 50px;
     &:hover {
       background: url("chrome://browser/skin/search-arrow-go.svg#search-arrow-go-inverted") center center no-repeat, linear-gradient(#4cb1ff, #1793e5);
+    }
+    &:-moz-dir(rtl) {
+      border-radius: 2px 0 0 2px;
     }
   }
 
@@ -53,5 +63,8 @@
     background-repeat: no-repeat;
     background-position: 5px center;
     @include bgimage("magnifier.svg");
+    &:-moz-dir(rtl) {
+      right: 0;
+    }
   }
 }

@@ -1,8 +1,26 @@
 const React = require("react");
-const SearchMagic = require("components/SearchMagic/SearchMagic");
+const classnames = require("classnames");
 const {connect} = require("react-redux");
 const actions = require("actions/index");
 const Platform = require("lib/platform");
+
+const Icon = React.createClass({
+  render: function () {
+    return (<img className={classnames("icon", {padded: this.props.padded})}
+      width={this.props.width}
+      height={this.props.height}
+      src={this.props.url}
+      alt={this.props.alt} />);
+  }
+});
+
+Icon.propTypes = {
+  src: React.PropTypes.string,
+  height: React.PropTypes.number,
+  width: React.PropTypes.number,
+  alt: React.PropTypes.string,
+  padded: React.PropTypes.bool
+};
 
 const Search = React.createClass({
   getInitialState: function () {
@@ -18,11 +36,11 @@ const Search = React.createClass({
   setValueAndSuggestions: function (value) {
     this.setState({activeIndex: -1, activeSuggestionIndex: -1});
     this.props.dispatch(actions.updateSearchString(value));
-    this.props.dispatch(actions.getSuggestions(this.props.Search.currentEngine.name, value));
+    this.props.dispatch(actions.getSuggestions(this.props.currentEngine.name, value));
   },
   getActiveSuggestion: function () {
     // Returns the active/highlighted suggestion, if any.
-    const suggestions = this.props.Search.suggestions;
+    const suggestions = this.props.suggestions;
     const index = this.state.activeSuggestionIndex;
     return (suggestions && suggestions.length && index >= 0) ? suggestions[index] : null;
   },
@@ -33,27 +51,29 @@ const Search = React.createClass({
     // keyboard.
     const index = this.state.activeEngineIndex;
     if (index >= 0) {
-      return this.props.Search.engines[index];
+      return this.props.engines[index];
     }
-    return null;
+
+    // fallback to the default engine.
+    return this.props.currentEngine;
   },
   getSettingsButtonIsActive: function () {
     const index = this.state.activeIndex;
-    const numSuggestions = this.props.Search.suggestions.length;
-    const numEngines = this.props.Search.engines.length;
+    const numSuggestions = this.props.suggestions.length;
+    const numEngines = this.props.engines.length;
     return index === numSuggestions + numEngines;
   },
   getActiveDescendantId: function () {
     // Returns the ID of the element being currently in focus, if any.
     const index = this.state.activeIndex;
-    const numSuggestions = this.props.Search.suggestions.length;
-    const numEngines = this.props.Search.engines.length;
+    const numSuggestions = this.props.suggestions.length;
+    const numEngines = this.props.engines.length;
     if (index < numSuggestions) {
-      return "search-magic-suggestions-" + index;
+      return "search-suggestions-" + index;
     } else if (index < numSuggestions + numEngines) {
-      return "search-magic-other-search-partners-" + (index - numSuggestions);
+      return "search-other-search-partners-" + (index - numSuggestions);
     } else if (index === numSuggestions + numEngines) {
-      return "search-magic-settings-button";
+      return "search-settings-button";
     }
     return null;
   },
@@ -68,8 +88,8 @@ const Search = React.createClass({
   handleKeypress: function (evt) {
     // Handle the keyboard navigation of the widget.
     const index = this.state.activeIndex;
-    const numSuggestions = this.props.Search.suggestions.length;
-    const numEngines = this.props.Search.engines.length;
+    const numSuggestions = this.props.suggestions.length;
+    const numEngines = this.props.engines.length;
     let newIndex = index;
     let newSuggestionIndex = this.state.activeSuggestionIndex;
     let newEngineIndex = this.state.activeEngineIndex;
@@ -170,7 +190,7 @@ const Search = React.createClass({
         // Otherwise, perform the search with active engine and suggestion.
         this.performSearch({
           engineName: this.getActiveEngine(),
-          searchString: this.getActiveSuggestion() || this.props.Search.searchString
+          searchString: this.getActiveSuggestion() || this.props.searchString
         });
         return;
       default:
@@ -188,14 +208,17 @@ const Search = React.createClass({
     this.setState(this.getInitialState());
   },
   render: function () {
-    const {currentEngine, searchString} = this.props.Search;
+    const {currentEngine, searchString} = this.props;
+    const currentIcon = currentEngine.icons[0] || {};
     const showSearchMagic = !!(searchString && this.state.focus);
+    let suggestionsIdIndex = 0;
+    let enginesIdIndex = 0;
     return (<form className="search">
       <div className="search-input-wrapper">
         <div className="search-icon" />
         <input ref="input" className="search-input" type="search"
           aria-label="Search query" aria-autocomplete="true"
-          aria-controls="search-magic-container"
+          aria-controls="search-container"
           aria-expanded={showSearchMagic}
           aria-activedescendant={this.getActiveDescendantId()}
           autoComplete="off" placeholder="Search" maxLength="256"
@@ -210,23 +233,63 @@ const Search = React.createClass({
         }} className="search-submit" aria-label="Submit search">
          <span className="sr-only" >Search</span>
         </button>
-        <SearchMagic
-          show={showSearchMagic}
-          performSearch={this.performSearch}
-          activeSuggestion={this.getActiveSuggestion()}
-          activeEngine={this.getActiveEngine()}
-          settingsButtonIsActive={this.getSettingsButtonIsActive()}
-          manageEngines={() => Platform.search.manageEngines()}
-          {...this.props.Search} />
+        <div id="search-container" role="presentation" hidden={!showSearchMagic}>
+          <section className="search-title" hidden={!this.props.suggestions.length}>
+            <Icon padded {...currentIcon} /> {currentEngine.placeholder}
+          </section>
+          <section className="search-suggestions" hidden={!this.props.suggestions.length}>
+            <ul role="listbox">
+              {this.props.suggestions.map(suggestion => {
+                const active = (this.state.activeSuggestionIndex === suggestionsIdIndex);
+                const activeEngine = this.getActiveEngine();
+                return (<li key={suggestion} role="presentation">
+                  <a id={"search-suggestions-" + suggestionsIdIndex++ }
+                     className={active ? "active" : ""} role="option"
+                     aria-selected={active}
+                     onClick={() => this.performSearch({
+                      engineName: activeEngine.name, searchString: suggestion
+                  })}>{suggestion}</a>
+                </li>);
+              })}
+            </ul>
+          </section>
+          <section className="search-title">
+            <span>Search for <strong>{this.props.searchString}</strong> with:</span>
+          </section>
+          <section className="search-other-search-partners" role="group">
+            <ul>
+              {this.props.engines.map(option => {
+                const icon = option.icons[0];
+                const active = (this.state.activeEngineIndex === enginesIdIndex);
+                return (<li key={option.name} className={active ? "active" : ""}>
+                  <a id={"search-other-search-partners-" + enginesIdIndex++ } aria-selected={active}
+                    onClick={() => this.performSearch({
+                      engineName: option.name, searchString: this.getActiveSuggestion()
+                  })}>
+                  <Icon {...icon} alt={option.name} /></a>
+                </li>);
+              })}
+            </ul>
+          </section>
+          <section className="search-settings">
+            <button id="search-settings-button"
+              className={this.getSettingsButtonIsActive() ? "active" : ""}
+              aria-selected={this.getSettingsButtonIsActive()}
+              onClick={(e) => {
+                e.preventDefault();
+                this.props.manageEngines();
+            }}>
+              Change Search Settings
+            </button>
+          </section>
+        </div>
       </div>
     </form>);
   }
 });
 
 function select(state) {
-  return {
-    Search: state.Search
-  };
+  return state.Search;
 }
 
 module.exports = connect(select)(Search);

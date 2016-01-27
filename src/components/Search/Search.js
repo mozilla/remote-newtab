@@ -47,15 +47,10 @@ const Search = React.createClass({
   getActiveEngine: function () {
     // The active engine is different from the current engine. The current
     // engine is the current default search engine of the user. The active engine
-    // is set if any of the alternate search engines has been selected via the
-    // keyboard.
+    // is the engine selected by the user in the widget, if any. It fallsback
+    // to the current default.
     const index = this.state.activeEngineIndex;
-    if (index >= 0) {
-      return this.props.engines[index];
-    }
-
-    // fallback to the default engine.
-    return this.props.currentEngine;
+    return (index >= 0) ? this.props.engines[index] : this.props.currentEngine;
   },
   getSettingsButtonIsActive: function () {
     const index = this.state.activeIndex;

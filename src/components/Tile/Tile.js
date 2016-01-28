@@ -12,8 +12,11 @@ const Tile = React.createClass({
     e.preventDefault();
     if (!this.isBlocked()) {
       gBlockedLinks.block(this.props.url);
-      this.props.dispatch(actions.setUndoDialogVisibility(true, this.props.url));
-      this.props.dispatch(actions.updateSites());
+      if (this.props.dispatch) {
+        // Dispatch doesn't exist in a test environment.
+        this.props.dispatch(actions.setUndoDialogVisibility(true, this.props.url));
+        this.props.dispatch(actions.updateSites());
+      }
     }
   },
 
@@ -30,7 +33,7 @@ const Tile = React.createClass({
   render: function () {
     return (<a className="tile" href={this.props.url}>
       <div className="tile-img-container">
-        <button className="control control-block" title="Remove this site" onClick={e => this.block(e)}></button>
+        <button className="control control-block" title="Remove this site" ref="blockButton" onClick={e => this.block(e)}></button>
         {this.props.imageURI && <div className="tile-img"
           style={{backgroundImage: `url(${this.props.imageURI})`}} />}
         {this.props.enhancedImageURI && <div className="tile-img-rollover"
@@ -57,3 +60,4 @@ function select(state) {
 }
 
 module.exports = connect(select)(Tile);
+module.exports.Tile = Tile;

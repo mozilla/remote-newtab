@@ -1,5 +1,5 @@
 const assert = require("chai").assert;
-const Tile = require("components/Tile/Tile");
+const Tile = require("components/Tile/Tile").Tile;
 const React = require("react");
 const {combineReducers} = require("redux");
 const ReactDOM = require("react-dom");
@@ -9,11 +9,14 @@ const finalCreateStore = require("lib/finalCreateStore");
 const reducers = require("reducers/index");
 const reducer = combineReducers(reducers);
 const store = finalCreateStore(reducer);
+const gUserDatabase = require("lib/userDatabase");
+const gBlockedLinks = require("lib/blockedLinks");
+const ReactTestUtils = require('react-addons-test-utils');
 
 const fakeProps = {
   title: "My tile",
   imageURI: "https://foo.com/foo.jpg",
-  url: "https://foo.com",
+  url: "https://foo.com/",
   store
 };
 
@@ -75,6 +78,20 @@ describe("Tile", () => {
         () => ReactDOM.render(<Tile title="foo" />, node),
         /Failed propType/
       );
+    });
+  });
+
+  describe("tile blocking", () => {
+    it("should save the blocked link", () => {
+      return gUserDatabase.init({"blockedLinks": []}).then(() => {
+        return gBlockedLinks.init().then(() => {
+          const blockEl = tile.refs["blockButton"];
+          assert.ok(blockEl);
+          ReactTestUtils.Simulate.click(blockEl);
+          assert.equal(JSON.stringify([...gBlockedLinks._links]), JSON.stringify([el.href]));
+          gBlockedLinks.unblock(el.href);
+        });
+      });
     });
   });
 

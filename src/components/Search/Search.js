@@ -72,6 +72,9 @@ const Search = React.createClass({
     }
     return null;
   },
+  getDropdownVisible: function () {
+    return !!(this.props.searchString && this.state.focus);
+  },
   performSearch: function (options) {
     Platform.search.performSearch({
       engineName: options.engineName,
@@ -82,6 +85,12 @@ const Search = React.createClass({
   },
   handleKeypress: function (evt) {
     // Handle the keyboard navigation of the widget.
+
+    // If the dropdown isn't visible, we don't handle the event.
+    if (!this.getDropdownVisible()) {
+      return;
+    }
+
     const index = this.state.activeIndex;
     const numSuggestions = this.props.suggestions.length;
     const numEngines = this.props.engines.length;
@@ -192,6 +201,8 @@ const Search = React.createClass({
         return;
     }
 
+    // We only get here if arrows or tabs were pressed. The other cases already
+    // returned above.
     evt.preventDefault();
     this.setState({
       activeIndex: newIndex,
@@ -205,7 +216,6 @@ const Search = React.createClass({
   render: function () {
     const {currentEngine, searchString} = this.props;
     const currentIcon = currentEngine.icons[0] || {};
-    const showSearchMagic = !!(searchString && this.state.focus);
     let suggestionsIdIndex = 0;
     let enginesIdIndex = 0;
     return (<form className="search">
@@ -214,7 +224,7 @@ const Search = React.createClass({
         <input ref="input" className="search-input" type="search"
           aria-label="Search query" aria-autocomplete="true"
           aria-controls="search-container"
-          aria-expanded={showSearchMagic}
+          aria-expanded={this.getDropdownVisible()}
           aria-activedescendant={this.getActiveDescendantId()}
           autoComplete="off" placeholder="Search" maxLength="256"
           value={searchString}
@@ -229,7 +239,7 @@ const Search = React.createClass({
         }} className="search-submit" aria-label="Submit search">
          <span className="sr-only" >Search</span>
         </button>
-        <div id="search-container" role="presentation" hidden={!showSearchMagic}>
+        <div id="search-container" role="presentation" hidden={!this.getDropdownVisible()}>
           <section className="search-title" hidden={!this.props.suggestions.length}>
             <Icon padded {...currentIcon} /> {currentEngine.placeholder}
           </section>

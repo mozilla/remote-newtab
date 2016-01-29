@@ -14,8 +14,9 @@ const initialState = {
   isHistoryLoading: false
 };
 
-module.exports = function Sites(prevState = initialState, action = null) {
-  switch (action.type) {
+module.exports = function Sites(prevState = initialState, action = {}) {
+  const {type, data} = action;
+  switch (type) {
     case c.REQUEST_SUGGESTED_DIRECTORY:
       return updateState(prevState, {
         isSuggestedLoading: true
@@ -23,15 +24,15 @@ module.exports = function Sites(prevState = initialState, action = null) {
     case c.RECEIVE_SUGGESTED_DIRECTORY:
       return updateState(prevState, {
         isSuggestedLoading: false,
-        suggested: action.suggested,
-        directory: TileUtils.formatDirectoryTiles(action.directory)
+        suggested: data.suggested,
+        directory: TileUtils.formatDirectoryTiles(data.directory)
       });
     case c.REQUEST_FRECENT:
       return updateState(prevState, {isHistoryLoading: true});
     case c.RECEIVE_FRECENT:
       return updateState(prevState, {
         isHistoryLoading: false,
-        history: TileUtils.formatHistoryTiles(action.sites)
+        history: TileUtils.formatHistoryTiles(data.sites)
       });
     case c.REQUEST_SCREENSHOT:
       return prevState;
@@ -39,8 +40,8 @@ module.exports = function Sites(prevState = initialState, action = null) {
     case c.RECEIVE_SCREENSHOT:
       return updateState(prevState, {
         history: prevState.history.slice().map(tile => {
-          if (tile.url !== action.url) return tile;
-          return updateState(tile, {imageURI: action.imageURI, imageURI_2x: action.imageURI_2x});
+          if (tile.url !== data.url) return tile;
+          return updateState(tile, {imageURI: data.imageURI, imageURI_2x: data.imageURI_2x});
         })
       });
 

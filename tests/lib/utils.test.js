@@ -39,7 +39,7 @@ describe("utils", () => {
 
   describe("receive", () => {
     it("should return a receive shape action", () => {
-      assert.deepEqual(utils.receive('foo', {stuff: 'blah'}), {type: 'foo', stuff: 'blah'});
+      assert.deepEqual(utils.receive('foo', {stuff: 'blah'}), {type: 'foo', data: {stuff: 'blah'}});
     });
   });
 });

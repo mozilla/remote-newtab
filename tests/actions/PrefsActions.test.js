@@ -13,7 +13,9 @@ describe("PrefsActions", () => {
     it("should create a RECEIVE_PREFS action", () => {
       assert.deepEqual(PrefsActions.getPrefs(), {
         type: c.RECEIVE_PREFS,
-        prefs: fakePrefs
+        data: {
+          prefs: fakePrefs
+        }
       });
     });
   });

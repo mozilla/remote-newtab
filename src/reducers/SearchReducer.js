@@ -14,11 +14,12 @@ const initialState = {
   searchOptions: []
 };
 
-module.exports = function Search(prevState = initialState, action = null) {
-  switch (action.type) {
+module.exports = function Search(prevState = initialState, action = {}) {
+  const {type, data} = action;
+  switch (type) {
     case c.UPDATE_SEARCH_STRING:
       return updateState(prevState, {
-        searchString: action.searchString
+        searchString: data.searchString
       });
     case c.REQUEST_SEARCH_SUGGESTIONS:
       return updateState(prevState, {
@@ -27,7 +28,7 @@ module.exports = function Search(prevState = initialState, action = null) {
     case c.RECEIVE_SEARCH_SUGGESTIONS:
       return updateState(prevState, {
         isLoading: false,
-        suggestions: action.body.remote || []
+        suggestions: data.remote || []
       });
     case c.REQUEST_CURRENT_SEARCH_ENGINE:
       return updateState(prevState, {
@@ -37,9 +38,9 @@ module.exports = function Search(prevState = initialState, action = null) {
       return updateState(prevState, {
         isLoading: false,
         currentEngine: {
-          name: action.body.name,
-          placeholder: action.body.placeholder,
-          icons: action.body.icons.map(icon => JSON.parse(icon.toJSON()))
+          name: data.name,
+          placeholder: data.placeholder,
+          icons: data.icons.map(icon => JSON.parse(icon.toJSON()))
         }
       });
     case c.REQUEST_VISIBLE_SEARCH_ENGINES:
@@ -49,7 +50,7 @@ module.exports = function Search(prevState = initialState, action = null) {
     case c.RECEIVE_VISIBLE_SEARCH_ENGINES:
       return updateState(prevState, {
         isLoading: false,
-        engines: action.body.map(engine => ({
+        engines: data.map(engine => ({
           name: engine.name,
           placeholder: engine.placeholder,
           icons: engine.icons.map(icon => JSON.parse(icon.toJSON()))

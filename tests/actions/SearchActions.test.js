@@ -14,7 +14,7 @@ describe("SearchActions", () => {
         {type: c.REQUEST_SEARCH_SUGGESTIONS},
         {
           type: c.RECEIVE_SEARCH_SUGGESTIONS,
-          body: {
+          data: {
             engineName: "Google",
             searchString: "hello",
             formHistory: [ "" ],
@@ -30,7 +30,7 @@ describe("SearchActions", () => {
     it("should dispatch the right actions", done => {
       const expectedActions = [
         {type: c.REQUEST_CURRENT_SEARCH_ENGINE},
-        {type: c.RECEIVE_CURRENT_SEARCH_ENGINE, body: currentEngine},
+        {type: c.RECEIVE_CURRENT_SEARCH_ENGINE, data: currentEngine},
       ];
       const store = mockStore({search: {}}, expectedActions, done);
       store.dispatch(SearchActions.getCurrentEngine());
@@ -40,7 +40,7 @@ describe("SearchActions", () => {
     it("should dispatch the right actions", done => {
       const expectedActions = [
         {type: c.REQUEST_VISIBLE_SEARCH_ENGINES},
-        {type: c.RECEIVE_VISIBLE_SEARCH_ENGINES, body: engines},
+        {type: c.RECEIVE_VISIBLE_SEARCH_ENGINES, data: engines},
       ];
       const store = mockStore({search: {}}, expectedActions, done);
       store.dispatch(SearchActions.getVisibleEngines());
@@ -50,7 +50,7 @@ describe("SearchActions", () => {
     it("should create an UPDATE_SEARCH_STRING action", () => {
       assert.deepEqual(SearchActions.updateSearchString("hello"), {
         type: c.UPDATE_SEARCH_STRING,
-        searchString: "hello"
+        data: {searchString: "hello"}
       });
     });
   });

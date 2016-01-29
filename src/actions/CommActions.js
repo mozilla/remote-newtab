@@ -43,11 +43,11 @@ module.exports = {
   getSearchSuggestions(searchString) {
     return function next(dispatch) {
       dispatch(request(c.REQUEST_SEARCH_SUGGESTIONS));
-      Comm.dispatch("NewTab:GetSuggestions", {
+      Comm.dispatch(receive("NewTab:GetSuggestions", {
         engineName: "Google",
         searchString,
         remoteTimeout: undefined
-      });
+      }));
     };
   }
 

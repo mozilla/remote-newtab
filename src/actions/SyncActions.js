@@ -11,10 +11,10 @@ module.exports = {
     return dispatch => {
       Platform.prefs.addEventListener("message", prefs => dispatch(receive(c.RECEIVE_PREFS, prefs)));
       Platform.search.addEventListener("enginechange", event => {
-        dispatch(receive(c.RECEIVE_CURRENT_SEARCH_ENGINE, {body: event.engine}));
+        dispatch(receive(c.RECEIVE_CURRENT_SEARCH_ENGINE, event.engine));
       });
       Platform.search.addEventListener("visibleenginechange", event => {
-        dispatch(receive(c.RECEIVE_VISIBLE_SEARCH_ENGINES, {body: event.engines}));
+        dispatch(receive(c.RECEIVE_VISIBLE_SEARCH_ENGINES, event.engines));
       });
     };
   },

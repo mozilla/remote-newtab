@@ -35,6 +35,6 @@ module.exports = {
    * @return {object}       Action object
    */
   receive(type, data = {}) {
-    return Object.assign({type}, data);
+    return {type, data};
   }
 };

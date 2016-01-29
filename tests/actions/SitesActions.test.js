@@ -13,9 +13,11 @@ describe("SitesActions", () => {
         {type: c.REQUEST_SCREENSHOT},
         {
           type: c.RECEIVE_SCREENSHOT,
-          url: "foo.com",
-          imageURI: FAKE_THUMBNAILS.imageURI,
-          imageURI_2x: FAKE_THUMBNAILS.imageURI_2x
+          data: {
+            url: "foo.com",
+            imageURI: FAKE_THUMBNAILS.imageURI,
+            imageURI_2x: FAKE_THUMBNAILS.imageURI_2x
+          }
         }
       ];
       const state = {Sites: {}};

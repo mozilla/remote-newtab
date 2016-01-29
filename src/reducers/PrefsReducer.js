@@ -7,13 +7,14 @@ const initialState = {
   showSuggested: true
 };
 
-module.exports = function Prefs(prevState = initialState, action = null) {
-  switch (action.type) {
+module.exports = function Prefs(prevState = initialState, action = {}) {
+  const {type, data} = action;
+  switch (type) {
     case c.RECEIVE_PREFS:
       return updateState(prevState, {
-        locale: action.prefs.get("general.useragent.locale"),
-        enabled: parseBoolean(action.prefs.get("browser.newtabpage.enabled")),
-        showSuggested: parseBoolean(action.prefs.get("browser.newtabpage.enhanced"))
+        locale: data.prefs.get("general.useragent.locale"),
+        enabled: parseBoolean(data.prefs.get("browser.newtabpage.enabled")),
+        showSuggested: parseBoolean(data.prefs.get("browser.newtabpage.enhanced"))
       });
     default:
       return prevState;

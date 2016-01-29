@@ -11,7 +11,7 @@ module.exports = {
         searchString,
         engineName
       });
-      dispatch(receive(c.RECEIVE_SEARCH_SUGGESTIONS, {body}));
+      dispatch(receive(c.RECEIVE_SEARCH_SUGGESTIONS, body));
     }, this);
   },
 
@@ -19,7 +19,7 @@ module.exports = {
     return async(function* (dispatch) {
       dispatch(request(c.REQUEST_CURRENT_SEARCH_ENGINE));
       const body = yield Platform.search.getCurrentEngine();
-      dispatch(receive(c.RECEIVE_CURRENT_SEARCH_ENGINE, {body}));
+      dispatch(receive(c.RECEIVE_CURRENT_SEARCH_ENGINE, body));
     }, this);
   },
 
@@ -27,7 +27,7 @@ module.exports = {
     return async(function* (dispatch) {
       dispatch(request(c.REQUEST_VISIBLE_SEARCH_ENGINES));
       const body = yield Platform.search.getVisibleEngines();
-      dispatch(receive(c.RECEIVE_VISIBLE_SEARCH_ENGINES, {body}));
+      dispatch(receive(c.RECEIVE_VISIBLE_SEARCH_ENGINES, body));
     }, this);
   },
 

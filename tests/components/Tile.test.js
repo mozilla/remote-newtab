@@ -9,8 +9,8 @@ const finalCreateStore = require("lib/finalCreateStore");
 const reducers = require("reducers/index");
 const reducer = combineReducers(reducers);
 const store = finalCreateStore(reducer);
-const gUserDatabase = require("lib/userDatabase");
-const gBlockedLinks = require("lib/blockedLinks");
+const userDatabase = require("lib/userDatabase");
+const blockedLinks = require("lib/blockedLinks");
 const ReactTestUtils = require('react-addons-test-utils');
 
 const fakeProps = {
@@ -83,13 +83,13 @@ describe("Tile", () => {
 
   describe("tile blocking", () => {
     it("should save the blocked link", () => {
-      return gUserDatabase.init({"blockedLinks": []}).then(() => {
-        return gBlockedLinks.init().then(() => {
+      return userDatabase.init({"blockedLinks": []}).then(() => {
+        return blockedLinks.init().then(() => {
           const blockEl = tile.refs["blockButton"];
           assert.ok(blockEl);
           ReactTestUtils.Simulate.click(blockEl);
-          assert.equal(JSON.stringify([...gBlockedLinks._links]), JSON.stringify([el.href]));
-          gBlockedLinks.unblock(el.href);
+          assert.equal(JSON.stringify([...blockedLinks._links]), JSON.stringify([el.href]));
+          blockedLinks.unblock(el.href);
         });
       });
     });

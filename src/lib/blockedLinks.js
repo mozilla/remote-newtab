@@ -1,29 +1,24 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this file,
- * You can obtain one at http://mozilla.org/MPL/2.0/. */
-/* jshint node:true, esnext:true */
-
 const async = require("lib/async");
-const gUserDatabase = require("lib/userDatabase");
+const userDatabase = require("lib/userDatabase");
 
 /**
  * Singleton that keeps track of all blocked links in the grid.
  */
-const gBlockedLinks = {
+const blockedLinks = {
   /**
    * The cached list of blocked links.
    */
   _links: new Set(),
 
   /**
-   * Load the blocked links from gUserDatabase and cache them.
+   * Load the blocked links from userDatabase and cache them.
    */
   init: async(function*() {
-    const result = yield gUserDatabase.load("prefs", "blockedLinks");
-    const blockedLinks = JSON.parse(result);
-    if (blockedLinks && blockedLinks.length) {
-      gBlockedLinks._links.clear();
-      blockedLinks.forEach(item => gBlockedLinks._links.add(item));
+    const result = yield userDatabase.load("prefs", "blockedLinks");
+    const loadedBlockedLinks = JSON.parse(result);
+    if (loadedBlockedLinks && loadedBlockedLinks.length) {
+      blockedLinks._links.clear();
+      loadedBlockedLinks.forEach(item => blockedLinks._links.add(item));
     }
     return blockedLinks;
   }),
@@ -56,7 +51,7 @@ const gBlockedLinks = {
    * Saves the current list of blocked links.
    */
   save() {
-    return gUserDatabase.save("prefs", "blockedLinks", JSON.stringify([...this._links]));
+    return userDatabase.save("prefs", "blockedLinks", JSON.stringify([...this._links]));
   },
 
   /**
@@ -81,8 +76,8 @@ const gBlockedLinks = {
    * Resets the links cache and IDB object.
    */
   reset() {
-    gBlockedLinks._links.clear();
-    return gBlockedLinks.save();
+    this._links.clear();
+    return this.save();
   }
 };
-module.exports = gBlockedLinks;
+module.exports = blockedLinks;

@@ -1,5 +1,5 @@
 const React = require("react");
-const gBlockedLinks = require("lib/blockedLinks");
+const blockedLinks = require("lib/blockedLinks");
 const {connect} = require("react-redux");
 const actions = require("actions/index");
 
@@ -11,7 +11,7 @@ const Tile = React.createClass({
   block: function (e) {
     e.preventDefault();
     if (!this.isBlocked()) {
-      gBlockedLinks.block(this.props.url);
+      blockedLinks.block(this.props.url);
       if (this.props.dispatch) {
         // Dispatch doesn't exist in a test environment.
         this.props.dispatch(actions.setUndoDialogVisibility(true, this.props.url));
@@ -27,13 +27,14 @@ const Tile = React.createClass({
    * @return {Boolean} Whether this site is blocked.
    */
   isBlocked: function () {
-    return gBlockedLinks.isBlocked(this.props.url);
+    return blockedLinks.isBlocked(this.props.url);
   },
 
   render: function () {
     return (<a className="tile" href={this.props.url}>
       <div className="tile-img-container">
-        <button className="control control-block" title="Remove this site" ref="blockButton" onClick={e => this.block(e)}></button>
+        <button className="control control-block" title="Remove this site"
+          ref="blockButton" onClick={e => this.block(e)}></button>
         {this.props.imageURI && <div className="tile-img"
           style={{backgroundImage: `url(${this.props.imageURI})`}} />}
         {this.props.enhancedImageURI && <div className="tile-img-rollover"

@@ -3,8 +3,8 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 /* jshint node:true, esnext:true */
 
-const gBlockedLinks = require("lib/blockedLinks");
-const gUserDatabase = require("lib/userDatabase");
+const blockedLinks = require("lib/blockedLinks");
+const userDatabase = require("lib/userDatabase");
 const async = require("lib/async");
 const assert = require("chai").assert;
 
@@ -35,57 +35,57 @@ describe("Blocked Links API", function() {
 
   afterEach(function(done) {
     // Clear the database and cached links.
-    return gUserDatabase.init({"blockedLinks": [], "pinnedLinks": []})
-      .then(gBlockedLinks.init)
-      .then(gBlockedLinks.reset)
+    return userDatabase.init({"blockedLinks": []})
+      .then(blockedLinks.init)
+      .then(blockedLinks.reset.bind(blockedLinks))
       .then(() => {
-        gUserDatabase.close();
+        userDatabase.close();
         done();
       });
   });
 
   it("should be empty initially", () => {
-    var links = gBlockedLinks._links;
+    var links = blockedLinks._links;
     assert.equal(links.size, 0);
   });
 
   it("should update the database and links", () => {
-    return gUserDatabase.init({"blockedLinks": []}).then(() => {
-      return gBlockedLinks.init().then(() => {
-        assert.isTrue(gBlockedLinks.isEmpty());
+    return userDatabase.init({"blockedLinks": []}).then(() => {
+      return blockedLinks.init().then(() => {
+        assert.isTrue(blockedLinks.isEmpty());
 
-        gBlockedLinks.block(firstLink);
-        gBlockedLinks.block(secondLink);
-        gBlockedLinks.block(thirdLink);
-        gBlockedLinks.unblock(secondLink);
+        blockedLinks.block(firstLink);
+        blockedLinks.block(secondLink);
+        blockedLinks.block(thirdLink);
+        blockedLinks.unblock(secondLink);
 
-        return gUserDatabase.load("prefs", "blockedLinks").then(blockedLinks => {
+        return userDatabase.load("prefs", "blockedLinks").then(loadedBlockedLinks => {
           var storedBlockedLinks = JSON.stringify([firstLink, thirdLink]);
-          assert.equal(blockedLinks, storedBlockedLinks);
-          assert.equal(JSON.stringify([...gBlockedLinks._links]), storedBlockedLinks);
+          assert.equal(loadedBlockedLinks, storedBlockedLinks);
+          assert.equal(JSON.stringify([...blockedLinks._links]), storedBlockedLinks);
         });
       });
     });
   });
 
   it("should have no impact when attempting to unblock a link that isn't blocked", () => {
-    return gUserDatabase.init({"blockedLinks": []}).then(() => {
-      gBlockedLinks.init().then(() => {
-        gBlockedLinks.unblock(secondLink);
-        assert.isTrue(gBlockedLinks.isEmpty());
+    return userDatabase.init({"blockedLinks": []}).then(() => {
+      blockedLinks.init().then(() => {
+        blockedLinks.unblock(secondLink);
+        assert.isTrue(blockedLinks.isEmpty());
       });
     });
   });
 
-  describe("gUserDatabase Errors", function() {
+  describe("userDatabase Errors", function() {
     it("should reject when there is an error opening the database", () => {
-      var initPromise = gUserDatabase.init({"blockedLinks": []}, gMockObject);
+      var initPromise = userDatabase.init({"blockedLinks": []}, gMockObject);
       return initPromise.should.be.rejected;
     });
 
     it("should reject when there is an error saving to the database", async(function*() {
-      yield gUserDatabase.init({"pinnedLinks": []});
-      var savePromise = gUserDatabase.save("prefs", "blockedLinks", null, gMockObject);
+      yield userDatabase.init({"pinnedLinks": []});
+      var savePromise = userDatabase.save("prefs", "blockedLinks", null, gMockObject);
       savePromise.should.eventually.be.rejected; // jshint ignore:line
     }));
 
@@ -93,7 +93,7 @@ describe("Blocked Links API", function() {
       var faultyRequest = gMockObject.generateFaultyRequest("Simple Handler Error");
       var errMsg = "This is a request handler error";
       var simpleRequestHandlersPromise =
-        gUserDatabase._setSimpleRequestHandlers(faultyRequest, errMsg);
+        userDatabase._setSimpleRequestHandlers(faultyRequest, errMsg);
       simpleRequestHandlersPromise.should.eventually.be.rejected; // jshint ignore:line
     });
   });

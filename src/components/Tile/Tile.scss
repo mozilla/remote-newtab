@@ -29,20 +29,17 @@
     opacity: 1;
   }
 
-  .control-block:-moz-dir(ltr) {
-    right: 4px;
-  }
-
   .control-block {
-    background-image: -moz-image-rect(url(../img/controls.svg), 0, 192, 32, 160);
+    right: 4px;
+    background: url("../img/controls.svg#svgView(viewBox(320, 0, 40, 40))");
   }
 
   .control-block:hover {
-    background-image: -moz-image-rect(url(../img/controls.svg), 0, 224, 32, 192);
+    background: url("../img/controls.svg#svgView(viewBox(352, 0, 40, 40))");
   }
 
   .control-block:hover:active {
-    background-image: -moz-image-rect(url(../img/controls.svg), 0, 256, 32, 224);
+    background: url("../img/controls.svg#svgView(viewBox(384, 0, 40, 40))");
   }
 
   &.tile-placeholder {

@@ -1,4 +1,4 @@
-const gBlockedLinks = require("lib/blockedLinks");
+const blockedLinks = require("lib/blockedLinks");
 
 const TileUtils = {
   DIRECTORY_FRECENCY: 1000,
@@ -12,7 +12,7 @@ const TileUtils = {
   getMergedLinks: function (allLinks) {
     return allLinks
       .reduce((newLinks, currLinks) => newLinks.concat(currLinks), [])
-      .filter(link => !gBlockedLinks.isBlocked(link.url))
+      .filter(link => !blockedLinks.isBlocked(link.url))
       .sort(this.compareLinks)
       .slice(0, this.MAX_NUM_LINKS);
   },

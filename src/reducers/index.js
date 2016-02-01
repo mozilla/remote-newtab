@@ -7,6 +7,5 @@ module.exports = {
   Prefs: require("reducers/PrefsReducer"),
   // TODO: remove when we get rid of all comm stuff
   Comm: require("reducers/CommReducer"),
-  Init: require("reducers/InitReducer"),
-  Undo: require("reducers/UndoReducer")
+  Block: require("reducers/BlockReducer")
 };

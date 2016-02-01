@@ -1,7 +1,7 @@
 .undo {
-  -moz-box-align: center;
-  -moz-box-pack: center;
-  display: -moz-box;
+  align-items: center;
+  justify-content: center;
+  display: flex;
   left: 6px;
   position: absolute;
   top: 6px;
@@ -19,7 +19,7 @@
   }
 
   .undo-button {
-    -moz-appearance: none;
+    appearance: none;
     cursor: pointer;
     padding: 0;
     margin: 0 4px;
@@ -38,12 +38,8 @@
     outline: 1px dotted;
   }
 
-  #undo-close-button:-moz-dir(rtl) {
-    float:left;
-  }
-
   #undo-close-button {
-    -moz-appearance: none;
+    appearance: none;
     padding: 0;
     border: none;
     height: 16px;
@@ -61,9 +57,4 @@
   #undo-close-button:hover:active {
     background-image: -moz-image-rect(url(../img/close.png), 0, 48, 16, 32);
   }
-}
-
-.undo:-moz-dir(rtl) {
-  left: auto;
-  right: 6px;
 }

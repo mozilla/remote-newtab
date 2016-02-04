@@ -4,5 +4,8 @@ module.exports = {
   },
   warn() {
     console.warn.apply(console, arguments); // eslint-disable-line no-console
+  },
+  error() {
+    console.error.apply(console, arguments); // eslint-disable-line no-console
   }
 };

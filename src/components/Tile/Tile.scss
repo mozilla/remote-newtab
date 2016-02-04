@@ -10,6 +10,37 @@
   color: $tile-text-color;
   font-size: $tile-font-size;
 
+  .control {
+    background-color: transparent;
+    background-size: 24px;
+    border: none;
+    height: 24px;
+    width: 24px;
+    position: absolute;
+    top: 4px;
+    opacity: 0;
+    z-index: 1;
+    transition: opacity 100ms ease-out;
+    cursor: pointer;
+  }
+
+  .tile-img-container:hover > .control {
+    opacity: 1;
+  }
+
+  .control-block {
+    right: 4px;
+    background: url("../img/controls.svg#svgView(viewBox(320, 0, 40, 40))");
+  }
+
+  .control-block:hover {
+    background: url("../img/controls.svg#svgView(viewBox(352, 0, 40, 40))");
+  }
+
+  .control-block:hover:active {
+    background: url("../img/controls.svg#svgView(viewBox(384, 0, 40, 40))");
+  }
+
   &.tile-placeholder {
     border: 2px dashed #c1c1c1;
     width: $tile-width;

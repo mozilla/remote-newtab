@@ -44,6 +44,10 @@ module.exports = function Sites(prevState = initialState, action = {}) {
           return updateState(tile, {imageURI: data.imageURI, imageURI_2x: data.imageURI_2x});
         })
       });
+    case c.RECEIVE_UPDATE_SITES:
+      return updateState(prevState, {
+        directory: TileUtils.formatDirectoryTiles(prevState.directory)
+      });
 
     // LEGACY
     case c.REQUEST_INIT:

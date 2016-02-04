@@ -8,6 +8,7 @@ const TileUtils = require("lib/TileUtils");
 const actions = require("actions/index");
 
 const Tile = require("components/Tile/Tile");
+const Block = require("components/Block/Block");
 const Search = require("components/Search/Search");
 const Settings = require("components/Settings/Settings");
 
@@ -15,6 +16,7 @@ const Base = React.createClass({
   componentWillMount: function () {
     // this.props.dispatch(actions.getPrefs());
     this.props.dispatch(actions.getSuggestedDirectory(this.props.intl.locale));
+    this.props.dispatch(actions.initUserDatabase());
     this.props.dispatch(actions.getCurrentEngine());
     this.props.dispatch(actions.getVisibleEngines());
     // this.props.dispatch(actions.getFrecentSites());
@@ -40,6 +42,7 @@ const Base = React.createClass({
       blankTiles.push(<div className="tile tile-placeholder" />);
     }
     return (<div>
+      <Block {...this.props.Block} />
       <Search foo={10} />
       <div className="grid" hidden={!prefs.enabled}>
         {tiles.map((tile, index) => <Tile key={index} {...tile} />)}

@@ -28,5 +28,9 @@ module.exports = {
       sites.forEach(site => dispatch(this.getSiteThumbnail(site.url)));
       dispatch(receive(c.RECEIVE_FRECENT, {sites}));
     }, this);
+  },
+
+  updateSites() {
+    return receive(c.RECEIVE_UPDATE_SITES);
   }
 };

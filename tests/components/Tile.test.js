@@ -1,16 +1,27 @@
 const assert = require("chai").assert;
-const Tile = require("components/Tile/Tile");
+const Tile = require("components/Tile/Tile").Tile;
 const React = require("react");
+const {combineReducers} = require("redux");
 const ReactDOM = require("react-dom");
 const {shouldConsoleError} = require('tests/test-utils');
+const finalCreateStore = require("lib/finalCreateStore");
+
+const reducers = require("reducers/index");
+const reducer = combineReducers(reducers);
+const store = finalCreateStore(reducer);
+const userDatabase = require("lib/userDatabase");
+const blockedLinks = require("lib/blockedLinks");
+const ReactTestUtils = require('react-addons-test-utils');
+
 const fakeProps = {
   title: "My tile",
   imageURI: "https://foo.com/foo.jpg",
-  url: "https://foo.com"
+  url: "https://foo.com/",
+  dispatch: function(){},
+  store
 };
 
 describe("Tile", () => {
-
   let node, tile, el;
   beforeEach(() => {
     node = document.createElement("div");
@@ -70,4 +81,18 @@ describe("Tile", () => {
     });
   });
 
+  describe("tile blocking", () => {
+    it("should save the blocked link", () => {
+      return userDatabase.init({"blockedLinks": []})
+        .then(blockedLinks.init())
+        .then(() => {
+          const blockEl = tile.refs["blockButton"];
+          assert.ok(blockEl);
+          ReactTestUtils.Simulate.click(blockEl);
+          ReactTestUtils.Simulate.click(blockEl); // A second attempt to block should have no effect.
+          assert.equal(JSON.stringify([...blockedLinks._links]), JSON.stringify([el.href]));
+          blockedLinks.unblock(el.href);
+        });
+    });
+  });
 });

@@ -5,7 +5,5 @@ module.exports = {
   Search: require("reducers/SearchReducer"),
   Sites: require("reducers/SitesReducer"),
   Prefs: require("reducers/PrefsReducer"),
-  // TODO: remove when we get rid of all comm stuff
-  Comm: require("reducers/CommReducer"),
   Block: require("reducers/BlockReducer")
 };

@@ -14,20 +14,23 @@ const Settings = require("components/Settings/Settings");
 
 const Base = React.createClass({
   componentWillMount: function () {
-    // this.props.dispatch(actions.getPrefs());
     this.props.dispatch(actions.getSuggestedDirectory(this.props.intl.locale));
     this.props.dispatch(actions.initUserDatabase());
-    this.props.dispatch(actions.getCurrentEngine());
-    this.props.dispatch(actions.getVisibleEngines());
+
     // this.props.dispatch(actions.getFrecentSites());
 
     // This adds all our listeners so we can watch for changes
     // and fire actions if anything updates
     this.props.dispatch(actions.addListeners());
 
-    // This will use the message passing API to load history tiles and stuff
-    // We won't need it once all the browser APIs are in place
-    // this.props.dispatch(actions.initComm());
+    // This will use the message passing API to load history tiles, and fetch prefs and stuff
+    window.addEventListener("WebChannelMessageToContent", function (e) {
+      this.props.dispatch(e.detail.message);
+    }.bind(this));
+
+    actions.getPrefs();
+    actions.getState();
+    actions.getStrings();
   },
   componentWillUnmount: function () {
     this.props.dispatch(actions.removeListeners());
@@ -36,7 +39,7 @@ const Base = React.createClass({
     const prefs = this.props.Prefs;
     const {history, directory} = this.props.Sites;
     let tiles = history;
-    if (prefs.showSuggested) tiles = TileUtils.getMergedLinks([history, directory]);
+    if (prefs.enhanced) tiles = TileUtils.getMergedLinks([history, directory]);
     const blankTiles = [];
     for (let i = 0; i < (MAX_TILES - tiles.length); i++) {
       blankTiles.push(<div className="tile tile-placeholder" />);

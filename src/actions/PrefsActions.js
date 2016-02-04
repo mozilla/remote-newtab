@@ -1,9 +1,8 @@
 const c = require("lib/constants");
-const {receive} = require("lib/utils");
-const Platform = require("lib/platform");
+const Comm = require("lib/comm");
 
 module.exports = {
   getPrefs() {
-    return receive(c.RECEIVE_PREFS, {prefs: Platform.prefs.getCurrent()});
+   Comm.dispatch(c.REQUEST_PREFS);
   }
 };

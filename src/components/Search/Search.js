@@ -2,8 +2,6 @@ const React = require("react");
 const classnames = require("classnames");
 const {connect} = require("react-redux");
 const actions = require("actions/index");
-const Platform = require("lib/platform");
-
 const Icon = React.createClass({
   render: function () {
     return (<img className={classnames("icon", {padded: this.props.padded})}
@@ -30,17 +28,18 @@ const Search = React.createClass({
       // are navigating the widget with the keyboard.
       activeIndex: -1,
       activeSuggestionIndex: -1,
-      activeEngineIndex: -1
+      activeEngineIndex: -1,
+      searchString: this.props.searchString
     };
   },
   setValueAndSuggestions: function (value) {
-    this.setState({activeIndex: -1, activeSuggestionIndex: -1});
+    this.setState({activeIndex: -1, activeSuggestionIndex: -1, searchString: value});
     this.props.dispatch(actions.updateSearchString(value));
-    this.props.dispatch(actions.getSuggestions(this.props.currentEngine.name, value));
+    actions.getSuggestions(this.props.currentEngine.name, value);
   },
   getActiveSuggestion: function () {
     // Returns the active/highlighted suggestion, if any.
-    const suggestions = this.props.suggestions;
+    const suggestions = this.props.formHistory.concat(this.props.suggestions);
     const index = this.state.activeSuggestionIndex;
     return (suggestions && suggestions.length && index >= 0) ? suggestions[index] : null;
   },
@@ -54,17 +53,17 @@ const Search = React.createClass({
   },
   getSettingsButtonIsActive: function () {
     const index = this.state.activeIndex;
-    const numSuggestions = this.props.suggestions.length;
+    const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
     const numEngines = this.props.engines.length;
     return index === numSuggestions + numEngines;
   },
   getActiveDescendantId: function () {
     // Returns the ID of the element being currently in focus, if any.
     const index = this.state.activeIndex;
-    const numSuggestions = this.props.suggestions.length;
+    const numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
     const numEngines = this.props.engines.length;
     if (index < numSuggestions) {
-      return "search-suggestions-" + index;
+      return "search-suggestions-" + "history-search-suggestions-" + index;
     } else if (index < numSuggestions + numEngines) {
       return "search-other-search-partners-" + (index - numSuggestions);
     } else if (index === numSuggestions + numEngines) {
@@ -76,12 +75,18 @@ const Search = React.createClass({
     return !!(this.props.searchString && this.state.focus);
   },
   performSearch: function (options) {
-    Platform.search.performSearch({
-      engineName: options.engineName,
+    actions.performSearch({
+      engineName: options.engineName.name,
       searchString: options.searchString,
       healthReportKey: "1",
       searchPurpose: "d"
     });
+  },
+  removeFormHistory: function (suggestion) {
+    actions.removeFormHistory(suggestion);
+  },
+  cycleCurrentEngine: function (index) {
+    actions.cycleEngine(this.props.engines[index].name);
   },
   handleKeypress: function (evt) {
     // Handle the keyboard navigation of the widget.
@@ -92,8 +97,10 @@ const Search = React.createClass({
     }
 
     const index = this.state.activeIndex;
-    const numSuggestions = this.props.suggestions.length;
     const numEngines = this.props.engines.length;
+    const originalSearchString = this.state.searchString;
+    const suggestions = this.props.formHistory.concat(this.props.suggestions);
+    let numSuggestions = this.props.formHistory.concat(this.props.suggestions).length;
     let newIndex = index;
     let newSuggestionIndex = this.state.activeSuggestionIndex;
     let newEngineIndex = this.state.activeEngineIndex;
@@ -104,14 +111,19 @@ const Search = React.createClass({
           if (index < numSuggestions - 1) {
             // We are in suggestions, move down until the last one.
             newSuggestionIndex++;
+            this.props.dispatch(actions.updateSearchString(suggestions[newSuggestionIndex]));
           } else if (index === numSuggestions - 1) {
             // We are on the last suggestion, reset suggestion index and
             // start on the engine index.
+            this.props.dispatch(actions.updateSearchString(originalSearchString));
             newSuggestionIndex = -1;
             newEngineIndex++;
           } else if (index < numSuggestions + numEngines - 1) {
             // We are in engines, keep going until the last one.
             newEngineIndex++;
+            if (evt.getModifierState("Accel")) {
+              this.cycleCurrentEngine(newEngineIndex);
+            }
           } else if (index === numSuggestions + numEngines - 1) {
             // We are on the last engine, reset engine index.
             newEngineIndex = -1;
@@ -127,13 +139,18 @@ const Search = React.createClass({
           if (index < numSuggestions) {
             // We are in suggestions, move on up.
             newSuggestionIndex--;
+            this.props.dispatch(actions.updateSearchString(suggestions[newSuggestionIndex]));
           } else if (index === numSuggestions) {
             // We are on the first engine, reset engine index and move to
             // last suggestion.
             newEngineIndex = -1;
             newSuggestionIndex = numSuggestions - 1;
+            this.props.dispatch(actions.updateSearchString(suggestions[newSuggestionIndex]));
           } else if (index < numSuggestions + numEngines) {
             // We are on the engine list, move on up.
+            if (evt.getModifierState("Accel")) {
+              this.cycleCurrentEngine(newEngineIndex);
+            }
             newEngineIndex--;
           } else {
             // We are on the button, move to last engine.
@@ -183,11 +200,27 @@ const Search = React.createClass({
           }
         }
         break;
+      case "Delete":
+        // This is the case where the user deletes a form history entry from the dropdown
+        // You can only delete form history entries, so check that the active suggestion is
+        // a form himstory entry.
+        if (this.props.formHistory.includes(suggestions[newSuggestionIndex])) {
+          // Remove it, update your form history list and your list of suggestions.
+          this.removeFormHistory(suggestions[newSuggestionIndex]);
+          this.props.formHistory.splice(newSuggestionIndex, 1);
+          suggestions.splice(newSuggestionIndex, 1);
+          // Update your suggestion index, and the number of suggestions shown.
+          newSuggestionIndex = -1;
+          newIndex = -1;
+          numSuggestions--;
+        }
+
+        break;
       case "Enter":
         evt.preventDefault();
         // If the change settings button is selected, fire the action for it.
         if (this.getSettingsButtonIsActive()) {
-          Platform.search.manageEngines();
+          actions.manageEngines();
           return;
         }
 
@@ -215,7 +248,7 @@ const Search = React.createClass({
   },
   render: function () {
     const {currentEngine, searchString} = this.props;
-    const currentIcon = currentEngine.icons[0] || {};
+    const currentIcon = currentEngine.icons || {};
     let suggestionsIdIndex = 0;
     let enginesIdIndex = 0;
     return (<form className="search">
@@ -226,24 +259,40 @@ const Search = React.createClass({
           aria-controls="search-container"
           aria-expanded={this.getDropdownVisible()}
           aria-activedescendant={this.getActiveDescendantId()}
-          autoComplete="off" placeholder="Search" maxLength="256"
+          autoComplete="off" placeholder={this.props.searchPlaceholder} maxLength="256"
           value={searchString}
-          placeholder="Search"
+          placeholder={this.props.searchPlaceholder}
           onChange={e => this.setValueAndSuggestions(e.target.value)}
           onFocus={() => this.setState({focus: true})}
           onBlur={() => setTimeout(() => this.resetState(), 200)}
           onKeyDown={e => this.handleKeypress(e)} />
         <button onClick={e => {
           e.preventDefault();
-          this.performSearch({engineName: currentEngine.name, searchString});
+          this.performSearch({engineName: currentEngine, searchString});
         }} className="search-submit" aria-label="Submit search">
          <span className="sr-only" >Search</span>
         </button>
         <div id="search-container" role="presentation" hidden={!this.getDropdownVisible()}>
-          <section className="search-title" hidden={!this.props.suggestions.length}>
-            <Icon padded {...currentIcon} /> {currentEngine.placeholder}
+          <section className="search-title" hidden={!this.props.formHistory.concat(this.props.suggestions).length}>
+            <Icon padded {...currentIcon} /> {this.props.searchHeader.replace("%S", currentEngine.name)}
           </section>
-          <section className="search-suggestions" hidden={!this.props.suggestions.length}>
+          <section className="history-search-suggestions" hidden={!this.props.formHistory.length}>
+            <ul role="listbox">
+              {this.props.formHistory.map(suggestion => {
+                const active = (this.state.activeSuggestionIndex === suggestionsIdIndex);
+                const activeEngine = this.getActiveEngine();
+                return (<li key={suggestion} role="presentation">
+                  <a id={"history-search-suggestions-" + suggestionsIdIndex++ }
+                     className={active ? "active" : ""} role="option"
+                     aria-selected={active}
+                     onClick={() => this.performSearch({
+                      engineName: activeEngine.name, searchString: suggestion
+                  })}><div id="historyIcon" className={active ? "active" : ""}></div>{suggestion}</a>
+                </li>);
+              })}
+            </ul>
+            </section>
+            <section className="search-suggestions" hidden={!this.props.suggestions.length}>
             <ul role="listbox">
               {this.props.suggestions.map(suggestion => {
                 const active = (this.state.activeSuggestionIndex === suggestionsIdIndex);
@@ -260,20 +309,24 @@ const Search = React.createClass({
             </ul>
           </section>
           <section className="search-title">
-            <span>Search for <strong>{this.props.searchString}</strong> with:</span>
+            <span>{this.props.searchForSomethingWith
+                .replace("<span class='contentSearchSearchWithHeaderSearchText'></span>", searchString)}
+            </span>
           </section>
           <section className="search-other-search-partners" role="group">
             <ul>
               {this.props.engines.map(option => {
-                const icon = option.icons[0];
-                const active = (this.state.activeEngineIndex === enginesIdIndex);
-                return (<li key={option.name} className={active ? "active" : ""}>
-                  <a id={"search-other-search-partners-" + enginesIdIndex++ } aria-selected={active}
-                    onClick={() => this.performSearch({
-                      engineName: option.name, searchString: this.getActiveSuggestion()
-                  })}>
-                  <Icon {...icon} alt={option.name} /></a>
-                </li>);
+                if (option.name !== this.props.currentEngine.name) {
+                  const icon = option.icons;
+                  const active = (this.state.activeEngineIndex === enginesIdIndex);
+                  return (<li key={option.name} className={active ? "active" : ""}>
+                    <a id={"search-other-search-partners-" + enginesIdIndex++ } aria-selected={active}
+                      onClick={() => this.performSearch({
+                        engineName: option.name, searchString: this.getActiveSuggestion()
+                    })}>
+                    <Icon {...icon} alt={option.name} /></a>
+                  </li>);
+                }
               })}
             </ul>
           </section>
@@ -283,9 +336,9 @@ const Search = React.createClass({
               aria-selected={this.getSettingsButtonIsActive()}
               onClick={(e) => {
                 e.preventDefault();
-                this.props.manageEngines();
+                actions.manageEngines();
             }}>
-              Change Search Settings
+              {this.props.searchSettings}
             </button>
           </section>
         </div>

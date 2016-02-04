@@ -1,37 +1,42 @@
 const c = require("lib/constants");
-const {request, receive} = require("lib/utils");
-const Platform = require("lib/platform");
-const async = require("lib/async");
+const Comm = require("lib/comm");
+const {receive} = require("lib/utils");
 
 module.exports = {
+
+  getStrings() {
+    Comm.dispatch(c.REQUEST_UISTRINGS);
+  },
+
   getSuggestions(engineName, searchString) {
-    return async(function* (dispatch) {
-      dispatch(request(c.REQUEST_SEARCH_SUGGESTIONS));
-      const body = yield Platform.search.getSuggestions({
-        searchString,
-        engineName
-      });
-      dispatch(receive(c.RECEIVE_SEARCH_SUGGESTIONS, body));
-    }, this);
+    const searchData = {
+      engineName,
+      searchString
+    };
+    Comm.dispatch(c.REQUEST_SEARCH_SUGGESTIONS, searchData);
   },
 
-  getCurrentEngine() {
-    return async(function* (dispatch) {
-      dispatch(request(c.REQUEST_CURRENT_SEARCH_ENGINE));
-      const body = yield Platform.search.getCurrentEngine();
-      dispatch(receive(c.RECEIVE_CURRENT_SEARCH_ENGINE, body));
-    }, this);
+  manageEngines() {
+    Comm.dispatch(c.REQUEST_MANAGE_ENGINES);
   },
 
-  getVisibleEngines() {
-    return async(function* (dispatch) {
-      dispatch(request(c.REQUEST_VISIBLE_SEARCH_ENGINES));
-      const body = yield Platform.search.getVisibleEngines();
-      dispatch(receive(c.RECEIVE_VISIBLE_SEARCH_ENGINES, body));
-    }, this);
+  getState() {
+    Comm.dispatch(c.REQUEST_SEARCH_STATE);
+  },
+
+  cycleEngine(engineName) {
+    Comm.dispatch(c.REQUEST_CYCLE_ENGINE, engineName);
+  },
+
+  removeFormHistory(suggestion) {
+    Comm.dispatch(c.REQUEST_REMOVE_FORM_HISTORY, suggestion);
   },
 
   updateSearchString(searchString) {
     return receive(c.UPDATE_SEARCH_STRING, {searchString});
+  },
+
+  performSearch(searchData) {
+    Comm.dispatch(c.REQUEST_PERFORM_SEARCH, searchData);
   }
 };

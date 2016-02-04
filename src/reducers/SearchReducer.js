@@ -5,56 +5,72 @@ const initialState = {
   isLoading: false,
   searchString: "",
   suggestions: [],
+  formHistory: [],
   currentEngine: {
     name: "",
     placeholder: "",
     icons: []
   },
   engines: [],
-  searchOptions: []
+  searchOptions: [],
+  searchPlaceholder: "",
+  searchSettings: "",
+  searchHeader: "",
+  searchForSomethingWith: ""
 };
 
 module.exports = function Search(prevState = initialState, action = {}) {
   const {type, data} = action;
   switch (type) {
-    case c.UPDATE_SEARCH_STRING:
+    case c.RECEIVE_UISTRINGS:
       return updateState(prevState, {
-        searchString: data.searchString
-      });
-    case c.REQUEST_SEARCH_SUGGESTIONS:
-      return updateState(prevState, {
-        isLoading: true
+        searchPlaceholder: data.searchPlaceholder,
+        searchSettings: data.searchSettings,
+        searchHeader: data.searchHeader,
+        searchForSomethingWith: data.searchForSomethingWith
       });
     case c.RECEIVE_SEARCH_SUGGESTIONS:
       return updateState(prevState, {
-        isLoading: false,
+        formHistory: data.local || [],
+        searchString: data.term,
         suggestions: data.remote || []
       });
-    case c.REQUEST_CURRENT_SEARCH_ENGINE:
+    case c.RECEIVE_SEARCH_STATE:
       return updateState(prevState, {
-        isLoading: true
+        currentEngine: {
+          name: data.currentEngine.name,
+          placeholder: data.currentEngine.placeholder,
+          icons: {
+            url: data.currentEngine.iconBuffer,
+            height: 16,
+            width: 16
+          }
+        },
+        engines: data.engines.map(engine => ({
+          name: engine.name,
+          placeholder: engine.placeholder,
+          icons: {
+            url: engine.iconBuffer,
+            height: 16,
+            width: 16
+          }
+        }))
       });
-    case c.RECEIVE_CURRENT_SEARCH_ENGINE:
+    case c.RECEIVE_CURRENT_ENGINE:
       return updateState(prevState, {
-        isLoading: false,
         currentEngine: {
           name: data.name,
           placeholder: data.placeholder,
-          icons: data.icons.map(icon => JSON.parse(icon.toJSON()))
+          icons: {
+            url: data.iconBuffer,
+            height: 16,
+            width: 16
+          }
         }
       });
-    case c.REQUEST_VISIBLE_SEARCH_ENGINES:
+    case c.UPDATE_SEARCH_STRING:
       return updateState(prevState, {
-        isLoading: true
-      });
-    case c.RECEIVE_VISIBLE_SEARCH_ENGINES:
-      return updateState(prevState, {
-        isLoading: false,
-        engines: data.map(engine => ({
-          name: engine.name,
-          placeholder: engine.placeholder,
-          icons: engine.icons.map(icon => JSON.parse(icon.toJSON()))
-        }))
+        searchString: data.searchString
       });
     default:
       return prevState;

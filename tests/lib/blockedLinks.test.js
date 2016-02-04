@@ -36,7 +36,7 @@ describe("Blocked Links API", function() {
   afterEach(function(done) {
     // Clear the database and cached links.
     return userDatabase.init({"blockedLinks": []})
-      .then(blockedLinks.init)
+      .then(blockedLinks.init())
       .then(blockedLinks.reset.bind(blockedLinks))
       .then(() => {
         userDatabase.close();
@@ -50,8 +50,9 @@ describe("Blocked Links API", function() {
   });
 
   it("should update the database and links", () => {
-    return userDatabase.init({"blockedLinks": []}).then(() => {
-      return blockedLinks.init().then(() => {
+    return userDatabase.init({"blockedLinks": []})
+      .then(blockedLinks.init())
+      .then(() => {
         assert.isTrue(blockedLinks.isEmpty());
 
         blockedLinks.block(firstLink);
@@ -65,12 +66,11 @@ describe("Blocked Links API", function() {
           assert.equal(JSON.stringify([...blockedLinks._links]), storedBlockedLinks);
         });
       });
-    });
   });
 
   it("should have no impact when attempting to unblock a link that isn't blocked", () => {
     return userDatabase.init({"blockedLinks": []}).then(() => {
-      blockedLinks.init().then(() => {
+      blockedLinks.init()().then(() => {
         blockedLinks.unblock(secondLink);
         assert.isTrue(blockedLinks.isEmpty());
       });

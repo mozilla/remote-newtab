@@ -13,15 +13,17 @@ const blockedLinks = {
   /**
    * Load the blocked links from userDatabase and cache them.
    */
-  init: async(function*() {
-    const result = yield userDatabase.load("prefs", "blockedLinks");
-    const loadedBlockedLinks = JSON.parse(result);
-    if (loadedBlockedLinks && loadedBlockedLinks.length) {
-      blockedLinks._links.clear();
-      loadedBlockedLinks.forEach(item => blockedLinks._links.add(item));
-    }
-    return blockedLinks;
-  }),
+  init() {
+    return async(function*() {
+      const result = yield userDatabase.load("prefs", "blockedLinks");
+      const loadedBlockedLinks = JSON.parse(result);
+      if (loadedBlockedLinks && loadedBlockedLinks.length) {
+        this._links.clear();
+        loadedBlockedLinks.forEach(item => this._links.add(item));
+      }
+      return this;
+    }, this);
+  },
 
   /**
    * Blocks a given link. Adjusts siteMap accordingly, and notifies listeners.

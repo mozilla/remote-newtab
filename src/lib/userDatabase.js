@@ -49,10 +49,9 @@ const userDatabase = {
     return userDatabase._setSimpleRequestHandlers(request, transactionDescription);
   },
 
-  _setSimpleRequestHandlers(request, logString) {
+  _setSimpleRequestHandlers(request, errorString) {
     return new Promise((resolve, reject) => {
       request.onerror = event => {
-        const errorString = event.target.errorCode + ": " + logString;
         error(errorString);
         reject(new Error(errorString));
       };

@@ -6,7 +6,7 @@ const {updateState} = require("lib/utils");
 const initialState = {
   isInitialized: false,
   visible: false,
-  blockedURL: undefined
+  blockedURL: null
 };
 
 module.exports = function Search(prevState = initialState, action = null) {

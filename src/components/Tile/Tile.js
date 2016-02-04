@@ -10,14 +10,12 @@ const Tile = React.createClass({
    */
   block: function (e) {
     e.preventDefault();
-    if (!this.isBlocked()) {
-      blockedLinks.block(this.props.url);
-      if (this.props.dispatch) {
-        // Dispatch doesn't exist in a test environment.
-        this.props.dispatch(actions.setUndoDialogVisibility(true, this.props.url));
-        this.props.dispatch(actions.updateSites());
-      }
+    if (this.isBlocked()) {
+      return;
     }
+    blockedLinks.block(this.props.url);
+    this.props.dispatch(actions.setUndoDialogVisibility(true, this.props.url));
+    this.props.dispatch(actions.updateSites());
   },
 
 
@@ -54,10 +52,8 @@ Tile.propTypes = {
   url: React.PropTypes.string.isRequired
 };
 
-function select(state) {
-  return {
-    Tile: state.Tile
-  };
+function select({tile}) {
+  return {tile};
 }
 
 module.exports = connect(select)(Tile);

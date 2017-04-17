@@ -49,7 +49,7 @@
     "generate-offline-files": "bin/generate-offline-files.js",
     "karma": "karma start --single-run",
     "test": "npm run karma",
-    "jshint": "jshint src bin",
+    "jshint": "jshint bin/*.js src/locale/*.js src/js/*.js src/js/lib/*.js src/test/*.js src/test/lib/*.js",
     "jscs": "jscs --esnext src",
     "jscs:fix": "jscs --esnext --fix bin/ src/locale/ src/js/ src/js/lib/ src/test/ src/test/lib",
     "pretest": "npm run generate-offline-files && npm run jshint && npm run jscs",
